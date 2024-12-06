@@ -24,6 +24,7 @@ export default function PushNotificationPrompt() {
       setShowPrompt(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to enable notifications');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
