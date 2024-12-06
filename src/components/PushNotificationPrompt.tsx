@@ -5,16 +5,27 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 export default function PushNotificationPrompt() {
   const { permission, loading, requestPermission } = usePushNotifications();
   const [showPrompt, setShowPrompt] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Show prompt after a short delay if not already granted
-    if (!loading && permission !== 'granted') {
+    if (!loading && permission === 'default') {
       const timer = setTimeout(() => {
         setShowPrompt(true);
       }, 2000);
       return () => clearTimeout(timer);
     }
   }, [loading, permission]);
+
+  const handleEnableNotifications = async () => {
+    try {
+      setError(null);
+      await requestPermission();
+      setShowPrompt(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to enable notifications');
+    }
+  };
 
   if (loading || permission === 'granted' || !showPrompt) {
     return null;
@@ -32,9 +43,12 @@ export default function PushNotificationPrompt() {
         <p className="text-gray-600 text-center mb-6">
           Get instant updates from Elampillai Community. Stay informed about local news, events, and announcements.
         </p>
+        {error && (
+          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+        )}
         <div className="flex flex-col space-y-3">
           <button
-            onClick={requestPermission}
+            onClick={handleEnableNotifications}
             className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Enable Notifications

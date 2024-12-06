@@ -5,17 +5,16 @@ export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkPermission = async () => {
       try {
         if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-          setError('Push notifications are not supported in this browser');
+          setLoading(false);
           return;
         }
 
-        const currentPermission = await Notification.permission;
+        const currentPermission = Notification.permission;
         setPermission(currentPermission);
 
         if (currentPermission === 'granted') {
@@ -24,7 +23,7 @@ export function usePushNotifications() {
           setSubscription(existingSubscription);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to check notification permission');
+        console.error('Error checking notification permission:', err);
       } finally {
         setLoading(false);
       }
@@ -35,9 +34,6 @@ export function usePushNotifications() {
 
   const requestPermission = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
         throw new Error('Push notifications are not supported in this browser');
       }
@@ -62,11 +58,8 @@ export function usePushNotifications() {
         setSubscription(subscription);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to request notification permission';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
+      console.error('Error requesting notification permission:', err);
+      throw err;
     }
   };
 
@@ -74,7 +67,6 @@ export function usePushNotifications() {
     permission,
     subscription,
     loading,
-    error,
     requestPermission
   };
 }
