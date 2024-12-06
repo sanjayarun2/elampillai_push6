@@ -7,13 +7,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { subscription, payload } = req.body;
+    const { subscription, payload, vapidKeys } = req.body;
 
-    // Configure web-push with VAPID details
+    if (!vapidKeys?.publicKey || !vapidKeys?.privateKey) {
+      throw new Error('Missing VAPID keys');
+    }
+
     webpush.setVapidDetails(
       'mailto:admin@elampillai.in',
-      process.env.VITE_VAPID_PUBLIC_KEY!,
-      process.env.VITE_VAPID_PRIVATE_KEY!
+      vapidKeys.publicKey,
+      vapidKeys.privateKey
     );
 
     await webpush.sendNotification(
