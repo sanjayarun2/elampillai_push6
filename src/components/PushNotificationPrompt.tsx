@@ -1,35 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export default function PushNotificationPrompt() {
   const { permission, loading, requestPermission } = usePushNotifications();
+  const [showPrompt, setShowPrompt] = useState(false);
 
-  if (loading || permission === 'granted') {
+  useEffect(() => {
+    // Show prompt after a short delay if not already granted
+    if (!loading && permission !== 'granted') {
+      const timer = setTimeout(() => {
+        setShowPrompt(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, permission]);
+
+  if (loading || permission === 'granted' || !showPrompt) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 right-4 max-w-sm bg-white rounded-lg shadow-lg p-4 border border-gray-200 z-50">
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
-          <Bell className="h-6 w-6 text-blue-500" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+        <div className="flex items-center justify-center mb-4">
+          <Bell className="h-12 w-12 text-blue-500" />
         </div>
-        <div>
-          <h3 className="text-sm font-medium text-gray-900">
-            எங்கள் செய்திகளை பெற
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Get instant updates from Elampillai Community
-          </p>
-          <div className="mt-3">
-            <button
-              onClick={requestPermission}
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Enable Notifications
-            </button>
-          </div>
+        <h3 className="text-xl font-semibold text-center mb-2">
+          எங்கள் செய்திகளை பெற
+        </h3>
+        <p className="text-gray-600 text-center mb-6">
+          Get instant updates from Elampillai Community. Stay informed about local news, events, and announcements.
+        </p>
+        <div className="flex flex-col space-y-3">
+          <button
+            onClick={requestPermission}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Enable Notifications
+          </button>
+          <button
+            onClick={() => setShowPrompt(false)}
+            className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors"
+          >
+            Maybe Later
+          </button>
         </div>
       </div>
     </div>
