@@ -1,13 +1,6 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create settings table
-CREATE TABLE IF NOT EXISTS settings (
-    id TEXT PRIMARY KEY,
-    whatsapp_link TEXT,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Create blogs table
 CREATE TABLE IF NOT EXISTS blogs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -16,33 +9,6 @@ CREATE TABLE IF NOT EXISTS blogs (
     date TEXT NOT NULL,
     author TEXT NOT NULL,
     image TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create shops table
-CREATE TABLE IF NOT EXISTS shops (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
-    address TEXT NOT NULL,
-    description TEXT NOT NULL,
-    rating NUMERIC(3,1) NOT NULL,
-    phone TEXT,
-    category TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create products table
-CREATE TABLE IF NOT EXISTS products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    price NUMERIC(10,2) NOT NULL,
-    seller TEXT NOT NULL,
-    whatsapp_link TEXT NOT NULL,
-    image TEXT NOT NULL,
-    category TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -78,39 +44,39 @@ CREATE TABLE IF NOT EXISTS notifications (
     processed_at TIMESTAMP WITH TIME ZONE
 );
 
--- Enable Row Level Security (RLS)
-ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+-- Create settings table
+CREATE TABLE IF NOT EXISTS settings (
+    id TEXT PRIMARY KEY,
+    whatsapp_link TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Enable RLS
 ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
-CREATE POLICY "Allow all operations" ON settings FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON blogs FOR ALL TO public USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all operations" ON shops FOR ALL TO public USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all operations" ON products FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON comments FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON push_subscriptions FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON notifications FOR ALL TO public USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON settings FOR ALL TO public USING (true) WITH CHECK (true);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS blogs_created_at_idx ON blogs(created_at DESC);
+CREATE INDEX IF NOT EXISTS comments_blog_id_idx ON comments(blog_id);
+CREATE INDEX IF NOT EXISTS push_subscriptions_endpoint_idx ON push_subscriptions(endpoint);
+CREATE INDEX IF NOT EXISTS push_subscriptions_last_used_idx ON push_subscriptions(last_used);
+CREATE INDEX IF NOT EXISTS notifications_blog_id_idx ON notifications(blog_id);
+
+-- Grant permissions
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon;
 
 -- Insert default settings
 INSERT INTO settings (id, whatsapp_link, updated_at)
 VALUES ('1', '', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
-
--- Grant permissions
-GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon;
-GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon;
-
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS blogs_created_at_idx ON blogs(created_at DESC);
-CREATE INDEX IF NOT EXISTS shops_name_idx ON shops(name);
-CREATE INDEX IF NOT EXISTS products_created_at_idx ON products(created_at DESC);
-CREATE INDEX IF NOT EXISTS comments_blog_id_idx ON comments(blog_id);
-CREATE INDEX IF NOT EXISTS comments_created_at_idx ON comments(created_at);
-CREATE INDEX IF NOT EXISTS push_subscriptions_endpoint_idx ON push_subscriptions(endpoint);
-CREATE INDEX IF NOT EXISTS push_subscriptions_last_used_idx ON push_subscriptions(last_used);
