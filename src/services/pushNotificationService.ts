@@ -9,17 +9,12 @@ export const pushNotificationService = {
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
       const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
 
-      // Get IP address
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      const { ip } = await ipResponse.json();
-
       const { data, error } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
-          ip_address: ip,
           user_agent: ua,
           device_type: deviceType,
           browser: browser,
@@ -55,6 +50,7 @@ export const pushNotificationService = {
       let successCount = 0;
       const errors = [];
 
+      // Send notifications in parallel
       await Promise.all(subscriptions.map(async (sub) => {
         try {
           const response = await fetch('/api/send-notification', {
@@ -73,9 +69,12 @@ export const pushNotificationService = {
                 body: title,
                 icon: '/icon-192x192.png',
                 badge: '/icon-192x192.png',
+                tag: `blog-${blogId}`,
                 data: {
                   url: `/blog/${blogId}`
-                }
+                },
+                vibrate: [200, 100, 200],
+                requireInteraction: true
               }
             })
           });
@@ -94,6 +93,12 @@ export const pushNotificationService = {
         } catch (error) {
           errors.push(error);
           console.error('Error sending to subscription:', error);
+
+          // If failed, mark subscription as inactive
+          await supabase
+            .from('push_subscriptions')
+            .update({ active: false })
+            .eq('id', sub.id);
         }
       }));
 
@@ -110,20 +115,12 @@ export const pushNotificationService = {
 
   async getSubscriptionCount(): Promise<number> {
     try {
-      const { data, count, error } = await supabase
+      const { count, error } = await supabase
         .from('push_subscriptions')
-        .select('*', { count: 'exact' })
+        .select('*', { count: 'exact', head: true })
         .eq('active', true);
 
-      if (error) {
-        console.error('Detailed Subscription Count Error:', {
-          message: error.message,
-          details: error.details,
-          code: error.code
-        });
-        throw error;
-      }
-
+      if (error) throw error;
       return count || 0;
     } catch (error) {
       console.error('Error getting subscription count:', error);
