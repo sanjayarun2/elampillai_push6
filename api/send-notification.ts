@@ -12,27 +12,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { subscription, payload } = req.body;
 
-    if (!subscription || !payload) {
-      return res.status(400).json({ error: 'Missing required parameters' });
+    // Validation
+    if (!subscription || !subscription.endpoint || !subscription.keys) {
+      return res.status(400).json({ error: 'Invalid subscription data' });
+    }
+    if (!payload || !payload.title || !payload.body) {
+      return res.status(400).json({ error: 'Invalid payload data' });
     }
 
+    // Set VAPID keys
     webpush.setVapidDetails(
       'mailto:admin@elampillai.in',
       VAPID_PUBLIC_KEY,
       VAPID_PRIVATE_KEY
     );
 
-    await webpush.sendNotification(
-      subscription,
-      JSON.stringify(payload)
-    );
-    
+    // Send the notification
+    await webpush.sendNotification(subscription, JSON.stringify(payload));
+
+    // Respond with success
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error sending push notification:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to send notification',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : null // Log stack trace for debugging
     });
   }
 }
