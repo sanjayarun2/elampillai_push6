@@ -3,13 +3,7 @@ import webpush from 'web-push';
 
 // Fixed VAPID keys
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-const VAPID_PRIVATE_KEY = 'QD5HVJvQXgxRwJW1g1vO9dB-FvL2Zc3R6KvRxA8gXYw';
-
-webpush.setVapidDetails(
-  'mailto:admin@elampillai.in',
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
+const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -19,9 +13,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { subscription, payload } = req.body;
 
-    if (!subscription || !payload) {
-      return res.status(400).json({ error: 'Missing required parameters' });
-    }
+    webpush.setVapidDetails(
+      'mailto:admin@elampillai.in',
+      VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY
+    );
 
     await webpush.sendNotification(
       subscription,
