@@ -40,8 +40,8 @@ export default function PushNotificationButton() {
           subscription
             ? 'bg-red-600 hover:bg-red-700 active:bg-red-800'
             : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
-        } text-white rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95`}
-        disabled={loading}
+        } text-white rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+        disabled={loading || permission === 'denied'}
       >
         {subscription ? (
           <>
@@ -58,6 +58,11 @@ export default function PushNotificationButton() {
       {error && (
         <div className="text-red-600 text-sm animate-fade-in">
           {error}
+        </div>
+      )}
+      {permission === 'denied' && (
+        <div className="text-amber-600 text-sm animate-fade-in">
+          Please enable notifications in your browser settings to receive updates.
         </div>
       )}
     </div>

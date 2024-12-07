@@ -8,12 +8,13 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show prompt after a short delay if not already granted
     if (!loading && permission === 'default') {
       const timer = setTimeout(() => {
         setShowPrompt(true);
-      }, 2000);
+      }, 3000);
       return () => clearTimeout(timer);
+    } else {
+      setShowPrompt(false);
     }
   }, [loading, permission]);
 
@@ -28,15 +29,17 @@ export default function PushNotificationPrompt() {
     }
   };
 
-  if (loading || permission === 'granted' || !showPrompt) {
+  if (loading || permission !== 'default' || !showPrompt) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
+      <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full transform transition-all duration-300 scale-100">
         <div className="flex items-center justify-center mb-4">
-          <Bell className="h-12 w-12 text-blue-500" />
+          <div className="bg-blue-100 p-3 rounded-full">
+            <Bell className="h-8 w-8 text-blue-600" />
+          </div>
         </div>
         <h3 className="text-xl font-semibold text-center mb-2">
           எங்கள் செய்திகளை பெற
@@ -45,12 +48,14 @@ export default function PushNotificationPrompt() {
           Get instant updates from Elampillai Community. Stay informed about local news, events, and announcements.
         </p>
         {error && (
-          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+          <div className="text-red-600 text-sm text-center mb-4 animate-fade-in">
+            {error}
+          </div>
         )}
         <div className="flex flex-col space-y-3">
           <button
             onClick={handleEnableNotifications}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transform transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
           >
             Enable Notifications
           </button>
