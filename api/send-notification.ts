@@ -1,23 +1,22 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 
+const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+const VAPID_PRIVATE_KEY = 'YOUR_PRIVATE_KEY'; // Replace with your private key
+
+webpush.setVapidDetails(
+  'mailto:admin@elampillai.in',
+  VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY
+);
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { subscription, payload, vapidKeys } = req.body;
-
-    if (!vapidKeys?.publicKey || !vapidKeys?.privateKey) {
-      throw new Error('Missing VAPID keys');
-    }
-
-    webpush.setVapidDetails(
-      'mailto:admin@elampillai.in',
-      vapidKeys.publicKey,
-      vapidKeys.privateKey
-    );
+    const { subscription, payload } = req.body;
 
     await webpush.sendNotification(
       subscription,

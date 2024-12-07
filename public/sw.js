@@ -1,5 +1,7 @@
 self.addEventListener('push', event => {
   const data = event.data.json();
+  
+  // Ensure notification is shown even if the app is in the background
   const options = {
     body: data.body,
     icon: '/icon-192x192.png',
@@ -15,7 +17,8 @@ self.addEventListener('push', event => {
     tag: data.tag || 'elampillai-notification',
     renotify: true,
     requireInteraction: true,
-    silent: false
+    silent: false,
+    timestamp: Date.now()
   };
 
   event.waitUntil(
@@ -53,5 +56,15 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    Promise.all([
+      self.clients.claim(),
+      // Clear any old caches
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      })
+    ])
+  );
 });
