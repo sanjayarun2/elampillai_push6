@@ -1,6 +1,10 @@
 import { supabase } from '../lib/supabase';
 
-const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+interface PushSubscription {
+  endpoint: string;
+  auth: string;
+  p256dh: string;
+}
 
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
@@ -22,6 +26,39 @@ export const pushNotificationService = {
     } catch (error) {
       console.error('Error saving subscription:', error);
       throw error;
+    }
+  },
+
+  async getAllSubscriptions(): Promise<PushSubscription[]> {
+    try {
+      const { data, error } = await supabase
+        .from('push_subscriptions')
+        .select('*');
+
+      if (error) throw error;
+
+      return (data || []).map(sub => ({
+        endpoint: sub.endpoint,
+        auth: sub.auth,
+        p256dh: sub.p256dh
+      }));
+    } catch (error) {
+      console.error('Error getting subscriptions:', error);
+      throw error;
+    }
+  },
+
+  async getSubscriptionCount(): Promise<number> {
+    try {
+      const { count, error } = await supabase
+        .from('push_subscriptions')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count || 0;
+    } catch (error) {
+      console.error('Error getting subscription count:', error);
+      return 0;
     }
   },
 
@@ -90,7 +127,5 @@ export const pushNotificationService = {
       console.error('Error in sendNotification:', error);
       throw error;
     }
-  },
-
-  // ... rest of the service methods remain the same
+  }
 };
