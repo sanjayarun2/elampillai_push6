@@ -52,6 +52,7 @@ CREATE POLICY "Allow all operations" ON notification_logs FOR ALL TO public USIN
 -- Create indexes
 CREATE INDEX IF NOT EXISTS push_subscriptions_endpoint_idx ON push_subscriptions(endpoint);
 CREATE INDEX IF NOT EXISTS push_subscriptions_ip_idx ON push_subscriptions(ip_address);
+CREATE INDEX IF NOT EXISTS push_subscriptions_active_idx ON push_subscriptions(active);
 CREATE INDEX IF NOT EXISTS notifications_blog_id_idx ON notifications(blog_id);
 CREATE INDEX IF NOT EXISTS notification_logs_notification_id_idx ON notification_logs(notification_id);
 
