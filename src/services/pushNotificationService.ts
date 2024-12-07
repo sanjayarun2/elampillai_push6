@@ -7,23 +7,18 @@ const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      // Get IP address
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      const ipData = await ipResponse.json();
-      
       // Get device info
       const ua = navigator.userAgent;
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
       const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
-          ip_address: ipData.ip,
           user_agent: ua,
           device_type: deviceType,
           browser: browser,
@@ -32,10 +27,12 @@ export const pushNotificationService = {
           active: true
         }, {
           onConflict: 'endpoint'
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
-      return true;
+      return data;
     } catch (error) {
       console.error('Error saving subscription:', error);
       throw error;
@@ -57,7 +54,6 @@ export const pushNotificationService = {
       let successCount = 0;
       const errors = [];
 
-      // Send to all subscriptions
       await Promise.all(subscriptions.map(async (sub) => {
         try {
           const response = await fetch('/api/send-notification', {
@@ -93,14 +89,29 @@ export const pushNotificationService = {
             throw new Error('Failed to send notification');
           }
 
+          // Log successful notification
+          await supabase.from('notification_logs').insert({
+            subscription_id: sub.id,
+            notification_type: 'blog_post',
+            status: 'success'
+          });
+
           // Update last_used timestamp
           await supabase
             .from('push_subscriptions')
             .update({ last_used: new Date().toISOString() })
-            .eq('endpoint', sub.endpoint);
+            .eq('id', sub.id);
 
           successCount++;
         } catch (error) {
+          // Log failed notification
+          await supabase.from('notification_logs').insert({
+            subscription_id: sub.id,
+            notification_type: 'blog_post',
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+
           errors.push(error);
           console.error('Error sending to subscription:', error);
         }
