@@ -62,7 +62,10 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
     endpoint TEXT UNIQUE NOT NULL,
     auth TEXT NOT NULL,
     p256dh TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    ip_address TEXT,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_used TIMESTAMP WITH TIME ZONE
 );
 
 -- Create notifications table
@@ -110,3 +113,4 @@ CREATE INDEX IF NOT EXISTS products_created_at_idx ON products(created_at DESC);
 CREATE INDEX IF NOT EXISTS comments_blog_id_idx ON comments(blog_id);
 CREATE INDEX IF NOT EXISTS comments_created_at_idx ON comments(created_at);
 CREATE INDEX IF NOT EXISTS push_subscriptions_endpoint_idx ON push_subscriptions(endpoint);
+CREATE INDEX IF NOT EXISTS push_subscriptions_last_used_idx ON push_subscriptions(last_used);

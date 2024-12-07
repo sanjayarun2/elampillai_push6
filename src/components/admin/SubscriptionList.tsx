@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSupabaseQuery } from '../../hooks/useSupabaseQuery';
 import { pushNotificationService } from '../../services/pushNotificationService';
-import { formatDistanceToNow } from 'date-fns';
 
 interface Subscription {
   id: string;
@@ -72,11 +71,11 @@ export default function SubscriptionList() {
                 {sub.ip_address || 'Unknown'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatDistanceToNow(new Date(sub.created_at), { addSuffix: true })}
+                {new Date(sub.created_at).toLocaleDateString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {sub.last_used 
-                  ? formatDistanceToNow(new Date(sub.last_used), { addSuffix: true })
+                  ? new Date(sub.last_used).toLocaleDateString()
                   : 'Never'
                 }
               </td>

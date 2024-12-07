@@ -19,38 +19,35 @@ export interface Database {
           author: string;
           image?: string;
           created_at: string;
+          updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['blogs']['Row'], 'id' | 'created_at'>;
+        Insert: Omit<Database['public']['Tables']['blogs']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['blogs']['Insert']>;
       };
-      shops: {
+      comments: {
         Row: {
           id: string;
-          name: string;
-          address: string;
-          description: string;
-          rating: number;
-          phone?: string;
-          category: string;
+          blog_id: string;
+          author: string;
+          content: string;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['shops']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['shops']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['comments']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['comments']['Insert']>;
       };
-      products: {
+      push_subscriptions: {
         Row: {
           id: string;
-          name: string;
-          description: string;
-          price: number;
-          seller: string;
-          whatsapp_link: string;
-          image: string;
-          category: string;
+          endpoint: string;
+          auth: string;
+          p256dh: string;
+          ip_address: string | null;
+          user_agent: string | null;
           created_at: string;
+          last_used: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['products']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['products']['Insert']>;
+        Insert: Omit<Database['public']['Tables']['push_subscriptions']['Row'], 'id' | 'created_at' | 'last_used'>;
+        Update: Partial<Database['public']['Tables']['push_subscriptions']['Insert']>;
       };
     };
   };
