@@ -23,8 +23,7 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${supabaseKey}`
       }
     }
   }
