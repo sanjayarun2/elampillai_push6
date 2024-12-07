@@ -3,7 +3,9 @@ import { supabase } from '../lib/supabase';
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      // Get device info
+      console.log('Saving subscription:', subscription); // Log the subscription
+
+      // Extract user agent details
       const ua = navigator.userAgent;
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
@@ -27,7 +29,12 @@ export const pushNotificationService = {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving subscription to Supabase:', error);
+        throw error;
+      }
+
+      console.log('Subscription saved successfully:', data); // Log successful save
       return data;
     } catch (error) {
       console.error('Error saving subscription:', error);

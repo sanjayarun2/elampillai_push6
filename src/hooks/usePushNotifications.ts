@@ -23,9 +23,12 @@ export function usePushNotifications() {
         if (currentPermission === 'granted') {
           const registration = await navigator.serviceWorker.ready;
           const existingSubscription = await registration.pushManager.getSubscription();
-          
+
           if (existingSubscription) {
             setSubscription(existingSubscription);
+            console.log('Existing subscription found:', existingSubscription);
+          } else {
+            console.log('No existing subscription found.');
           }
         }
       } catch (err) {
@@ -51,7 +54,7 @@ export function usePushNotifications() {
 
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
-        
+
         // Unsubscribe from existing subscription if any
         const currentSubscription = await registration.pushManager.getSubscription();
         if (currentSubscription) {
@@ -64,8 +67,11 @@ export function usePushNotifications() {
           applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         });
 
+        console.log('New subscription created:', newSubscription);
+
         // Save subscription to backend
         await pushNotificationService.saveSubscription(newSubscription);
+
         setSubscription(newSubscription);
 
         // Show welcome notification
