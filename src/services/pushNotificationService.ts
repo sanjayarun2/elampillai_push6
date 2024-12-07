@@ -65,26 +65,14 @@ export const pushNotificationService = {
     }
   },
 
-  async getAllSubscriptions() {
-    try {
-      const { data, error } = await supabase
-        .from('push_subscriptions')
-        .select('endpoint, auth, p256dh')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error getting subscriptions:', error);
-      return [];
-    }
-  },
-
   async sendNotification(blogId: string, title: string) {
     try {
-      const subscriptions = await this.getAllSubscriptions();
-      
-      if (!subscriptions.length) {
+      const { data: subscriptions, error } = await supabase
+        .from('push_subscriptions')
+        .select('endpoint, auth, p256dh');
+
+      if (error) throw error;
+      if (!subscriptions?.length) {
         throw new Error('No push subscriptions found');
       }
 
@@ -116,7 +104,8 @@ export const pushNotificationService = {
                   url: `/blog/${blogId}`
                 },
                 tag: `blog-${blogId}`,
-                requireInteraction: true
+                requireInteraction: true,
+                vibrate: [200, 100, 200]
               }
             })
           });

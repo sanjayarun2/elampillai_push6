@@ -2,12 +2,12 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-const VAPID_PRIVATE_KEY = 'YOUR_PRIVATE_KEY'; // Replace with your private key
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
 
 webpush.setVapidDetails(
   'mailto:admin@elampillai.in',
   VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
+  VAPID_PRIVATE_KEY || ''
 );
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

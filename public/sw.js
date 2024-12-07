@@ -1,7 +1,6 @@
 self.addEventListener('push', event => {
   const data = event.data.json();
   
-  // Ensure notification is shown even if the app is in the background
   const options = {
     body: data.body,
     icon: '/icon-192x192.png',
@@ -50,7 +49,6 @@ self.addEventListener('notificationclick', event => {
   }
 });
 
-// Ensure service worker is activated immediately
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
 });
