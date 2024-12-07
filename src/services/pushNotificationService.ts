@@ -64,8 +64,8 @@ export const pushNotificationService = {
         .insert([{
           blog_id: blogId,
           title: title,
-          status: 'sent',
-          processed_at: new Date().toISOString()
+          status: 'pending',
+          created_at: new Date().toISOString()
         }]);
 
       const payload = {
@@ -75,7 +75,9 @@ export const pushNotificationService = {
         badge: '/icon-192x192.png',
         data: {
           url: `/blog/${blogId}`
-        }
+        },
+        vibrate: [200, 100, 200],
+        requireInteraction: true
       };
 
       // Send to all subscriptions
@@ -102,8 +104,17 @@ export const pushNotificationService = {
             if (!response.ok) {
               throw new Error('Failed to send notification');
             }
+
+            // Update notification status
+            await supabase
+              .from('notifications')
+              .update({ status: 'sent', processed_at: new Date().toISOString() })
+              .eq('blog_id', blogId);
+
+            return { success: true, endpoint: sub.endpoint };
           } catch (error) {
             console.error('Error sending notification to subscription:', error);
+            return { success: false, endpoint: sub.endpoint, error };
           }
         })
       );
