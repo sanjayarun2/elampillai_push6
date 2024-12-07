@@ -12,12 +12,13 @@ async function initialize() {
   try {
     await initializeDatabase();
 
-    if ('serviceWorker' in navigator && !import.meta.env.DEV) {
+    // Register service worker in both dev and prod
+    if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
         updateViaCache: 'none'
       });
-      console.log('ServiceWorker registered successfully');
+      console.log('ServiceWorker registered successfully:', registration);
     }
   } catch (error) {
     console.error('Initialization error:', error);

@@ -16,6 +16,7 @@
     "react-dom": "^18.3.0",
     "react-helmet-async": "^2.0.4",
     "react-router-dom": "^6.22.3",
+    "vite-plugin-pwa": "^0.21.1",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
