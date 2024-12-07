@@ -11,8 +11,8 @@ if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -22,10 +22,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Verify authorization
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  // Verify API key
+  const apiKey = req.headers.apikey;
+  if (!apiKey) {
+    return res.status(401).json({ 
+      error: 'Unauthorized',
+      message: 'No API key found in request',
+      hint: 'No `apikey` request header or url param was found.'
+    });
   }
 
   try {

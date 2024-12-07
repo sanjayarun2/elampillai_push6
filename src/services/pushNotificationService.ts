@@ -22,8 +22,7 @@ export const pushNotificationService = {
           created_at: new Date().toISOString(),
           active: true
         }, {
-          onConflict: 'endpoint',
-          ignoreDuplicates: false
+          onConflict: 'endpoint'
         })
         .select()
         .single();
@@ -54,10 +53,24 @@ export const pushNotificationService = {
       // Send notifications in parallel
       await Promise.all(subscriptions.map(async (sub) => {
         try {
+          const payload = {
+            title: 'New Blog Post',
+            body: title,
+            icon: '/icon-192x192.png',
+            badge: '/icon-192x192.png',
+            tag: `blog-${blogId}`,
+            data: {
+              url: `/blog/${blogId}`
+            },
+            vibrate: [200, 100, 200],
+            requireInteraction: true
+          };
+
           const response = await fetch('/api/send-notification', {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
               'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
@@ -68,24 +81,21 @@ export const pushNotificationService = {
                   p256dh: sub.p256dh
                 }
               },
-              payload: {
-                title: 'New Blog Post',
-                body: title,
-                icon: '/icon-192x192.png',
-                badge: '/icon-192x192.png',
-                tag: `blog-${blogId}`,
-                data: {
-                  url: `/blog/${blogId}`
-                },
-                vibrate: [200, 100, 200],
-                requireInteraction: true
-              }
+              payload
             })
           });
 
           if (!response.ok) {
             throw new Error('Failed to send notification');
           }
+
+          // Log successful notification
+          await supabase.from('notification_logs').insert({
+            subscription_id: sub.id,
+            title: payload.title,
+            body: payload.body,
+            status: 'success'
+          });
 
           // Update last_used timestamp
           await supabase
@@ -98,7 +108,16 @@ export const pushNotificationService = {
           errors.push(error);
           console.error('Error sending to subscription:', error);
 
-          // If failed, mark subscription as inactive
+          // Log failed notification
+          await supabase.from('notification_logs').insert({
+            subscription_id: sub.id,
+            title: 'New Blog Post',
+            body: title,
+            status: 'failed',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+
+          // Mark subscription as inactive if it failed
           await supabase
             .from('push_subscriptions')
             .update({ active: false })
