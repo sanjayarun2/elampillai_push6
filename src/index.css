@@ -19,3 +19,12 @@
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@keyframes scale {
+  from { transform: scale(0.95); }
+  to { transform: scale(1); }
+}
+
+.animate-scale {
+  animation: scale 0.2s ease-out;
+}

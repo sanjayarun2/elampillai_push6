@@ -8,18 +8,10 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && permission === 'default') {
-      // Show prompt immediately on mobile devices
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const delay = isMobile ? 0 : 3000;
-      
-      const timer = setTimeout(() => {
-        setShowPrompt(true);
-      }, delay);
-      
-      return () => clearTimeout(timer);
-    } else {
-      setShowPrompt(false);
+    // Show prompt immediately on first visit
+    if (!loading && permission === 'default' && !localStorage.getItem('notificationPromptShown')) {
+      setShowPrompt(true);
+      localStorage.setItem('notificationPromptShown', 'true');
     }
   }, [loading, permission]);
 
@@ -30,6 +22,7 @@ export default function PushNotificationPrompt() {
       setShowPrompt(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to enable notifications');
+      setTimeout(() => setError(null), 3000);
     }
   };
 

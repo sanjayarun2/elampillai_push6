@@ -29,6 +29,7 @@ export function usePushNotifications() {
       }
     };
 
+    // Check permission immediately
     checkPermission();
   }, []);
 
@@ -66,7 +67,8 @@ export function usePushNotifications() {
           body: 'You will now receive updates from Elampillai Community',
           icon: '/icon-192x192.png',
           badge: '/icon-192x192.png',
-          tag: 'welcome-notification'
+          tag: 'welcome-notification',
+          vibrate: [200, 100, 200]
         });
       }
     } catch (err) {
