@@ -23,5 +23,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
-  }
+  },
+  define: {
+    'process.env': process.env
+  },
+  envPrefix: 'VITE_'  // Explicitly add this to ensure VITE_ prefixed variables are loaded
 });
