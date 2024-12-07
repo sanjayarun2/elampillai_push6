@@ -8,6 +8,7 @@ import type { BlogPost as BlogPostType } from '../types';
 import SEOHead from '../components/SEOHead';
 import WhatsAppButton from '../components/ui/WhatsAppButton';
 import ShareButton from '../components/ui/ShareButton';
+import { pushNotificationService } from '../services/pushNotificationService'; // Assuming this service is available
 
 export default function BlogPost() {
   const { id } = useParams();
@@ -56,6 +57,20 @@ export default function BlogPost() {
       setComments([...comments, comment]);
       setNewComment('');
       setCommentAuthor('');
+
+      // Trigger push notification for new comment
+      try {
+        const notificationResponse = await pushNotificationService.sendNotification(
+          id, // passing the blog ID as the key
+          `${commentAuthor} commented on your post: ${newComment.substring(0, 50)}...`
+        );
+        if (!notificationResponse.success) {
+          console.error('Failed to send push notifications');
+        }
+      } catch (notificationError) {
+        console.error('Error sending push notification:', notificationError);
+      }
+
     } catch (err) {
       setError('Failed to add comment. Please try again.');
     } finally {
