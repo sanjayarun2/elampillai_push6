@@ -9,9 +9,11 @@ export function usePushNotifications() {
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Check the initial permission and subscription status on mount
   useEffect(() => {
     const checkPermission = async () => {
       try {
+        // Ensure that both Notification API and Service Worker API are supported
         if (!('Notification' in window) || !('serviceWorker' in navigator)) {
           setLoading(false);
           return;
@@ -41,47 +43,54 @@ export function usePushNotifications() {
     checkPermission();
   }, []);
 
+  // Request permission from the user to enable notifications
   const requestPermission = async () => {
     try {
       setLoading(true);
 
+      // Ensure browser supports push notifications and service workers
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
         throw new Error('Push notifications are not supported in this browser');
       }
 
+      // Request notification permission
       const permission = await Notification.requestPermission();
       setPermission(permission);
+      console.log('Notification permission:', permission);
 
       if (permission === 'granted') {
+        // Register the service worker if not already registered
         const registration = await navigator.serviceWorker.ready;
 
-        // Unsubscribe from existing subscription if any
+        // Unsubscribe from the existing subscription if any
         const currentSubscription = await registration.pushManager.getSubscription();
         if (currentSubscription) {
           await currentSubscription.unsubscribe();
         }
 
-        // Create new subscription
+        // Create a new push subscription
         const newSubscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
         });
 
         console.log('New subscription created:', newSubscription);
 
-        // Save subscription to backend
+        // Save the subscription to the backend
         await pushNotificationService.saveSubscription(newSubscription);
 
         setSubscription(newSubscription);
 
-        // Show welcome notification
+        // Show a welcome notification after the subscription is created
         new Notification('Notifications Enabled', {
           body: 'You will now receive updates from Elampillai Community',
           icon: '/icon-192x192.png',
           badge: '/icon-192x192.png',
           tag: 'welcome-notification',
-          vibrate: [200, 100, 200]
+          vibrate: [200, 100, 200],
         });
+      } else {
+        console.log('User denied notification permission');
       }
     } catch (err) {
       console.error('Error requesting notification permission:', err);
@@ -95,11 +104,11 @@ export function usePushNotifications() {
     permission,
     subscription,
     loading,
-    requestPermission
+    requestPermission,
   };
 }
 
-// Utility function to convert VAPID key
+// Utility function to convert VAPID key from base64 to Uint8Array
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
