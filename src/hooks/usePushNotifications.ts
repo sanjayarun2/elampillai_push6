@@ -29,7 +29,6 @@ export function usePushNotifications() {
       }
     };
 
-    // Check permission immediately
     checkPermission();
   }, []);
 

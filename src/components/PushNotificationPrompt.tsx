@@ -8,10 +8,10 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show prompt immediately on first visit
-    if (!loading && permission === 'default' && !localStorage.getItem('notificationPromptShown')) {
+    // Show prompt immediately on mobile devices
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!loading && permission === 'default' && isMobile) {
       setShowPrompt(true);
-      localStorage.setItem('notificationPromptShown', 'true');
     }
   }, [loading, permission]);
 
