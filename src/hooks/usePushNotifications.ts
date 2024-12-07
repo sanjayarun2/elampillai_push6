@@ -45,17 +45,21 @@ export function usePushNotifications() {
 
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
-        let subscription = await registration.pushManager.getSubscription();
+        let currentSubscription = await registration.pushManager.getSubscription();
 
-        if (!subscription) {
-          subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY'
-          });
+        if (currentSubscription) {
+          await currentSubscription.unsubscribe();
         }
 
-        await pushNotificationService.saveSubscription(subscription);
-        setSubscription(subscription);
+        const vapidPublicKey = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+        
+        const newSubscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: vapidPublicKey
+        });
+
+        await pushNotificationService.saveSubscription(newSubscription);
+        setSubscription(newSubscription);
       }
     } catch (err) {
       console.error('Error requesting notification permission:', err);

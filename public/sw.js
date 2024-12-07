@@ -12,8 +12,8 @@ self.addEventListener('push', event => {
         title: 'Read More'
       }
     ],
-    tag: 'elampillai-notification', // Ensure only one notification is shown
-    renotify: true // Allow new notifications to override old ones
+    tag: 'elampillai-notification',
+    renotify: true
   };
 
   event.waitUntil(
@@ -32,20 +32,17 @@ self.addEventListener('notificationclick', event => {
         type: 'window',
         includeUncontrolled: true
       }).then(windowClients => {
-        // Focus existing window if available
         for (const client of windowClients) {
           if (client.url === urlToOpen && 'focus' in client) {
             return client.focus();
           }
         }
-        // Open new window if none exists
         return clients.openWindow(urlToOpen);
       })
     );
   }
 });
 
-// Handle service worker updates
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
 });
