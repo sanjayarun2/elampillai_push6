@@ -1,12 +1,15 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 
-const VAPID_PUBLIC_KEY = process.env.VITE_VAPID_PUBLIC_KEY;
-const VAPID_PRIVATE_KEY = process.env.VITE_VAPID_PRIVATE_KEY;
+// Fixed VAPID keys
+const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
 
-if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
-  throw new Error('Missing VAPID keys');
-}
+webpush.setVapidDetails(
+  'mailto:admin@elampillai.in',
+  VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY
+);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
@@ -22,16 +25,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Verify API key
-  const apiKey = req.headers.apikey;
-  if (!apiKey) {
-    return res.status(401).json({ 
-      error: 'Unauthorized',
-      message: 'No API key found in request',
-      hint: 'No `apikey` request header or url param was found.'
-    });
-  }
-
   try {
     const { subscription, payload } = req.body;
 
@@ -42,12 +35,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!payload) {
       return res.status(400).json({ error: 'Missing payload' });
     }
-
-    webpush.setVapidDetails(
-      'mailto:admin@elampillai.in',
-      VAPID_PUBLIC_KEY,
-      VAPID_PRIVATE_KEY
-    );
 
     await webpush.sendNotification(
       subscription,
