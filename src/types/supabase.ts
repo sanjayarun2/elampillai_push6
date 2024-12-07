@@ -1,6 +1,15 @@
 export interface Database {
   public: {
     Tables: {
+      settings: {
+        Row: {
+          id: string;
+          whatsapp_link: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['settings']['Row'], 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['settings']['Insert']>;
+      };
       blogs: {
         Row: {
           id: string;
@@ -42,15 +51,6 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['products']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['products']['Insert']>;
-      };
-      settings: {
-        Row: {
-          id: string;
-          whatsapp_link: string;
-          updated_at: string;
-        };
-        Insert: Omit<Database['public']['Tables']['settings']['Row'], 'id' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['settings']['Insert']>;
       };
     };
   };

@@ -1,26 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = 'https://ldcysindetsevcwapdvx.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3lzaW5kZXRzZXZjd2FwZHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1NDY2OTQsImV4cCI6MjA0OTEyMjY5NH0.9mmVYOCTv2Si1HLw9L8AfFBuFvhjxh1ef3kcQLajwjA';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase URL or Anon Key');
-}
-
-export const supabase = createClient<Database>(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false
-    },
-    global: {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  }
-);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
