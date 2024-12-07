@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { pushNotificationService } from '../services/pushNotificationService';
 
+// Fixed VAPID public key
+const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+
 export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
@@ -55,13 +58,13 @@ export function usePushNotifications() {
         // Create new subscription
         const newSubscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo'
+          applicationServerKey: VAPID_PUBLIC_KEY
         });
 
         await pushNotificationService.saveSubscription(newSubscription);
         setSubscription(newSubscription);
 
-        // Show confirmation notification
+        // Show welcome notification
         new Notification('Notifications Enabled', {
           body: 'You will now receive updates from Elampillai Community',
           icon: '/icon-192x192.png',
