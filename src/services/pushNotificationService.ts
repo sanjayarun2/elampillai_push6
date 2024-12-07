@@ -6,26 +6,33 @@ export const pushNotificationService = {
       console.log('Saving subscription:', subscription); // Log the subscription
 
       // Extract user agent details
-      const ua = navigator.userAgent;
+      const ua = navigator.userAgent || 'xxxx'; // Fallback if user agent is missing
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
       const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
 
+      // Get IP address via a public API (fallback to 'xxxx' if unavailable)
+      const ipAddress = await getIPAddress() || 'xxxx';
+
       const { data, error } = await supabase
         .from('push_subscriptions')
-        .upsert({
-          endpoint: subscription.endpoint,
-          auth: subscription.keys.auth,
-          p256dh: subscription.keys.p256dh,
-          user_agent: ua,
-          device_type: deviceType,
-          browser: browser,
-          os: os,
-          created_at: new Date().toISOString(),
-          active: true
-        }, {
-          onConflict: 'endpoint'
-        })
+        .upsert(
+          {
+            endpoint: subscription.endpoint,
+            auth: subscription.keys.auth || 'xxxx',
+            p256dh: subscription.keys.p256dh || 'xxxx',
+            user_agent: ua,
+            device_type: deviceType,
+            browser: browser,
+            os: os,
+            ip_address: ipAddress,
+            created_at: new Date().toISOString(),
+            active: true
+          },
+          {
+            onConflict: 'endpoint' // Ensure the endpoint is unique
+          }
+        )
         .select()
         .single();
 
@@ -174,3 +181,15 @@ export const pushNotificationService = {
     }
   }
 };
+
+// Function to get IP address (you can use a public API to get the IP address)
+async function getIPAddress() {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    return data.ip;
+  } catch (error) {
+    console.error('Error fetching IP address:', error);
+    return 'xxxx'; // Return 'xxxx' if IP address can't be fetched
+  }
+}
