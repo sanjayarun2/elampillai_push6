@@ -2,20 +2,27 @@ import { supabase } from '../lib/supabase';
 
 interface PushSubscription {
   endpoint: string;
-  auth: string;
-  p256dh: string;
+  keys: {
+    auth: string;
+    p256dh: string;
+  };
 }
 
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      const subData = subscription.toJSON();
+      // Get IP address from ipify API
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      
       const { error } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
-          auth: subData.keys?.auth || '',
-          p256dh: subData.keys?.p256dh || '',
+          auth: subscription.keys.auth,
+          p256dh: subscription.keys.p256dh,
+          ip_address: ipData.ip,
+          user_agent: navigator.userAgent,
           created_at: new Date().toISOString()
         }, {
           onConflict: 'endpoint'
@@ -25,25 +32,6 @@ export const pushNotificationService = {
       return true;
     } catch (error) {
       console.error('Error saving subscription:', error);
-      throw error;
-    }
-  },
-
-  async getAllSubscriptions(): Promise<PushSubscription[]> {
-    try {
-      const { data, error } = await supabase
-        .from('push_subscriptions')
-        .select('*');
-
-      if (error) throw error;
-
-      return (data || []).map(sub => ({
-        endpoint: sub.endpoint,
-        auth: sub.auth,
-        p256dh: sub.p256dh
-      }));
-    } catch (error) {
-      console.error('Error getting subscriptions:', error);
       throw error;
     }
   },
@@ -62,6 +50,36 @@ export const pushNotificationService = {
     }
   },
 
+  async getAllSubscriptionsWithDetails() {
+    try {
+      const { data, error } = await supabase
+        .from('push_subscriptions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error getting subscriptions:', error);
+      return [];
+    }
+  },
+
+  async getAllSubscriptions() {
+    try {
+      const { data, error } = await supabase
+        .from('push_subscriptions')
+        .select('endpoint, auth, p256dh')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error getting subscriptions:', error);
+      return [];
+    }
+  },
+
   async sendNotification(blogId: string, title: string) {
     try {
       const subscriptions = await this.getAllSubscriptions();
@@ -70,58 +88,66 @@ export const pushNotificationService = {
         throw new Error('No push subscriptions found');
       }
 
-      const payload = {
-        title: 'Elampillai News',
-        body: title,
-        icon: '/icon-192x192.png',
-        badge: '/icon-192x192.png',
-        data: {
-          url: `/blog/${blogId}`
-        },
-        vibrate: [200, 100, 200],
-        requireInteraction: true,
-        tag: `blog-${blogId}`,
-        renotify: true,
-        timestamp: Date.now()
-      };
+      let successCount = 0;
+      const errors = [];
 
-      const results = await Promise.allSettled(
-        subscriptions.map(async (sub) => {
-          try {
-            const response = await fetch('/api/send-notification', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
+      // Send to all subscriptions
+      await Promise.all(subscriptions.map(async (sub) => {
+        try {
+          const response = await fetch('/api/send-notification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              subscription: {
+                endpoint: sub.endpoint,
+                keys: {
+                  auth: sub.auth,
+                  p256dh: sub.p256dh
+                }
               },
-              body: JSON.stringify({
-                subscription: {
-                  endpoint: sub.endpoint,
-                  keys: {
-                    auth: sub.auth,
-                    p256dh: sub.p256dh
-                  }
+              payload: {
+                title: 'New Blog Post',
+                body: title,
+                icon: '/icon-192x192.png',
+                badge: '/icon-192x192.png',
+                data: {
+                  url: `/blog/${blogId}`
                 },
-                payload
-              })
-            });
+                tag: `blog-${blogId}`,
+                requireInteraction: true
+              }
+            })
+          });
 
-            if (!response.ok) {
-              throw new Error('Failed to send notification');
-            }
-
-            return { success: true, endpoint: sub.endpoint };
-          } catch (error) {
-            console.error('Error sending notification:', error);
-            return { success: false, endpoint: sub.endpoint, error };
+          if (!response.ok) {
+            throw new Error('Failed to send notification');
           }
-        })
-      );
 
-      const successCount = results.filter(r => r.status === 'fulfilled').length;
+          // Update last_used timestamp
+          await supabase
+            .from('push_subscriptions')
+            .update({ last_used: new Date().toISOString() })
+            .eq('endpoint', sub.endpoint);
+
+          successCount++;
+        } catch (error) {
+          errors.push(error);
+          // Remove invalid subscriptions
+          if (error.message.includes('subscription expired')) {
+            await supabase
+              .from('push_subscriptions')
+              .delete()
+              .eq('endpoint', sub.endpoint);
+          }
+        }
+      }));
+
       return { 
         success: successCount > 0,
         totalSent: successCount,
-        totalFailed: results.length - successCount
+        errors: errors.length > 0 ? errors : null
       };
     } catch (error) {
       console.error('Error in sendNotification:', error);
