@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { SettingsProvider } from './context/SettingsContext';
 import { initializeDatabase } from './lib/supabase-init';
 import App from './App';
@@ -12,7 +13,10 @@ async function initialize() {
     await initializeDatabase();
 
     if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      });
       console.log('ServiceWorker registered successfully');
     }
   } catch (error) {
@@ -22,11 +26,24 @@ async function initialize() {
 
 initialize();
 
+// Configure router with future flags
+const router = createBrowserRouter([
+  {
+    path: '*',
+    element: <App />
+  }
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
       <SettingsProvider>
-        <App />
+        <RouterProvider router={router} />
       </SettingsProvider>
     </HelmetProvider>
   </StrictMode>

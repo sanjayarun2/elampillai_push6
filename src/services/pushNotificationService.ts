@@ -1,13 +1,5 @@
 import { supabase } from '../lib/supabase';
 
-interface PushSubscription {
-  endpoint: string;
-  keys: {
-    auth: string;
-    p256dh: string;
-  };
-}
-
 // Fixed VAPID keys
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
 const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
@@ -19,7 +11,7 @@ export const pushNotificationService = {
       const ipResponse = await fetch('https://api.ipify.org?format=json');
       const ipData = await ipResponse.json();
       
-      // Parse user agent for device info
+      // Get device info
       const ua = navigator.userAgent;
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
@@ -89,7 +81,10 @@ export const pushNotificationService = {
                 badge: '/icon-192x192.png',
                 data: {
                   url: `/blog/${blogId}`
-                }
+                },
+                tag: `blog-${blogId}`,
+                renotify: true,
+                requireInteraction: true
               }
             })
           });
@@ -98,7 +93,7 @@ export const pushNotificationService = {
             throw new Error('Failed to send notification');
           }
 
-          // Update subscription last_used
+          // Update last_used timestamp
           await supabase
             .from('push_subscriptions')
             .update({ last_used: new Date().toISOString() })
