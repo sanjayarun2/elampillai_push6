@@ -10,6 +10,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Verify authorization
+  const authHeader = req.headers.authorization;
+  if (!authHeader || authHeader !== `Bearer ${VAPID_PRIVATE_KEY}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const { subscription, payload } = req.body;
 
@@ -19,11 +25,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       VAPID_PRIVATE_KEY
     );
 
-    await webpush.sendNotification(
-      subscription,
-      JSON.stringify(payload)
-    );
-
+    await webpush.sendNotification(subscription, JSON.stringify(payload));
+    
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error sending push notification:', error);
