@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Bell, BellOff } from 'lucide-react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
@@ -22,42 +22,44 @@ export default function PushNotificationButton() {
 
   if (loading) {
     return (
-      <button className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-600 rounded-lg cursor-not-allowed">
-        <Bell className="h-5 w-5 mr-2" />
+      <button 
+        className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-600 rounded-lg cursor-not-allowed"
+        disabled
+      >
+        <Bell className="h-5 w-5 mr-2 animate-pulse" />
         Loading...
       </button>
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-red-600 text-sm mb-2">
-        {error}
-      </div>
-    );
-  }
-
   return (
-    <button
-      onClick={handleSubscribe}
-      className={`inline-flex items-center px-4 py-2 ${
-        subscription
-          ? 'bg-red-600 hover:bg-red-700'
-          : 'bg-blue-600 hover:bg-blue-700'
-      } text-white rounded-lg transition-colors`}
-      disabled={loading}
-    >
-      {subscription ? (
-        <>
-          <BellOff className="h-5 w-5 mr-2" />
-          Unsubscribe from Notifications
-        </>
-      ) : (
-        <>
-          <Bell className="h-5 w-5 mr-2" />
-          Subscribe to Notifications
-        </>
+    <div className="space-y-2">
+      <button
+        onClick={handleSubscribe}
+        className={`inline-flex items-center px-4 py-2 ${
+          subscription
+            ? 'bg-red-600 hover:bg-red-700 active:bg-red-800'
+            : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+        } text-white rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95`}
+        disabled={loading}
+      >
+        {subscription ? (
+          <>
+            <BellOff className="h-5 w-5 mr-2" />
+            Unsubscribe from Notifications
+          </>
+        ) : (
+          <>
+            <Bell className="h-5 w-5 mr-2" />
+            Subscribe to Notifications
+          </>
+        )}
+      </button>
+      {error && (
+        <div className="text-red-600 text-sm animate-fade-in">
+          {error}
+        </div>
       )}
-    </button>
+    </div>
   );
 }

@@ -34,6 +34,8 @@ export function usePushNotifications() {
 
   const requestPermission = async () => {
     try {
+      setLoading(true);
+
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
         throw new Error('Push notifications are not supported in this browser');
       }
@@ -43,16 +45,14 @@ export function usePushNotifications() {
 
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
-        const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+        let subscription = await registration.pushManager.getSubscription();
 
-        if (!vapidPublicKey) {
-          throw new Error('VAPID public key is missing');
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY'
+          });
         }
-
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: vapidPublicKey
-        });
 
         await pushNotificationService.saveSubscription(subscription);
         setSubscription(subscription);
@@ -60,6 +60,8 @@ export function usePushNotifications() {
     } catch (err) {
       console.error('Error requesting notification permission:', err);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 

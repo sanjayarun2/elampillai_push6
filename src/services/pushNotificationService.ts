@@ -23,6 +23,7 @@ export const pushNotificationService = {
         });
 
       if (error) throw error;
+      return true;
     } catch (error) {
       console.error('Error saving subscription:', error);
       throw error;
@@ -54,81 +55,6 @@ export const pushNotificationService = {
     } catch (error) {
       console.error('Error getting subscriptions:', error);
       return [];
-    }
-  },
-
-  async sendNotification(blogId: string, title: string) {
-    try {
-      const subscriptions = await this.getAllSubscriptions();
-      
-      if (!subscriptions.length) {
-        throw new Error('No push subscriptions found');
-      }
-
-      // Record notification in database
-      await supabase
-        .from('notifications')
-        .insert([{
-          blog_id: blogId,
-          title: title,
-          status: 'sent',
-          processed_at: new Date().toISOString()
-        }]);
-
-      // Send notification through web-push
-      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
-      const vapidPrivateKey = import.meta.env.VITE_VAPID_PRIVATE_KEY;
-
-      if (!vapidPublicKey || !vapidPrivateKey) {
-        throw new Error('Missing VAPID keys');
-      }
-
-      const payload = {
-        title: 'New Blog Post',
-        body: title,
-        icon: '/icon-192x192.png',
-        badge: '/icon-192x192.png',
-        data: {
-          url: `/blog/${blogId}`
-        }
-      };
-
-      // Send to all subscriptions
-      await Promise.all(subscriptions.map(async (sub) => {
-        try {
-          const response = await fetch('/api/send-notification', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              subscription: {
-                endpoint: sub.endpoint,
-                keys: {
-                  auth: sub.auth,
-                  p256dh: sub.p256dh
-                }
-              },
-              payload,
-              vapidKeys: {
-                publicKey: vapidPublicKey,
-                privateKey: vapidPrivateKey
-              }
-            })
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to send notification');
-          }
-        } catch (error) {
-          console.error('Error sending notification to subscription:', error);
-        }
-      }));
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error in sendNotification:', error);
-      throw error;
     }
   }
 };
