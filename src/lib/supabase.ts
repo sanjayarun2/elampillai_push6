@@ -4,12 +4,16 @@ import type { Database } from '../types/supabase';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// More comprehensive logging
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing environment variables:', {
-    url: !!supabaseUrl,
-    key: !!supabaseKey
+  console.error('Supabase Configuration Error', {
+    urlProvided: !!supabaseUrl,
+    keyProvided: !!supabaseKey,
+    fullUrl: supabaseUrl,
+    // Avoid logging full key for security
+    keyLength: supabaseKey?.length || 0
   });
-  throw new Error('Missing Supabase URL or Anon Key');
+  throw new Error('Missing Supabase URL or Anon Key. Check your environment variables.');
 }
 
 export const supabase = createClient<Database>(

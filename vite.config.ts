@@ -24,11 +24,5 @@ export default defineConfig({
     port: 5173,
     host: true
   },
-  // Load environment variables
-  envDir: '.',
-  // Define environment variables that should be exposed to the client
-  define: {
-    'process.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
-    'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY)
-  }
+  envDir: '.'
 });
