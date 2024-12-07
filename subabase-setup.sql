@@ -47,6 +47,15 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create comments table
+CREATE TABLE IF NOT EXISTS comments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    blog_id UUID REFERENCES blogs(id) ON DELETE CASCADE,
+    author TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create push_subscriptions table
 CREATE TABLE IF NOT EXISTS push_subscriptions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -71,6 +80,7 @@ ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
@@ -79,6 +89,7 @@ CREATE POLICY "Allow all operations" ON settings FOR ALL TO public USING (true) 
 CREATE POLICY "Allow all operations" ON blogs FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON shops FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON products FOR ALL TO public USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON comments FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON push_subscriptions FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations" ON notifications FOR ALL TO public USING (true) WITH CHECK (true);
 
@@ -96,4 +107,6 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon;
 CREATE INDEX IF NOT EXISTS blogs_created_at_idx ON blogs(created_at DESC);
 CREATE INDEX IF NOT EXISTS shops_name_idx ON shops(name);
 CREATE INDEX IF NOT EXISTS products_created_at_idx ON products(created_at DESC);
+CREATE INDEX IF NOT EXISTS comments_blog_id_idx ON comments(blog_id);
+CREATE INDEX IF NOT EXISTS comments_created_at_idx ON comments(created_at);
 CREATE INDEX IF NOT EXISTS push_subscriptions_endpoint_idx ON push_subscriptions(endpoint);
