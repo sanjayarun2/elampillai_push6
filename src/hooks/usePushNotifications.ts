@@ -45,21 +45,29 @@ export function usePushNotifications() {
 
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
-        let currentSubscription = await registration.pushManager.getSubscription();
-
+        
+        // Unsubscribe from existing subscription if any
+        const currentSubscription = await registration.pushManager.getSubscription();
         if (currentSubscription) {
           await currentSubscription.unsubscribe();
         }
 
-        const vapidPublicKey = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-        
+        // Create new subscription
         const newSubscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: vapidPublicKey
+          applicationServerKey: 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo'
         });
 
         await pushNotificationService.saveSubscription(newSubscription);
         setSubscription(newSubscription);
+
+        // Show confirmation notification
+        new Notification('Notifications Enabled', {
+          body: 'You will now receive updates from Elampillai Community',
+          icon: '/icon-192x192.png',
+          badge: '/icon-192x192.png',
+          tag: 'welcome-notification'
+        });
       }
     } catch (err) {
       console.error('Error requesting notification permission:', err);

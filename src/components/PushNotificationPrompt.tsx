@@ -9,9 +9,14 @@ export default function PushNotificationPrompt() {
 
   useEffect(() => {
     if (!loading && permission === 'default') {
+      // Show prompt immediately on mobile devices
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const delay = isMobile ? 0 : 3000;
+      
       const timer = setTimeout(() => {
         setShowPrompt(true);
-      }, 3000);
+      }, delay);
+      
       return () => clearTimeout(timer);
     } else {
       setShowPrompt(false);
@@ -25,7 +30,6 @@ export default function PushNotificationPrompt() {
       setShowPrompt(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to enable notifications');
-      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -37,7 +41,7 @@ export default function PushNotificationPrompt() {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full transform transition-all duration-300 scale-100">
         <div className="flex items-center justify-center mb-4">
-          <div className="bg-blue-100 p-3 rounded-full">
+          <div className="bg-blue-100 p-3 rounded-full animate-pulse">
             <Bell className="h-8 w-8 text-blue-600" />
           </div>
         </div>
@@ -55,13 +59,13 @@ export default function PushNotificationPrompt() {
         <div className="flex flex-col space-y-3">
           <button
             onClick={handleEnableNotifications}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transform transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transform transition-all duration-200 hover:scale-105 active:scale-95 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Enable Notifications
           </button>
           <button
             onClick={() => setShowPrompt(false)}
-            className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors"
+            className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors focus:outline-none"
           >
             Maybe Later
           </button>
