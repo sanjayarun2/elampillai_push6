@@ -1,5 +1,7 @@
 import { supabase } from '../lib/supabase';
 
+const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
@@ -59,7 +61,7 @@ export const pushNotificationService = {
       }
 
       // Record notification in database
-      await supabase
+      const { error: insertError } = await supabase
         .from('notifications')
         .insert([{
           blog_id: blogId,
@@ -68,8 +70,10 @@ export const pushNotificationService = {
           created_at: new Date().toISOString()
         }]);
 
+      if (insertError) throw insertError;
+
       const payload = {
-        title: 'New Blog Post',
+        title: 'Elampillai News',
         body: title,
         icon: '/icon-192x192.png',
         badge: '/icon-192x192.png',
@@ -77,7 +81,9 @@ export const pushNotificationService = {
           url: `/blog/${blogId}`
         },
         vibrate: [200, 100, 200],
-        requireInteraction: true
+        requireInteraction: true,
+        tag: `blog-${blogId}`,
+        renotify: true
       };
 
       // Send to all subscriptions
@@ -97,7 +103,10 @@ export const pushNotificationService = {
                     p256dh: sub.p256dh
                   }
                 },
-                payload
+                payload,
+                vapidKeys: {
+                  publicKey: VAPID_PUBLIC_KEY
+                }
               })
             });
 
@@ -108,7 +117,10 @@ export const pushNotificationService = {
             // Update notification status
             await supabase
               .from('notifications')
-              .update({ status: 'sent', processed_at: new Date().toISOString() })
+              .update({ 
+                status: 'sent', 
+                processed_at: new Date().toISOString() 
+              })
               .eq('blog_id', blogId);
 
             return { success: true, endpoint: sub.endpoint };
@@ -119,7 +131,12 @@ export const pushNotificationService = {
         })
       );
 
-      return { success: true, results };
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      return { 
+        success: successCount > 0,
+        totalSent: successCount,
+        totalFailed: results.length - successCount
+      };
     } catch (error) {
       console.error('Error in sendNotification:', error);
       throw error;

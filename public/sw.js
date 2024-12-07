@@ -12,9 +12,10 @@ self.addEventListener('push', event => {
         title: 'Read More'
       }
     ],
-    tag: 'elampillai-notification',
+    tag: data.tag || 'elampillai-notification',
     renotify: true,
-    requireInteraction: true
+    requireInteraction: true,
+    silent: false
   };
 
   event.waitUntil(
@@ -46,6 +47,7 @@ self.addEventListener('notificationclick', event => {
   }
 });
 
+// Ensure service worker is activated immediately
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
 });

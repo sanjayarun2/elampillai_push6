@@ -52,28 +52,29 @@ export function BlogEditor() {
     try {
       setSendingNotification(true);
       setNotificationStatus('Sending notification...');
+      
       const result = await pushNotificationService.sendNotification(post.id, post.title);
       
       if (result.success) {
-        setNotificationStatus('Notification sent successfully!');
-        // Show a notification to the admin as confirmation
+        setNotificationStatus(`Notification sent successfully! (${result.totalSent} sent)`);
+        // Show confirmation to admin
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('Notification Sent', {
-            body: `Successfully sent notification for: ${post.title}`,
+          new Notification('Notifications Sent', {
+            body: `Successfully sent to ${result.totalSent} subscribers`,
             icon: '/icon-192x192.png',
             tag: 'admin-notification',
             vibrate: [200, 100, 200]
           });
         }
       } else {
-        throw new Error('Failed to send notification');
+        throw new Error('Failed to send notifications');
       }
     } catch (error) {
       console.error('Error sending notification:', error);
       setNotificationStatus(error instanceof Error ? error.message : 'Error sending notification');
     } finally {
       setSendingNotification(false);
-      setTimeout(() => setNotificationStatus(''), 3000);
+      setTimeout(() => setNotificationStatus(''), 5000);
     }
   };
 
