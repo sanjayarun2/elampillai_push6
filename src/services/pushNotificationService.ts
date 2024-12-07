@@ -22,7 +22,8 @@ export const pushNotificationService = {
           created_at: new Date().toISOString(),
           active: true
         }, {
-          onConflict: 'endpoint'
+          onConflict: 'endpoint',
+          ignoreDuplicates: false
         })
         .select()
         .single();
@@ -55,7 +56,10 @@ export const pushNotificationService = {
         try {
           const response = await fetch('/api/send-notification', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+            },
             body: JSON.stringify({
               subscription: {
                 endpoint: sub.endpoint,
