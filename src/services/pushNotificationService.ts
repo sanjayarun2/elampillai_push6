@@ -8,49 +8,30 @@ interface PushSubscription {
   };
 }
 
+// Fixed VAPID keys - these should match your Vercel environment variables
+const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      // Get client IP using multiple fallback services
-      let ipAddress = null;
-      try {
-        const responses = await Promise.any([
-          fetch('https://api.ipify.org?format=json'),
-          fetch('https://api.ip.sb/ip'),
-          fetch('https://api.myip.com')
-        ]);
-        const data = await responses.json();
-        ipAddress = data.ip || data;
-      } catch (error) {
-        console.warn('Could not fetch IP address:', error);
-      }
-
-      const { error: upsertError } = await supabase
+      // Get IP address
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      
+      const { error } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
-          ip_address: ipAddress,
+          ip_address: ipData.ip,
           user_agent: navigator.userAgent,
           created_at: new Date().toISOString()
         }, {
           onConflict: 'endpoint'
         });
 
-      if (upsertError) throw upsertError;
-
-      // Show welcome notification
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Notifications Enabled', {
-          body: 'You will now receive updates from Elampillai Community',
-          icon: '/icon-192x192.png',
-          badge: '/icon-192x192.png',
-          tag: 'welcome',
-          vibrate: [200, 100, 200]
-        });
-      }
-
+      if (error) throw error;
       return true;
     } catch (error) {
       console.error('Error saving subscription:', error);
@@ -91,7 +72,7 @@ export const pushNotificationService = {
     try {
       const { data: subscriptions, error } = await supabase
         .from('push_subscriptions')
-        .select('endpoint, auth, p256dh');
+        .select('*');
 
       if (error) throw error;
       if (!subscriptions?.length) {
@@ -145,13 +126,7 @@ export const pushNotificationService = {
           successCount++;
         } catch (error) {
           errors.push(error);
-          // Remove invalid subscriptions
-          if (error.message.includes('subscription expired')) {
-            await supabase
-              .from('push_subscriptions')
-              .delete()
-              .eq('endpoint', sub.endpoint);
-          }
+          console.error('Error sending to subscription:', error);
         }
       }));
 
