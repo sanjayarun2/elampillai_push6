@@ -1,7 +1,5 @@
 import { supabase } from '../lib/supabase';
 
-const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
@@ -11,12 +9,17 @@ export const pushNotificationService = {
       const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
       const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
 
+      // Get IP address
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const { ip } = await ipResponse.json();
+
       const { data, error } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
+          ip_address: ip,
           user_agent: ua,
           device_type: deviceType,
           browser: browser,
