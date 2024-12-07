@@ -110,12 +110,20 @@ export const pushNotificationService = {
 
   async getSubscriptionCount(): Promise<number> {
     try {
-      const { count, error } = await supabase
+      const { data, count, error } = await supabase
         .from('push_subscriptions')
-        .select('*', { count: 'exact', head: true })
+        .select('*', { count: 'exact' })
         .eq('active', true);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Detailed Subscription Count Error:', {
+          message: error.message,
+          details: error.details,
+          code: error.code
+        });
+        throw error;
+      }
+
       return count || 0;
     } catch (error) {
       console.error('Error getting subscription count:', error);
