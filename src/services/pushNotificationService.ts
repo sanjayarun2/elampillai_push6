@@ -5,34 +5,18 @@ export const pushNotificationService = {
     try {
       console.log('Saving subscription:', subscription); // Log the subscription
 
-      // Extract user agent details
-      const ua = navigator.userAgent || 'xxxx'; // Fallback if user agent is missing
-      const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
-      const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
-      const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
-
-      // Get IP address via a public API (fallback to 'xxxx' if unavailable)
-      const ipAddress = await getIPAddress() || 'xxxx';
-
+      // Save only required fields (id, auth, p256dh, created_at, active)
       const { data, error } = await supabase
         .from('push_subscriptions')
-        .upsert(
-          {
-            endpoint: subscription.endpoint,
-            auth: subscription.keys.auth || 'xxxx',
-            p256dh: subscription.keys.p256dh || 'xxxx',
-            user_agent: ua,
-            device_type: deviceType,
-            browser: browser,
-            os: os,
-            ip_address: ipAddress,
-            created_at: new Date().toISOString(),
-            active: true
-          },
-          {
-            onConflict: 'endpoint' // Ensure the endpoint is unique
-          }
-        )
+        .upsert({
+          endpoint: subscription.endpoint,
+          auth: subscription.keys.auth,      // Only auth and p256dh keys
+          p256dh: subscription.keys.p256dh,  // Only p256dh key
+          created_at: new Date().toISOString(), // created_at as current timestamp
+          active: true                        // Set active to true
+        }, {
+          onConflict: 'endpoint'  // Use endpoint as the unique key
+        })
         .select()
         .single();
 
@@ -54,7 +38,7 @@ export const pushNotificationService = {
       const { data: subscriptions, error: subError } = await supabase
         .from('push_subscriptions')
         .select('*')
-        .eq('active', true);
+        .eq('active', true);  // Fetch active subscriptions
 
       if (subError) throw subError;
       if (!subscriptions?.length) {
@@ -181,15 +165,3 @@ export const pushNotificationService = {
     }
   }
 };
-
-// Function to get IP address (you can use a public API to get the IP address)
-async function getIPAddress() {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error('Error fetching IP address:', error);
-    return 'xxxx'; // Return 'xxxx' if IP address can't be fetched
-  }
-}

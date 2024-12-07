@@ -76,12 +76,8 @@ export function usePushNotifications() {
 
         console.log('New subscription created:', newSubscription);
 
-        // Capture additional details (user agent, IP address)
-        const userAgent = navigator.userAgent || 'xxxx'; // Use 'xxxx' if userAgent is unavailable
-        const ipAddress = await getIPAddress() || 'xxxx'; // Use 'xxxx' if IP address is unavailable
-
         // Save the subscription to the backend
-        await pushNotificationService.saveSubscription(newSubscription, userAgent, ipAddress);
+        await pushNotificationService.saveSubscription(newSubscription);
 
         setSubscription(newSubscription);
 
@@ -126,16 +122,4 @@ function urlBase64ToUint8Array(base64String: string) {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
-}
-
-// Function to get IP address (you can use a public API to get the IP address)
-async function getIPAddress() {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error('Error fetching IP address:', error);
-    return 'xxxx'; // Return 'xxxx' if IP address can't be fetched
-  }
 }
