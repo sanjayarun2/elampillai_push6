@@ -11,24 +11,46 @@ interface PushSubscription {
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      // Get IP address from ipify API
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      const ipData = await ipResponse.json();
-      
-      const { error } = await supabase
+      // Get client IP using multiple fallback services
+      let ipAddress = null;
+      try {
+        const responses = await Promise.any([
+          fetch('https://api.ipify.org?format=json'),
+          fetch('https://api.ip.sb/ip'),
+          fetch('https://api.myip.com')
+        ]);
+        const data = await responses.json();
+        ipAddress = data.ip || data;
+      } catch (error) {
+        console.warn('Could not fetch IP address:', error);
+      }
+
+      const { error: upsertError } = await supabase
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
-          ip_address: ipData.ip,
+          ip_address: ipAddress,
           user_agent: navigator.userAgent,
           created_at: new Date().toISOString()
         }, {
           onConflict: 'endpoint'
         });
 
-      if (error) throw error;
+      if (upsertError) throw upsertError;
+
+      // Show welcome notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Notifications Enabled', {
+          body: 'You will now receive updates from Elampillai Community',
+          icon: '/icon-192x192.png',
+          badge: '/icon-192x192.png',
+          tag: 'welcome',
+          vibrate: [200, 100, 200]
+        });
+      }
+
       return true;
     } catch (error) {
       console.error('Error saving subscription:', error);

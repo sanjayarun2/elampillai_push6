@@ -8,10 +8,14 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show prompt immediately on mobile devices
+    // Show prompt immediately if it's a mobile device
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!loading && permission === 'default' && isMobile) {
-      setShowPrompt(true);
+    const shouldShowPrompt = !loading && permission === 'default' && isMobile;
+    
+    if (shouldShowPrompt) {
+      // Small delay to ensure page has loaded
+      const timer = setTimeout(() => setShowPrompt(true), 1000);
+      return () => clearTimeout(timer);
     }
   }, [loading, permission]);
 
