@@ -1,4 +1,4 @@
--- Enable Row Level Security (RLS)
+-- Enable Row Level Security (RLS) for tables
 ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
