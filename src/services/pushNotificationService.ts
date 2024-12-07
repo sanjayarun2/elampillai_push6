@@ -1,16 +1,10 @@
 import { supabase } from '../lib/supabase';
 
-// Fixed VAPID keys - these should be your actual VAPID keys
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
 
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
-      // Get IP address
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      const { ip } = await ipResponse.json();
-
       // Get device info
       const ua = navigator.userAgent;
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
@@ -23,7 +17,6 @@ export const pushNotificationService = {
           endpoint: subscription.endpoint,
           auth: subscription.keys.auth,
           p256dh: subscription.keys.p256dh,
-          ip_address: ip,
           user_agent: ua,
           device_type: deviceType,
           browser: browser,
@@ -59,28 +52,11 @@ export const pushNotificationService = {
       let successCount = 0;
       const errors = [];
 
-      // Create notification record
-      const { data: notification, error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          blog_id: blogId,
-          title: title,
-          status: 'sending',
-          created_at: new Date().toISOString()
-        })
-        .select()
-        .single();
-
-      if (notifError) throw notifError;
-
       await Promise.all(subscriptions.map(async (sub) => {
         try {
           const response = await fetch('/api/send-notification', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${VAPID_PRIVATE_KEY}`
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               subscription: {
                 endpoint: sub.endpoint,
@@ -96,10 +72,7 @@ export const pushNotificationService = {
                 badge: '/icon-192x192.png',
                 data: {
                   url: `/blog/${blogId}`
-                },
-                tag: `blog-${blogId}`,
-                renotify: true,
-                requireInteraction: true
+                }
               }
             })
           });
@@ -107,13 +80,6 @@ export const pushNotificationService = {
           if (!response.ok) {
             throw new Error('Failed to send notification');
           }
-
-          // Log successful notification
-          await supabase.from('notification_logs').insert({
-            notification_id: notification.id,
-            subscription_id: sub.id,
-            status: 'success'
-          });
 
           // Update last_used timestamp
           await supabase
@@ -123,29 +89,10 @@ export const pushNotificationService = {
 
           successCount++;
         } catch (error) {
-          // Log failed notification
-          await supabase.from('notification_logs').insert({
-            notification_id: notification.id,
-            subscription_id: sub.id,
-            status: 'error',
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
-
           errors.push(error);
           console.error('Error sending to subscription:', error);
         }
       }));
-
-      // Update notification status
-      await supabase
-        .from('notifications')
-        .update({
-          status: successCount > 0 ? 'completed' : 'failed',
-          sent_count: successCount,
-          error_count: errors.length,
-          processed_at: new Date().toISOString()
-        })
-        .eq('id', notification.id);
 
       return { 
         success: successCount > 0,

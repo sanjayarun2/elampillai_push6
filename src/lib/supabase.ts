@@ -1,24 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = 'https://ldcysindetsevcwapdvx.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3lzaW5kZXRzZXZjd2FwZHZ4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMzU0NjY5NCwiZXhwIjoyMDQ5MTIyNjk0fQ.16TfFSkrS9bIqoIOmpxoajWq_gNveY3TeXK1sWYE3Zo';
 
-// Check if the values are present
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL or Anon Key is missing in the environment variables.');
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase URL or Anon Key');
 }
 
-// Only initialize Supabase if both variables are present
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-  },
-  global: {
-    headers: {
-      'apikey': supabaseAnonKey,
-      'Authorization': `Bearer ${supabaseAnonKey}`,
+export const supabase = createClient<Database>(
+  supabaseUrl,
+  supabaseKey,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true
     },
-  },
-});
+    global: {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
+      }
+    }
+  }
+);
