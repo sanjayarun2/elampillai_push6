@@ -36,13 +36,11 @@ self.addEventListener('notificationclick', event => {
         type: 'window',
         includeUncontrolled: true
       }).then(windowClients => {
-        // Focus existing window if available
         for (const client of windowClients) {
           if (client.url === urlToOpen && 'focus' in client) {
             return client.focus();
           }
         }
-        // Open new window if none exists
         return clients.openWindow(urlToOpen);
       })
     );

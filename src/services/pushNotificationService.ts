@@ -8,7 +8,6 @@ interface PushSubscription {
   };
 }
 
-// Fixed VAPID keys - these should match your Vercel environment variables
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
 
 export const pushNotificationService = {
