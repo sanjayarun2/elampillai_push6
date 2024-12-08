@@ -8,14 +8,19 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show prompt immediately if it's a mobile device
+    // Check if notification permission is still 'default' and show the prompt only if necessary
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const shouldShowPrompt = !loading && permission === 'default' && isMobile;
-    
+    const shouldShowPrompt = !loading && permission === 'default';
+
     if (shouldShowPrompt) {
-      // Small delay to ensure page has loaded
-      const timer = setTimeout(() => setShowPrompt(true), 1000);
-      return () => clearTimeout(timer);
+      // If mobile device, show immediately with a small delay
+      if (isMobile) {
+        const timer = setTimeout(() => setShowPrompt(true), 1000);
+        return () => clearTimeout(timer);
+      } else {
+        // For web, only show after user interaction
+        setShowPrompt(true);
+      }
     }
   }, [loading, permission]);
 
