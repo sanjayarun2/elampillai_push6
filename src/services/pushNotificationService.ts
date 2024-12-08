@@ -3,6 +3,11 @@ import { supabase } from '../lib/supabase';
 export const pushNotificationService = {
   async saveSubscription(subscription: PushSubscription) {
     try {
+      // Ensure the subscription keys exist
+      if (!subscription?.keys?.auth || !subscription?.keys?.p256dh) {
+        throw new Error('Missing required subscription keys (auth or p256dh)');
+      }
+
       // Get device info
       const ua = navigator.userAgent;
       const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
@@ -13,8 +18,8 @@ export const pushNotificationService = {
         .from('push_subscriptions')
         .upsert({
           endpoint: subscription.endpoint,
-          auth: subscription.keys.auth,
-          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth,  // safely accessing keys.auth
+          p256dh: subscription.keys.p256dh,  // safely accessing keys.p256dh
           user_agent: ua,
           device_type: deviceType,
           browser: browser,
@@ -27,10 +32,13 @@ export const pushNotificationService = {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving subscription:', error);
+        throw error;
+      }
       return data;
     } catch (error) {
-      console.error('Error saving subscription:', error);
+      console.error('Error in saveSubscription:', error);
       throw error;
     }
   },
@@ -42,8 +50,12 @@ export const pushNotificationService = {
         .select('*')
         .eq('active', true);
 
-      if (subError) throw subError;
+      if (subError) {
+        console.error('Error fetching subscriptions:', subError);
+        throw subError;
+      }
       if (!subscriptions?.length) {
+        console.error('No active subscriptions found');
         throw new Error('No active subscriptions found');
       }
 
@@ -86,6 +98,7 @@ export const pushNotificationService = {
           });
 
           if (!response.ok) {
+            console.error('Failed to send notification for subscription:', sub.id);
             throw new Error('Failed to send notification');
           }
 
@@ -106,7 +119,7 @@ export const pushNotificationService = {
           successCount++;
         } catch (error) {
           errors.push(error);
-          console.error('Error sending to subscription:', error);
+          console.error('Error sending to subscription:', sub.id, error);
 
           // Log failed notification
           await supabase.from('notification_logs').insert({
@@ -143,10 +156,13 @@ export const pushNotificationService = {
         .select('*', { count: 'exact', head: true })
         .eq('active', true);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error getting subscription count:', error);
+        throw error;
+      }
       return count || 0;
     } catch (error) {
-      console.error('Error getting subscription count:', error);
+      console.error('Error in getSubscriptionCount:', error);
       return 0;
     }
   },
@@ -159,10 +175,13 @@ export const pushNotificationService = {
         .eq('active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error getting all subscriptions:', error);
+        throw error;
+      }
       return data || [];
     } catch (error) {
-      console.error('Error getting subscriptions:', error);
+      console.error('Error in getAllSubscriptionsWithDetails:', error);
       return [];
     }
   }
