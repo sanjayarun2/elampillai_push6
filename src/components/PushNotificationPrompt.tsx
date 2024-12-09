@@ -8,12 +8,9 @@ export default function PushNotificationPrompt() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show prompt immediately if it's a mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const shouldShowPrompt = !loading && permission === 'default' && isMobile;
-    
+    const shouldShowPrompt = !loading && permission === 'default';
+
     if (shouldShowPrompt) {
-      // Small delay to ensure page has loaded
       const timer = setTimeout(() => setShowPrompt(true), 1000);
       return () => clearTimeout(timer);
     }
@@ -42,16 +39,12 @@ export default function PushNotificationPrompt() {
             <Bell className="h-8 w-8 text-blue-600" />
           </div>
         </div>
-        <h3 className="text-xl font-semibold text-center mb-2">
-          எங்கள் செய்திகளை பெற
-        </h3>
+        <h3 className="text-xl font-semibold text-center mb-2">Enable Notifications</h3>
         <p className="text-gray-600 text-center mb-6">
-          Get instant updates from Elampillai Community. Stay informed about local news, events, and announcements.
+          Get instant updates from the community. Stay informed about local news, events, and announcements.
         </p>
         {error && (
-          <div className="text-red-600 text-sm text-center mb-4 animate-fade-in">
-            {error}
-          </div>
+          <div className="text-red-600 text-sm text-center mb-4 animate-fade-in">{error}</div>
         )}
         <div className="flex flex-col space-y-3">
           <button

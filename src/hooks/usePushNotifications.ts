@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { pushNotificationService } from '../services/pushNotificationService';
 
-// Fixed VAPID public key
 const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
 
 export function usePushNotifications() {
@@ -12,11 +11,6 @@ export function usePushNotifications() {
   useEffect(() => {
     const checkPermission = async () => {
       try {
-        if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-          setLoading(false);
-          return;
-        }
-
         const currentPermission = Notification.permission;
         setPermission(currentPermission);
 
@@ -39,23 +33,11 @@ export function usePushNotifications() {
     try {
       setLoading(true);
 
-      if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        throw new Error('Push notifications are not supported in this browser');
-      }
-
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
-        
-        // Unsubscribe from existing subscription if any
-        const currentSubscription = await registration.pushManager.getSubscription();
-        if (currentSubscription) {
-          await currentSubscription.unsubscribe();
-        }
-
-        // Create new subscription
         const newSubscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: VAPID_PUBLIC_KEY
@@ -64,13 +46,10 @@ export function usePushNotifications() {
         await pushNotificationService.saveSubscription(newSubscription);
         setSubscription(newSubscription);
 
-        // Show welcome notification
         new Notification('Notifications Enabled', {
-          body: 'You will now receive updates from Elampillai Community',
+          body: 'You will now receive updates from the community.',
           icon: '/icon-192x192.png',
-          badge: '/icon-192x192.png',
-          tag: 'welcome-notification',
-          vibrate: [200, 100, 200]
+          tag: 'welcome-notification'
         });
       }
     } catch (err) {
@@ -81,10 +60,5 @@ export function usePushNotifications() {
     }
   };
 
-  return {
-    permission,
-    subscription,
-    loading,
-    requestPermission
-  };
+  return { permission, subscription, loading, requestPermission };
 }
