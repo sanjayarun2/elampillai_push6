@@ -3,8 +3,8 @@ import webpush from 'web-push';
 import { createClient } from '@supabase/supabase-js';
 
 // VAPID keys for Web Push Notifications
-const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
-const VAPID_PRIVATE_KEY = 'gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY';
+const VAPID_PUBLIC_KEY = process.env.VITE_VAPID_PUBLIC_KEY!;
+const VAPID_PRIVATE_KEY = process.env.VITE_VAPID_PRIVATE_KEY!;
 
 // Set the VAPID details for web push
 webpush.setVapidDetails(
