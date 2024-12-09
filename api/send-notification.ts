@@ -33,9 +33,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { subscription, payload } = req.body;
 
-    // Log the received data
-    console.log('Received subscription:', subscription);
-    console.log('Received payload:', payload);
+    console.log('Received subscription:', subscription);  // Log received subscription
+    console.log('Received payload:', payload);  // Log received payload
 
     if (!subscription || !subscription.endpoint || !subscription.keys) {
       console.error('Invalid subscription data:', subscription);
@@ -47,20 +46,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing or invalid payload' });
     }
 
-    // Fetch the active subscriptions from Supabase
+    // Fetch active subscriptions from Supabase
     const { data: subscriptionsFromDb, error: fetchError } = await supabase
       .from('push_subscriptions')
       .select('*')
-      .eq('active', true); // Get only active subscriptions
+      .eq('active', true);  // Only fetch active subscriptions
 
     if (fetchError) {
       console.error('Error fetching subscriptions from Supabase:', fetchError.message);
       return res.status(500).json({ error: 'Error fetching subscriptions from Supabase', details: fetchError.message });
     }
 
-    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);
+    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);  // Log the fetched subscriptions
 
-    // Send the notification if no issues
+    // Send the push notification using the subscription received from the client
     try {
       await webpush.sendNotification(subscription, JSON.stringify(payload));
       await logNotification(subscription.endpoint, payload, 'success');
@@ -78,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 async function logNotification(endpoint: string, payload: any, status: string, error: string | null = null) {
   const { error: logError } = await supabase.from('notification_logs').insert({
-    subscription_id: endpoint,
+    subscription_id: endpoint,  // Store the endpoint as the unique identifier
     title: payload.title,
     body: payload.body,
     status,
@@ -89,6 +88,6 @@ async function logNotification(endpoint: string, payload: any, status: string, e
   if (logError) {
     console.error('Error logging notification:', logError.message);
   } else {
-    console.log('Notification logged successfully');
+    console.log('Notification logged successfully');  // Log success when notification is logged
   }
 }
