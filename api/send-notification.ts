@@ -33,8 +33,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { subscription, payload } = req.body;
 
-    console.log('Received subscription:', subscription);  // Log received subscription
-    console.log('Received payload:', payload);  // Log received payload
+    // Log received subscription and payload
+    console.log('Received subscription:', subscription);
+    console.log('Received payload:', payload);
 
     if (!subscription || !subscription.endpoint || !subscription.keys) {
       console.error('Invalid subscription data:', subscription);
@@ -50,14 +51,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data: subscriptionsFromDb, error: fetchError } = await supabase
       .from('push_subscriptions')
       .select('*')
-      .eq('active', true);  // Only fetch active subscriptions
+      .eq('active', true);  // Get only active subscriptions
 
+    // Log Supabase fetch result
     if (fetchError) {
       console.error('Error fetching subscriptions from Supabase:', fetchError.message);
       return res.status(500).json({ error: 'Error fetching subscriptions from Supabase', details: fetchError.message });
     }
 
-    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);  // Log the fetched subscriptions
+    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);
 
     // Send the push notification using the subscription received from the client
     try {
