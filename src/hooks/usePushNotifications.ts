@@ -19,7 +19,7 @@ export function usePushNotifications() {
           const existingSubscription = await registration.pushManager.getSubscription();
           setSubscription(existingSubscription);
 
-          // Refresh subscription in Supabase
+          // Refresh subscription in Supabase only if new or updated subscription is found
           if (existingSubscription) {
             console.log('Refreshing subscription:', existingSubscription);
             await pushNotificationService.saveSubscription(existingSubscription);
@@ -42,6 +42,7 @@ export function usePushNotifications() {
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
+      // If permission granted, subscribe the user to push notifications
       if (permission === 'granted') {
         const registration = await navigator.serviceWorker.ready;
         const newSubscription = await registration.pushManager.subscribe({
@@ -66,5 +67,8 @@ export function usePushNotifications() {
     }
   };
 
-  return { permission, subscription, loading, requestPermission };
+  // Don't show the notification prompt if permission is already granted or denied
+  const shouldShowPrompt = permission === 'default';
+
+  return { permission, subscription, loading, requestPermission, shouldShowPrompt };
 }
