@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/send-notification.ts": {
-      "runtime": "@vercel/node@2.0.0"  // Use the latest Node.js runtime
+      "runtime": "@vercel/node@2.0.0"
     }
   },
   "env": {
