@@ -33,6 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { subscription, payload } = req.body;
 
+    // Log the received data
     console.log('Received subscription:', subscription);
     console.log('Received payload:', payload);
 
@@ -46,20 +47,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing or invalid payload' });
     }
 
-    // Debug: Fetch subscriptions from Supabase
-    const { data: subscriptions, error: fetchError } = await supabase
+    // Fetch the active subscriptions from Supabase
+    const { data: subscriptionsFromDb, error: fetchError } = await supabase
       .from('push_subscriptions')
-      .select('*')  // Fetch all subscriptions
-      .eq('active', true); // You can filter by active subscriptions
+      .select('*')
+      .eq('active', true); // Get only active subscriptions
 
     if (fetchError) {
-      console.error('Error fetching subscriptions:', fetchError.message);
-      return res.status(500).json({ error: 'Error fetching subscriptions', details: fetchError.message });
+      console.error('Error fetching subscriptions from Supabase:', fetchError.message);
+      return res.status(500).json({ error: 'Error fetching subscriptions from Supabase', details: fetchError.message });
     }
 
-    // Log the subscriptions to confirm fetching is working
-    console.log('Fetched Subscriptions:', subscriptions);
+    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);
 
+    // Send the notification if no issues
     try {
       await webpush.sendNotification(subscription, JSON.stringify(payload));
       await logNotification(subscription.endpoint, payload, 'success');
@@ -87,5 +88,7 @@ async function logNotification(endpoint: string, payload: any, status: string, e
 
   if (logError) {
     console.error('Error logging notification:', logError.message);
+  } else {
+    console.log('Notification logged successfully');
   }
 }
