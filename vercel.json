@@ -1,13 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build",  
   "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "functions": {
+    "api/send-notification.js": {
+      "runtime": "nodejs14.x"
     }
-  ],
+  },
+  "env": {
+    "VITE_SUPABASE_URL": "https://ldcysindetsevcwapdvx.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3lzaW5kZXRzZXZjd2FwZHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1NDY2OTQsImV4cCI6MjA0OTEyMjY5NH0.9mmVYOCTv2Si1HLw9L8AfFBuFvhjxh1ef3kcQLajwjA",
+    "VITE_VAPID_PUBLIC_KEY": "BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo",
+    "VITE_VAPID_PRIVATE_KEY": "gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY"
+  },
   "headers": [
     {
       "source": "/sw.js",
@@ -40,15 +45,10 @@
       ]
     }
   ],
-  "env": {
-    "VITE_SUPABASE_URL": "https://ldcysindetsevcwapdvx.supabase.co",
-    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3lzaW5kZXRzZXZjd2FwZHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1NDY2OTQsImV4cCI6MjA0OTEyMjY5NH0.9mmVYOCTv2Si1HLw9L8AfFBuFvhjxh1ef3kcQLajwjA",
-    "VITE_VAPID_PUBLIC_KEY": "BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo",
-    "VITE_VAPID_PRIVATE_KEY": "gxL8WTYEv_Hm1FSjJcgWxDlhF2Lx2BpQKHOPXPgrRHY"
-  },
-  "functions": {
-    "api/send-notification.js": {
-      "runtime": "nodejs14.x"
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  }
+  ]
 }
