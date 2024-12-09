@@ -46,6 +46,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing or invalid payload' });
     }
 
+    // Debug: Fetch subscriptions from Supabase
+    const { data: subscriptions, error: fetchError } = await supabase
+      .from('push_subscriptions')
+      .select('*')  // Fetch all subscriptions
+      .eq('active', true); // You can filter by active subscriptions
+
+    if (fetchError) {
+      console.error('Error fetching subscriptions:', fetchError.message);
+      return res.status(500).json({ error: 'Error fetching subscriptions', details: fetchError.message });
+    }
+
+    // Log the subscriptions to confirm fetching is working
+    console.log('Fetched Subscriptions:', subscriptions);
+
     try {
       await webpush.sendNotification(subscription, JSON.stringify(payload));
       await logNotification(subscription.endpoint, payload, 'success');
