@@ -20,92 +20,127 @@ const supabase = createClient(
 );
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // More robust CORS handling
+  // Robust CORS handling
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Support both POST and GET methods
-  if (req.method !== 'POST' && req.method !== 'GET') {
+  // Only accept POST requests
+  if (req.method !== 'POST') {
     console.error('Invalid method:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // Parse body based on request method
-    const body = req.method === 'POST' 
-      ? req.body 
-      : req.query;
+    // Parse the raw body to log everything for debugging
+    console.log('Raw request body:', JSON.stringify(req.body, null, 2));
 
-    const { subscription, payload } = body;
+    const { subscription, payload } = req.body;
 
-    // Log received subscription and payload for debugging
-    console.log('Received subscription:', subscription);
-    console.log('Received payload:', payload);
+    // Extensive subscription validation with detailed error messages
+    if (!subscription) {
+      console.error('No subscription object provided');
+      return res.status(400).json({ 
+        error: 'Invalid subscription data', 
+        details: 'Subscription object is missing' 
+      });
+    }
 
-    // Validate subscription data
-    if (!subscription || !subscription.endpoint || !subscription.keys) {
-      console.error('Invalid subscription data:', subscription);
-      return res.status(400).json({ error: 'Invalid subscription data' });
+    // Check each critical subscription field with detailed validation
+    if (!subscription.endpoint) {
+      console.error('Subscription is missing endpoint');
+      return res.status(400).json({ 
+        error: 'Invalid subscription data', 
+        details: 'Subscription endpoint is required' 
+      });
+    }
+
+    if (!subscription.keys || !subscription.keys.p256dh || !subscription.keys.auth) {
+      console.error('Subscription keys are incomplete', subscription.keys);
+      return res.status(400).json({ 
+        error: 'Invalid subscription data', 
+        details: 'Subscription requires p256dh and auth keys' 
+      });
     }
 
     // Validate payload data
     if (!payload || !payload.title || !payload.body) {
       console.error('Invalid payload data:', payload);
-      return res.status(400).json({ error: 'Missing or invalid payload' });
+      return res.status(400).json({ 
+        error: 'Invalid payload', 
+        details: 'Payload must contain title and body' 
+      });
     }
 
-    // Fetch active subscriptions from Supabase
-    const { data: subscriptionsFromDb, error: fetchError } = await supabase
-      .from('push_subscriptions')
-      .select('*')
-      .eq('active', true);
-
-    // Log the result of fetching subscriptions from the database
-    if (fetchError) {
-      console.error('Error fetching subscriptions from Supabase:', fetchError.message);
-      return res.status(500).json({ error: 'Error fetching subscriptions from Supabase', details: fetchError.message });
-    }
-
-    console.log('Fetched active subscriptions from Supabase:', subscriptionsFromDb);
-
-    // Send the push notification using the subscription received from the client
+    // Attempt to send notification
     try {
-      await webpush.sendNotification(subscription, JSON.stringify(payload));
+      const pushResult = await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: subscription.keys.p256dh,
+            auth: subscription.keys.auth
+          }
+        }, 
+        JSON.stringify(payload)
+      );
+
       // Log successful notification
       await logNotification(subscription.endpoint, payload, 'success');
-      return res.status(200).json({ success: true });
+
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Notification sent successfully' 
+      });
+
     } catch (pushError) {
-      console.error('Error sending push notification:', pushError);
-      // Log failed notification
-      await logNotification(subscription.endpoint, payload, 'failed', pushError.message);
-      return res.status(500).json({ error: 'Failed to send notification', details: pushError.message });
+      console.error('Push notification error:', pushError);
+      
+      // Log failed notification with detailed error
+      await logNotification(
+        subscription.endpoint, 
+        payload, 
+        'failed', 
+        pushError instanceof Error ? pushError.message : 'Unknown push error'
+      );
+
+      return res.status(500).json({ 
+        error: 'Failed to send notification', 
+        details: pushError instanceof Error ? pushError.message : 'Unknown error' 
+      });
     }
+
   } catch (error) {
     console.error('Unexpected server error:', error);
-    return res.status(500).json({ error: 'Unexpected server error', details: error.message });
+    return res.status(500).json({ 
+      error: 'Unexpected server error', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    });
   }
 }
 
 // Helper function to log notification status in Supabase
 async function logNotification(endpoint: string, payload: any, status: string, error: string | null = null) {
-  const { error: logError } = await supabase.from('notification_logs').insert({
-    subscription_id: endpoint,
-    title: payload.title,
-    body: payload.body,
-    status,
-    error,
-    created_at: new Date().toISOString(),
-  });
+  try {
+    const { error: logError } = await supabase.from('notification_logs').insert({
+      subscription_id: endpoint,
+      title: payload.title,
+      body: payload.body,
+      status,
+      error,
+      created_at: new Date().toISOString(),
+    });
 
-  if (logError) {
-    console.error('Error logging notification:', logError.message);
-  } else {
-    console.log('Notification logged successfully');
+    if (logError) {
+      console.error('Error logging notification:', logError.message);
+    }
+  } catch (insertError) {
+    console.error('Unexpected error during notification logging:', insertError);
   }
 }
