@@ -1,39 +1,70 @@
 import webpush from 'web-push';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import crypto from 'crypto';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-
-async function generateVapidKeys() {
+function verifyVAPIDKey(publicKey, privateKey) {
   try {
-    const vapidKeys = webpush.generateVAPIDKeys();
-    const envPath = path.resolve(__dirname, '../.env');
-    let envContent = '';
+    // Decode the public key
+    const decodedPublicKey = Buffer.from(publicKey, 'base64');
+    
+    console.log('Public Key Length:', decodedPublicKey.length);
+    console.log('Public Key Hex:', decodedPublicKey.toString('hex'));
 
+    // Verify key is on P-256 curve
     try {
-      envContent = await fs.readFile(envPath, 'utf-8');
-    } catch (err) {
-      // File doesn't exist, create new
-      envContent = `VITE_SUPABASE_URL=https://seoxweqqaqnmmfbrjsys.supabase.co\nVITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlb3h3ZXFxYXFubW1mYnJqc3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MTI1MTksImV4cCI6MjA0ODM4ODUxOX0.spXyYzop4LG_AHbltW6S60gynx2YHOTyqaKSIRjfRlU\n`;
+      // Attempt to create a key object
+      const ecPublicKey = crypto.createPublicKey({
+        key: {
+          kty: 'EC',
+          crv: 'P-256',
+          x: decodedPublicKey.slice(1, 33).toString('base64'),
+          y: decodedPublicKey.slice(33, 65).toString('base64')
+        },
+        format: 'jwk'
+      });
+      
+      console.log('Key successfully validated on P-256 curve');
+    } catch (curveError) {
+      console.error('Curve Validation Error:', curveError);
+      throw new Error('Invalid P-256 curve key');
     }
 
-    // Remove existing VAPID keys if they exist
-    envContent = envContent.replace(/VITE_VAPID_PUBLIC_KEY=.*\n?/g, '');
-    envContent = envContent.replace(/VITE_VAPID_PRIVATE_KEY=.*\n?/g, '');
+    // Verify key works with web-push
+    webpush.setVapidDetails(
+      'mailto:your-email@example.com',
+      publicKey,
+      privateKey
+    );
 
-    // Add new VAPID keys
-    envContent += `\nVITE_VAPID_PUBLIC_KEY=${vapidKeys.publicKey}`;
-    envContent += `\nVITE_VAPID_PRIVATE_KEY=${vapidKeys.privateKey}`;
+    console.log('VAPID keys are valid and compatible');
+    return true;
+  } catch (error) {
+    console.error('VAPID Key Verification Failed:', error);
+    return false;
+  }
+}
 
-    await fs.writeFile(envPath, envContent.trim() + '\n');
-    console.log('VAPID Keys generated and saved successfully');
+function generateAndVerifyVAPIDKeys() {
+  try {
+    // Generate new VAPID keys
+    const vapidKeys = webpush.generateVAPIDKeys();
+    
+    console.log('Generated Public Key:', vapidKeys.publicKey);
+    console.log('Generated Private Key:', vapidKeys.privateKey);
+
+    // Verify the generated keys
+    const isValid = verifyVAPIDKey(vapidKeys.publicKey, vapidKeys.privateKey);
+    
+    if (!isValid) {
+      console.error('Generated keys are invalid');
+      process.exit(1);
+    }
+
+    return vapidKeys;
   } catch (error) {
     console.error('Error generating VAPID keys:', error);
     process.exit(1);
   }
 }
 
-generateVapidKeys();
+// Run the verification
+generateAndVerifyVAPIDKeys();
