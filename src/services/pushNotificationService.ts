@@ -31,7 +31,8 @@ export const pushNotificationService = {
           browser,
           os,
           created_at: new Date().toISOString(),
-          active: true
+          active: true,
+          last_used: new Date().toISOString()
         }, {
           onConflict: 'endpoint'
         })
@@ -54,12 +55,12 @@ export const pushNotificationService = {
         .eq('active', true);
 
       if (subError) throw subError;
-      if (!subscriptions?.length) throw new Error('No active subscriptions found');
+      if (!subscriptions?.length) {
+        console.warn('No active subscriptions found');
+        return { success: false, totalSent: 0, errors: ['No active subscriptions'] };
+      }
 
-      let successCount = 0;
-      const errors = [];
-
-      await Promise.all(
+      const notificationResults = await Promise.all(
         subscriptions.map(async (sub) => {
           try {
             const payload = {
@@ -67,62 +68,122 @@ export const pushNotificationService = {
               body: title,
               icon: '/icon-192x192.png',
               tag: `blog-${blogId}`,
-              data: { url: `/blog/${blogId}` }
+              data: { 
+                url: `/blog/${blogId}`,
+                timestamp: new Date().toISOString()
+              }
             };
 
-            const response = await fetch('/api/send-notification', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
-              },
-              body: JSON.stringify({
-                subscription: {
-                  endpoint: sub.endpoint,
-                  keys: {
-                    auth: sub.auth,
-                    p256dh: sub.p256dh
-                  }
+            // Improved error handling and logging
+            let response;
+            try {
+              response = await fetch('/api/send-notification', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
                 },
-                payload
-              })
-            });
+                body: JSON.stringify({
+                  subscription: {
+                    endpoint: sub.endpoint,
+                    keys: {
+                      auth: sub.auth,
+                      p256dh: sub.p256dh
+                    }
+                  },
+                  payload
+                })
+              });
+            } catch (fetchError) {
+              console.error('Fetch error:', fetchError);
+              throw new Error(`Network error: ${fetchError.message}`);
+            }
 
-            if (!response.ok) throw new Error('Failed to send notification');
+            // Check response status
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Notification send failed:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errorText
+              });
+              throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
 
+            // Log successful notification
             await supabase.from('notification_logs').insert({
               subscription_id: sub.id,
               title: payload.title,
               body: payload.body,
-              status: 'success'
+              status: 'success',
+              blog_id: blogId
             });
 
+            // Update last used timestamp
             await supabase
               .from('push_subscriptions')
-              .update({ last_used: new Date().toISOString() })
+              .update({ 
+                last_used: new Date().toISOString(),
+                last_successful: new Date().toISOString()
+              })
               .eq('id', sub.id);
 
-            successCount++;
+            return { 
+              subscriptionId: sub.id, 
+              status: 'success' 
+            };
           } catch (error) {
-            errors.push(error);
-            console.error('Error sending to subscription:', error);
+            // Detailed error logging
+            console.error('Error processing subscription:', {
+              subscriptionId: sub.id,
+              endpoint: sub.endpoint,
+              error: error.message
+            });
+
+            // Log failed notification
             await supabase.from('notification_logs').insert({
               subscription_id: sub.id,
               title: 'New Blog Post',
               body: title,
               status: 'failed',
-              error: error instanceof Error ? error.message : 'Unknown error'
+              error: error instanceof Error ? error.message : 'Unknown error',
+              blog_id: blogId
             });
-            await supabase.from('push_subscriptions').update({ active: false }).eq('id', sub.id);
+
+            // Only mark as inactive for persistent failures
+            await supabase
+              .from('push_subscriptions')
+              .update({ 
+                active: false, 
+                last_error: new Date().toISOString() 
+              })
+              .eq('id', sub.id);
+
+            return { 
+              subscriptionId: sub.id, 
+              status: 'failed', 
+              error: error.message 
+            };
           }
         })
       );
 
-      return { success: successCount > 0, totalSent: successCount, errors };
+      // Aggregate results
+      const successfulNotifications = notificationResults.filter(
+        result => result.status === 'success'
+      );
+
+      return {
+        success: successfulNotifications.length > 0,
+        totalSent: successfulNotifications.length,
+        results: notificationResults
+      };
     } catch (error) {
-      console.error('Error in sendNotification:', error);
-      throw error;
+      console.error('Critical error in sendNotification:', error);
+      return {
+        success: false,
+        totalSent: 0,
+        errors: [error instanceof Error ? error.message : 'Unknown error']
+      };
     }
   }
 };
