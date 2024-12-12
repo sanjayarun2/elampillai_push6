@@ -23,12 +23,43 @@ try {
 }
 
 // Supabase client setup
+try {
+  console.log('Setting up Supabase client...');
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  console.log('Supabase client setup complete');
+} catch (error) {
+  console.error('Error setting up Supabase client:', error);
+}
+
+// Supabase client variable to avoid "undefined" access
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// TypeScript interfaces for strict type handling
+interface PushSubscriptionKeys {
+  p256dh: string;
+  auth: string;
+}
+
+interface PushSubscription {
+  endpoint: string;
+  keys: PushSubscriptionKeys;
+}
+
+interface Payload {
+  title: string;
+  body: string;
+}
+
+// Main API handler
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  console.log('Handler invoked with method:', req.method);
+
   // Robust CORS handling
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -36,6 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
+    console.log('CORS preflight request received');
     return res.status(200).end();
   }
 
@@ -45,38 +77,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    console.log('Parsing request body...');
     console.log('Request body:', req.body);
 
-    const { subscription, payload } = req.body;
+    const { subscription, payload } = req.body as { subscription: PushSubscription; payload: Payload };
 
     if (!subscription) {
-      console.error('Missing subscription');
+      console.error('No subscription object provided');
       return res.status(400).json({ error: 'Subscription object is missing' });
     }
 
     if (!subscription.endpoint || !subscription.keys?.p256dh || !subscription.keys?.auth) {
-      console.error('Incomplete subscription keys');
+      console.error('Subscription object is invalid or incomplete');
       return res.status(400).json({ error: 'Invalid subscription keys' });
     }
 
     if (!payload?.title || !payload?.body) {
-      console.error('Invalid payload');
+      console.error('Payload is invalid or missing required fields');
       return res.status(400).json({ error: 'Payload must contain title and body' });
     }
 
-    console.log('Attempting to send notification');
+    console.log('Attempting to send notification...');
     const pushResult = await webpush.sendNotification(
       {
         endpoint: subscription.endpoint,
         keys: {
           p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth
-        }
+          auth: subscription.keys.auth,
+        },
       },
       JSON.stringify(payload)
     );
 
-    console.log('Notification sent successfully');
+    console.log('Push notification sent successfully:', pushResult);
     await logNotification(subscription.endpoint, payload, 'success');
 
     return res.status(200).json({
@@ -85,11 +118,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       response: pushResult,
     });
   } catch (error) {
-    console.error('Push notification error:', error);
+    console.error('Unexpected error during the notification process:', error);
 
     await logNotification(
-      subscription?.endpoint || '',
-      payload,
+      req.body?.subscription?.endpoint || '',
+      req.body?.payload,
       'failed',
       error instanceof Error ? error.message : 'Unknown error'
     );
@@ -103,6 +136,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 // Helper function to log notification results in Supabase
 async function logNotification(endpoint: string, payload: any, status: string, error: string | null = null) {
+  console.log('Logging notification with details:', {
+    endpoint,
+    payload,
+    status,
+    error,
+  });
+
   try {
     const { error: logError } = await supabase.from('notification_logs').insert({
       subscription_id: endpoint,
@@ -114,9 +154,11 @@ async function logNotification(endpoint: string, payload: any, status: string, e
     });
 
     if (logError) {
-      console.error('Error logging notification:', logError.message);
+      console.error('Error logging to Supabase:', logError.message);
+    } else {
+      console.log('Notification logged to Supabase successfully');
     }
   } catch (insertError) {
-    console.error('Unexpected error during notification logging:', insertError);
+    console.error('Unexpected error during Supabase logging:', insertError);
   }
 }
