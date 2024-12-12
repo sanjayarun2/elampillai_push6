@@ -20,24 +20,29 @@ const supabase = createClient(
 );
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Handle CORS preflight requests
+  // More robust CORS handling
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Allow the OPTIONS method for CORS
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only accept POST requests
-  if (req.method !== 'POST') {
+  // Support both POST and GET methods
+  if (req.method !== 'POST' && req.method !== 'GET') {
     console.error('Invalid method:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { subscription, payload } = req.body;
+    // Parse body based on request method
+    const body = req.method === 'POST' 
+      ? req.body 
+      : req.query;
+
+    const { subscription, payload } = body;
 
     // Log received subscription and payload for debugging
     console.log('Received subscription:', subscription);
@@ -59,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data: subscriptionsFromDb, error: fetchError } = await supabase
       .from('push_subscriptions')
       .select('*')
-      .eq('active', true);  // Only fetch active subscriptions
+      .eq('active', true);
 
     // Log the result of fetching subscriptions from the database
     if (fetchError) {
@@ -90,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 // Helper function to log notification status in Supabase
 async function logNotification(endpoint: string, payload: any, status: string, error: string | null = null) {
   const { error: logError } = await supabase.from('notification_logs').insert({
-    subscription_id: endpoint,  // Store the endpoint as a unique identifier
+    subscription_id: endpoint,
     title: payload.title,
     body: payload.body,
     status,
