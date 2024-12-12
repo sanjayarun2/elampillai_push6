@@ -43,7 +43,11 @@ export const pushNotificationService = {
       return data;
     } catch (error) {
       console.error('Error saving subscription:', error);
-      throw error;
+      // Check if error is an instance of Error
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error('Unknown error');
     }
   },
 
@@ -74,7 +78,6 @@ export const pushNotificationService = {
               }
             };
 
-            // Improved error handling and logging
             let response;
             try {
               response = await fetch('/api/send-notification', {
@@ -95,10 +98,12 @@ export const pushNotificationService = {
               });
             } catch (fetchError) {
               console.error('Fetch error:', fetchError);
-              throw new Error(`Network error: ${fetchError.message}`);
+              if (fetchError instanceof Error) {
+                throw new Error(fetchError.message);
+              }
+              throw new Error('Network error');
             }
 
-            // Check response status
             if (!response.ok) {
               const errorText = await response.text();
               console.error('Notification send failed:', {
@@ -109,7 +114,6 @@ export const pushNotificationService = {
               throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
-            // Log successful notification
             await supabase.from('notification_logs').insert({
               subscription_id: sub.id,
               title: payload.title,
@@ -118,7 +122,6 @@ export const pushNotificationService = {
               blog_id: blogId
             });
 
-            // Update last used timestamp
             await supabase
               .from('push_subscriptions')
               .update({ 
@@ -132,14 +135,12 @@ export const pushNotificationService = {
               status: 'success' 
             };
           } catch (error) {
-            // Detailed error logging
             console.error('Error processing subscription:', {
               subscriptionId: sub.id,
               endpoint: sub.endpoint,
-              error: error.message
+              error: error instanceof Error ? error.message : 'Unknown error'
             });
 
-            // Log failed notification
             await supabase.from('notification_logs').insert({
               subscription_id: sub.id,
               title: 'New Blog Post',
@@ -149,7 +150,6 @@ export const pushNotificationService = {
               blog_id: blogId
             });
 
-            // Only mark as inactive for persistent failures
             await supabase
               .from('push_subscriptions')
               .update({ 
@@ -161,13 +161,12 @@ export const pushNotificationService = {
             return { 
               subscriptionId: sub.id, 
               status: 'failed', 
-              error: error.message 
+              error: error instanceof Error ? error.message : 'Unknown error'
             };
           }
         })
       );
 
-      // Aggregate results
       const successfulNotifications = notificationResults.filter(
         result => result.status === 'success'
       );
