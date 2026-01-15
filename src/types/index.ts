@@ -6,6 +6,7 @@ export interface Shop {
   rating?: number;
   phone?: string;
   category: string;
+  slug: string;
 }
 
 export interface BlogPost {
