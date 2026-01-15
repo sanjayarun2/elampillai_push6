@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ShopCard from '../components/ShopCard';
-import { useSupabaseQuery } from '../hooks/useSupabaseQuery';
 import { shopService } from '../services/shopService';
 import type { Shop } from '../types';
 import SEOHead from '../components/SEOHead';
 
 export default function Shops() {
-  const { data: shops, loading, error } = useSupabaseQuery<Shop[]>(
-    () => shopService.getAll()
-  );
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadShops = async () => {
+      try {
+        const data = await shopService.getAllShops();
+        setShops(data);
+      } catch (err) {
+        console.error("Failed to load shops:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadShops();
+  }, []);
 
   if (loading) {
     return (
@@ -16,17 +28,6 @@ export default function Shops() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Local Shops</h1>
         <div className="text-center py-12">
           <p className="text-gray-600">Loading shops...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Local Shops</h1>
-        <div className="text-center py-12">
-          <p className="text-red-600">Error loading shops. Please try again later.</p>
         </div>
       </div>
     );
@@ -49,7 +50,7 @@ export default function Shops() {
             "@type": "LocalBusiness",
             "position": index + 1,
             "name": shop.name,
-            "description": shop.description,
+            "description": `${shop.category} located at ${shop.address}`,
             "address": {
               "@type": "PostalAddress",
               "streetAddress": shop.address,
@@ -58,20 +59,20 @@ export default function Shops() {
               "postalCode": "637502",
               "addressCountry": "IN"
             },
-            "telephone": shop.phone,
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": shop.rating,
-              "bestRating": "5",
-              "worstRating": "1"
-            }
+            "telephone": shop.phone
           }))
         }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Local Shops</h1>
-        {!shops || shops.length === 0 ? (
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Local Shops</h1>
+          <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+            {shops.length} Shops Found
+          </span>
+        </div>
+
+        {shops.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">No shops available yet.</p>
           </div>

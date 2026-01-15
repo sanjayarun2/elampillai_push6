@@ -1,0 +1,834 @@
+[
+  {
+    "id": "1",
+    "name": "Nithi Tex",
+    "category": "Saree Shop",
+    "address": "101/213, Kakapalayam Main Road, opposite Iyangar Bakery",
+    "phone": "07092957279",
+    "slug": "nithi-tex"
+  },
+  {
+    "id": "2",
+    "name": "Sri Sakthi Pugazh Tex",
+    "category": "Clothing store",
+    "address": "10/239, Gandhi Nagar Rd",
+    "phone": "08925736421",
+    "slug": "sri-sakthi-pugazh-tex"
+  },
+  {
+    "id": "3",
+    "name": "Sri Lakshanaa Sarees",
+    "category": "Clothing store",
+    "address": "Sumangali Nagar, Puliyampatti, Kadayampatti Road",
+    "phone": "",
+    "slug": "sri-lakshanaa-sarees"
+  },
+  {
+    "id": "4",
+    "name": "Shri Yugha Tex",
+    "category": "Clothing store",
+    "address": "14/3, New Rd",
+    "phone": "08072412992",
+    "slug": "shri-yugha-tex"
+  },
+  {
+    "id": "5",
+    "name": "A One Textiles",
+    "category": "Clothing store",
+    "address": "Axis Bank Backside, A-1 Building, Palakara Thottam",
+    "phone": "09444978167",
+    "slug": "a-one-textiles"
+  },
+  {
+    "id": "6",
+    "name": "Sumangali pattu mahal",
+    "category": "Saree Shop",
+    "address": "J243+6V4, KVP Theatre Rd, near sumangali jewellers",
+    "phone": "",
+    "slug": "sumangali-pattu-mahal"
+  },
+  {
+    "id": "7",
+    "name": "Janani Silks - Elampillai Sarees Manufacturer & Wholesaler",
+    "category": "Clothing store",
+    "address": "Shop No.5, K.V.P Complex",
+    "phone": "09994442511",
+    "slug": "janani-silks---elampillai-sarees-manufacturer-&-wholesaler"
+  },
+  {
+    "id": "8",
+    "name": "sumangali silk creation",
+    "category": "Saree Shop",
+    "address": "10-1/225, Kakapalayam Main Road",
+    "phone": "09894082175",
+    "slug": "sumangali-silk-creation"
+  },
+  {
+    "id": "9",
+    "name": "Sri Sakthi Pugazh Tex",
+    "category": "Clothing store",
+    "address": "263/1, KVP Theatre Rd",
+    "phone": "",
+    "slug": "sri-sakthi-pugazh-tex"
+  },
+  {
+    "id": "10",
+    "name": "Elampillai Tex",
+    "category": "Saree Shop",
+    "address": "KVP Theatre Rd",
+    "phone": "08807886162",
+    "slug": "elampillai-tex"
+  },
+  {
+    "id": "11",
+    "name": "KGS Sarees Elampillai",
+    "category": "Clothing store",
+    "address": "SVR Govindaraj Street",
+    "phone": "",
+    "slug": "kgs-sarees-elampillai"
+  },
+  {
+    "id": "12",
+    "name": "Madhan silks",
+    "category": "Clothing store",
+    "address": " · 96/1, Kakapalayam Main Road, near KVP Theatre Road",
+    "phone": "",
+    "slug": "madhan-silks"
+  },
+  {
+    "id": "13",
+    "name": "SREE SUNDAR TEX",
+    "category": "Saree Shop",
+    "address": "KVP COMPLEX, KVP Theatre Rd, near IOB ATM",
+    "phone": "09025444814",
+    "slug": "sree-sundar-tex"
+  },
+  {
+    "id": "14",
+    "name": "OKC sarees",
+    "category": "Clothing store",
+    "address": "Sri Ranga Tex, KVP Theatre Rd",
+    "phone": "09025912534",
+    "slug": "okc-sarees"
+  },
+  {
+    "id": "15",
+    "name": "Sri Lakshmi Narayana Silks Textiles",
+    "category": "Clothing store",
+    "address": " · J254+55H, Salem Main Rd",
+    "phone": "09786287848",
+    "slug": "sri-lakshmi-narayana-silks-textiles"
+  },
+  {
+    "id": "16",
+    "name": "Velan silks elampillai",
+    "category": "Clothing store",
+    "address": "10/2/52B Thirumalaigoundar Street Near Ulavar santhai, opp. Elampillai",
+    "phone": "09659827244",
+    "slug": "velan-silks-elampillai"
+  },
+  {
+    "id": "17",
+    "name": "Yamini Sarees",
+    "category": "Women's clothing store",
+    "address": "near elementary school",
+    "phone": "",
+    "slug": "yamini-sarees"
+  },
+  {
+    "id": "18",
+    "name": "Salem Elampillai Sarees",
+    "category": "Saree Shop",
+    "address": "10-3/72, Kakapalayam Main Road",
+    "phone": "09894031008",
+    "slug": "salem-elampillai-sarees"
+  },
+  {
+    "id": "19",
+    "name": "My Dream Sarees",
+    "category": "Women's clothing store",
+    "address": "Ulavar santhai, 10/2/53C, Thirumalai Gounder St, opp. Road",
+    "phone": "",
+    "slug": "my-dream-sarees"
+  },
+  {
+    "id": "20",
+    "name": "VPS SILK SAREES ( VPS SILKS FABRICS (P) LTD)",
+    "category": "Clothing store",
+    "address": "2/41, Water Tank street",
+    "phone": "09442636131",
+    "slug": "vps-silk-sarees-(-vps-silks-fabrics-(p)-ltd)"
+  },
+  {
+    "id": "21",
+    "name": "DD Sarees",
+    "category": "Clothing store",
+    "address": "14/566, opp bus stand ELAMPILLAI, PO",
+    "phone": "08667626207",
+    "slug": "dd-sarees"
+  },
+  {
+    "id": "22",
+    "name": "A One Textiles",
+    "category": "Clothing store",
+    "address": "Axis Bank Backside, A-1 Building, Palakara Thottam",
+    "phone": "09444978167",
+    "slug": "a-one-textiles"
+  },
+  {
+    "id": "23",
+    "name": "Yaksitha sarees",
+    "category": "Clothing store",
+    "address": " · Palakkara thottam, edanganasalai",
+    "phone": "09965222755",
+    "slug": "yaksitha-sarees"
+  },
+  {
+    "id": "24",
+    "name": "IMS TEX ELAMPILLAI",
+    "category": "Saree Shop",
+    "address": "selvaganapathy St",
+    "phone": "07397114812",
+    "slug": "ims-tex-elampillai"
+  },
+  {
+    "id": "25",
+    "name": "M.P.SAREES",
+    "category": "Saree Shop",
+    "address": "Elampillai, 10-61",
+    "phone": "09578584241",
+    "slug": "m.p.sarees"
+  },
+  {
+    "id": "26",
+    "name": "Sri Sivakami Silks",
+    "category": "Clothing store",
+    "address": "Gurunatha, swamy kovil St",
+    "phone": "09488604732",
+    "slug": "sri-sivakami-silks"
+  },
+  {
+    "id": "27",
+    "name": "Sri Ranga Tex",
+    "category": "Clothing store",
+    "address": "VBV STREET",
+    "phone": "09994093545",
+    "slug": "sri-ranga-tex"
+  },
+  {
+    "id": "28",
+    "name": "SRI KAMATCHI TEX",
+    "category": "Saree Shop",
+    "address": "C.A Complex, 15-1/141, Siddhar Kovil Rd, near HDFC Bank",
+    "phone": "09788955457",
+    "slug": "sri-kamatchi-tex"
+  },
+  {
+    "id": "29",
+    "name": "Vannamayil Fashions",
+    "category": "Clothing store",
+    "address": "",
+    "phone": "09543132754",
+    "slug": "vannamayil-fashions"
+  },
+  {
+    "id": "30",
+    "name": "ஶ்ரீ பொன்ராம் சில்க்ஸ்",
+    "category": "Saree Shop",
+    "address": "KVP complex",
+    "phone": "",
+    "slug": "ஶ்ரீ-பொன்ராம்-சில்க்ஸ்"
+  },
+  {
+    "id": "31",
+    "name": "Shri Srinivasa Textiles",
+    "category": "Clothing store",
+    "address": "14/411, Salem Main Rd",
+    "phone": "09443940820",
+    "slug": "shri-srinivasa-textiles"
+  },
+  {
+    "id": "32",
+    "name": "Reena Tex",
+    "category": "Saree Shop",
+    "address": "162-A",
+    "phone": "09655925123",
+    "slug": "reena-tex"
+  },
+  {
+    "id": "33",
+    "name": "Raviraj Textile | Elampillai Saree Collection",
+    "category": "Saree Shop",
+    "address": " · 12/12.Pappapatty katu valu,, puliyampatty,Kadayampatty Road, selvaganapathy St",
+    "phone": "09894130402",
+    "slug": "raviraj-textile-|-elampillai-saree-collection"
+  },
+  {
+    "id": "34",
+    "name": "SRI MOOGAMBIGA TEXTILES",
+    "category": "Clothing store",
+    "address": "3-2/64, Erusa Gounder street",
+    "phone": "",
+    "slug": "sri-moogambiga-textiles"
+  },
+  {
+    "id": "35",
+    "name": "SS Silks",
+    "category": "Saree Shop",
+    "address": "Siddhar Kovil Rd",
+    "phone": "",
+    "slug": "ss-silks"
+  },
+  {
+    "id": "36",
+    "name": "KGS TEX",
+    "category": "Open 24 hours",
+    "address": "",
+    "phone": "",
+    "slug": "kgs-tex"
+  },
+  {
+    "id": "37",
+    "name": "Clothing store ·  · Door No:123, Bus Stand, Kaliamman Temple St, near Axis Bank",
+    "category": "Open ⋅ Closes 8:30 pm",
+    "address": "094437 78989",
+    "phone": "",
+    "slug": "clothing-store ·  · door-no:123,-bus-stand,-kaliamman-temple-st,-near-axis-bank"
+  },
+  {
+    "id": "38",
+    "name": "Saree Shop · KVP Theatre Rd",
+    "category": "Open ⋅ Closes 7 pm",
+    "address": "095006 55298",
+    "phone": "",
+    "slug": "saree-shop · kvp-theatre-rd"
+  },
+  {
+    "id": "39",
+    "name": "Open ⋅ Closes 9 pm",
+    "category": "VIVEKANANDHA TEX",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-9 pm"
+  },
+  {
+    "id": "40",
+    "name": "Open ⋅ Closes 8 pm · 099527 52454",
+    "category": "SAT Micro Sarees",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm · 099527-52454"
+  },
+  {
+    "id": "41",
+    "name": "Open ⋅ Closes 7 pm · 097100 05007",
+    "category": "MKS Silks",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7 pm · 097100-05007"
+  },
+  {
+    "id": "42",
+    "name": "Open ⋅ Closes 7:30 pm · 086088 40699",
+    "category": "THANGAM TEX (VINTAGE WEAVING FACTORY)",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7:30 pm · 086088-40699"
+  },
+  {
+    "id": "43",
+    "name": "Open ⋅ Closes 8 pm · 097879 68716",
+    "category": "Sri Nandhini Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm · 097879-68716"
+  },
+  {
+    "id": "44",
+    "name": "Open ⋅ Closes 9 pm · 090256 04896",
+    "category": "Sri Velmurugan Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-9 pm · 090256-04896"
+  },
+  {
+    "id": "45",
+    "name": "Open ⋅ Closes 8 pm · 094422 94864",
+    "category": "VPS SILK SAREES ( VPS SILKS FABRICS (P) LTD)",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm · 094422-94864"
+  },
+  {
+    "id": "46",
+    "name": "Open ⋅ Closes 7 pm · 094426 36131",
+    "category": "P.S.R Textiles",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7 pm · 094426-36131"
+  },
+  {
+    "id": "47",
+    "name": "Open ⋅ Closes 10:30 pm · 093666 49222",
+    "category": "Sarees elampillai kokila sarees",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-10:30 pm · 093666-49222"
+  },
+  {
+    "id": "48",
+    "name": "Open ⋅ Closes 5 pm · 080727 57004",
+    "category": "Senthoor Tex - Factory Outlet",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-5 pm · 080727-57004"
+  },
+  {
+    "id": "49",
+    "name": "Open ⋅ Closes 10 pm",
+    "category": "ARUN TEX",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-10 pm"
+  },
+  {
+    "id": "50",
+    "name": "Open ⋅ Closes 4 pm",
+    "category": "Amman tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-4 pm"
+  },
+  {
+    "id": "51",
+    "name": "Open ⋅ Closes 7 pm · 099436 48421",
+    "category": "Balu Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7 pm · 099436-48421"
+  },
+  {
+    "id": "52",
+    "name": "Sumangali Silk Creation",
+    "category": "Saree Shop",
+    "address": "10-1/229 Kakapalayam Main Road, Kakapalayam, Elampillai - Kakapalayam Rd",
+    "phone": "09894082175",
+    "slug": "sumangali-silk-creation"
+  },
+  {
+    "id": "53",
+    "name": "YALINI SAREES",
+    "category": "Saree Shop",
+    "address": "J254+54J, selvaganapathy St",
+    "phone": "",
+    "slug": "yalini-sarees"
+  },
+  {
+    "id": "54",
+    "name": "SRINIVASA TEX",
+    "category": "Saree Shop",
+    "address": "bus stand, Axis Bank Street, back side",
+    "phone": "",
+    "slug": "srinivasa-tex"
+  },
+  {
+    "id": "55",
+    "name": "HARSHAL TEX",
+    "category": "Saree Shop",
+    "address": "UPSTAIR 4 Road, near THULASI PHARMACY",
+    "phone": "09080731265",
+    "slug": "harshal-tex"
+  },
+  {
+    "id": "56",
+    "name": "PALANI ANDAVAR TEXTILES",
+    "category": "Saree Shop",
+    "address": "Vinayaga clinic, Gurunatha Swamy Kovil Street, near Saravana Balaji Hospital",
+    "phone": "",
+    "slug": "palani-andavar-textiles"
+  },
+  {
+    "id": "57",
+    "name": "Sri Swetha silks",
+    "category": "Saree Shop",
+    "address": "elampillai, main road",
+    "phone": "09789510011",
+    "slug": "sri-swetha-silks"
+  },
+  {
+    "id": "58",
+    "name": "Santha tex",
+    "category": "Open ⋅ Closes 7 pm",
+    "address": "098652 44666",
+    "phone": "",
+    "slug": "santha-tex"
+  },
+  {
+    "id": "59",
+    "name": "Open now · 099443 00806",
+    "category": "SRI THIRUMALAI TEX",
+    "address": "",
+    "phone": "",
+    "slug": "open-now · 099443-00806"
+  },
+  {
+    "id": "60",
+    "name": "Open 24 hours",
+    "category": "ALAYA DESIGNERS - online saree shop",
+    "address": "",
+    "phone": "",
+    "slug": "open-24-hours"
+  },
+  {
+    "id": "61",
+    "name": "Open ⋅ Closes 6 pm · 074484 45200",
+    "category": "RaviRaj Textile Unit 1",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-6 pm · 074484-45200"
+  },
+  {
+    "id": "62",
+    "name": "Open ⋅ Closes 8 pm · 098940 30401",
+    "category": "Shri RajaGanapathi Tex ( SRG Tex )",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm · 098940-30401"
+  },
+  {
+    "id": "63",
+    "name": "Open ⋅ Closes 10 pm · 087781 03065",
+    "category": "SHREE VINAYAGA TEX VGS",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-10 pm · 087781-03065"
+  },
+  {
+    "id": "64",
+    "name": "Open ⋅ Closes 9 pm",
+    "category": "APM TEX , Elampillai",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-9 pm"
+  },
+  {
+    "id": "65",
+    "name": "Open ⋅ Closes 7 pm",
+    "category": "Shri Chakra Textiles",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7 pm"
+  },
+  {
+    "id": "66",
+    "name": "Open ⋅ Closes 9 pm · 094894 47338",
+    "category": "Tharani Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-9 pm · 094894-47338"
+  },
+  {
+    "id": "67",
+    "name": "Open now · 092445 03119",
+    "category": "PRATHIKSHA TEX",
+    "address": "",
+    "phone": "",
+    "slug": "open-now · 092445-03119"
+  },
+  {
+    "id": "68",
+    "name": "Open ⋅ Closes 8 pm · 086809 29542",
+    "category": "KAT Elampillai",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm · 086809-29542"
+  },
+  {
+    "id": "69",
+    "name": "Open ⋅ Closes 8:30 pm · 090435 56864",
+    "category": "Saree Shop",
+    "address": "10-1/217, Kakapalayam Main Road",
+    "phone": "",
+    "slug": "open ⋅-closes-8:30 pm · 090435-56864"
+  },
+  {
+    "id": "70",
+    "name": "Clothing store · 15-1/263-7, 8, KVP Theatre Rd",
+    "category": "Open ⋅ Closes 7 pm",
+    "address": "094439 95075",
+    "phone": "",
+    "slug": "clothing-store · 15-1/263-7,-8,-kvp-theatre-rd"
+  },
+  {
+    "id": "71",
+    "name": "Clothing store · 13/120B, Palakara Thottam, Mottour,, Elampillai, Salem-637502",
+    "category": "Open ⋅ Closes 8:30 pm",
+    "address": "094433 45677",
+    "phone": "",
+    "slug": "clothing-store · 13/120b,-palakara-thottam,-mottour,,-elampillai,-salem-637502"
+  },
+  {
+    "id": "72",
+    "name": "Clothing store · 637, #10/77-C3, (BSNL Exchenge Opp.), Kadaiyampatti Road, Salem, 502, Gandhi Nagar Rd",
+    "category": "Open ⋅ Closes 8:30 pm",
+    "address": "098947 53503",
+    "phone": "",
+    "slug": "clothing-store · 637,-#10/77-c3,-(bsnl-exchenge-opp.),-kadaiyampatti-road,-salem,-502,-gandhi-nagar-rd"
+  },
+  {
+    "id": "73",
+    "name": "Saree Shop · 4/183, New Rd",
+    "category": "Open ⋅ Closes 12 am",
+    "address": "",
+    "phone": "",
+    "slug": "saree-shop · 4/183,-new-rd"
+  },
+  {
+    "id": "74",
+    "name": "Women's clothing store · 104",
+    "category": "Open ⋅ Closes 10 pm",
+    "address": "063812 55633",
+    "phone": "",
+    "slug": "women's-clothing-store · 104"
+  },
+  {
+    "id": "75",
+    "name": "Open ⋅ Closes 5 pm · 078109 95565",
+    "category": "SRI LAKSHMI NARAYANA TEX (SLNT)",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-5 pm · 078109-95565"
+  },
+  {
+    "id": "76",
+    "name": "Open ⋅ Closes 8 pm",
+    "category": "Sri Sakthi Murugan Tex EPI",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm"
+  },
+  {
+    "id": "77",
+    "name": "Open ⋅ Closes 8 pm",
+    "category": "Vinayaka silks and Sarees",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm"
+  },
+  {
+    "id": "78",
+    "name": "Open now · 063805 99254",
+    "category": "Durganandhini Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open-now · 063805-99254"
+  },
+  {
+    "id": "79",
+    "name": "099948 06975",
+    "category": "RAMYA TEX",
+    "address": "",
+    "phone": "",
+    "slug": "099948-06975"
+  },
+  {
+    "id": "80",
+    "name": "Open ⋅ Closes 6:30 pm · 099764 21712",
+    "category": "Sri Sivasakthi Textiles",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-6:30 pm · 099764-21712"
+  },
+  {
+    "id": "81",
+    "name": "Open ⋅ Closes 7:30 pm · 094430 09332",
+    "category": "JP TEX &JPSILKS",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-7:30 pm · 094430-09332"
+  },
+  {
+    "id": "82",
+    "name": "G-tex",
+    "category": "Clothing store",
+    "address": "Gtex, near Prabakaran Hospital",
+    "phone": "",
+    "slug": "g-tex"
+  },
+  {
+    "id": "83",
+    "name": "Obuli Tex",
+    "category": "Manufacturer",
+    "address": " · 71-A, Subramniya swamy kovil street, opposite Murugan Kovil",
+    "phone": "08838319743",
+    "slug": "obuli-tex"
+  },
+  {
+    "id": "84",
+    "name": "DHARANI TEX",
+    "category": "Saree Shop",
+    "address": "126-1, Salem Main Rd, near Arun Icecream Shop",
+    "phone": "09894846910",
+    "slug": "dharani-tex"
+  },
+  {
+    "id": "85",
+    "name": "UKFashion Elampillai",
+    "category": "Clothing store",
+    "address": "main road",
+    "phone": "",
+    "slug": "ukfashion-elampillai"
+  },
+  {
+    "id": "86",
+    "name": "Liya Tex Elampillai",
+    "category": "Open ⋅ Closes 9 pm",
+    "address": "",
+    "phone": "",
+    "slug": "liya-tex-elampillai"
+  },
+  {
+    "id": "87",
+    "name": "Saree Shop · 495/254, Gandhi Nagar Rd",
+    "category": "Open ⋅ Closes 7 pm",
+    "address": "",
+    "phone": "",
+    "slug": "saree-shop · 495/254,-gandhi-nagar-rd"
+  },
+  {
+    "id": "88",
+    "name": "Saree Shop · 19, RSP Kandhasamy street",
+    "category": "Open ⋅ Closes 8 pm",
+    "address": "080722 14147",
+    "phone": "",
+    "slug": "saree-shop · 19,-rsp-kandhasamy-street"
+  },
+  {
+    "id": "89",
+    "name": "Saree Shop · Angappa Asari St",
+    "category": "Open now",
+    "address": "095143 82390",
+    "phone": "",
+    "slug": "saree-shop · angappa-asari-st"
+  },
+  {
+    "id": "90",
+    "name": "Saree Shop · Vao Office Backside",
+    "category": "098430 68651",
+    "address": "",
+    "phone": "",
+    "slug": "saree-shop · vao-office-backside"
+  },
+  {
+    "id": "91",
+    "name": "Open ⋅ Closes 9 pm · 089257 62243",
+    "category": "Sri Meenachi Tex",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-9 pm · 089257-62243"
+  },
+  {
+    "id": "92",
+    "name": "Open ⋅ Closes 8 pm",
+    "category": "Ramya Silk Sarees",
+    "address": "",
+    "phone": "",
+    "slug": "open ⋅-closes-8 pm"
+  },
+  {
+    "id": "93",
+    "name": "Shri Udhaya Silks",
+    "category": "Saree Shop",
+    "address": "11-2-34, opp. Kandan Theatre Gurunathar Swamy Koil",
+    "phone": "07708211507",
+    "slug": "shri-udhaya-silks"
+  },
+  {
+    "id": "94",
+    "name": "Eswari textiles",
+    "category": "Clothing store",
+    "address": "Kaliyamman Kovil St",
+    "phone": "08122339492",
+    "slug": "eswari-textiles"
+  },
+  {
+    "id": "95",
+    "name": "SRI ADITHYA SAREE COLLECTION",
+    "category": "Saree Shop",
+    "address": "ellampillIai, busstand",
+    "phone": "",
+    "slug": "sri-adithya-saree-collection"
+  },
+  {
+    "id": "96",
+    "name": "Sri Sai Sivam Tex",
+    "category": "Saree Shop",
+    "address": "Sandai Pettai Ulavar Sandai Backside",
+    "phone": "07418204100",
+    "slug": "sri-sai-sivam-tex"
+  },
+  {
+    "id": "97",
+    "name": "SRI VAARI TEX",
+    "category": "Saree Shop",
+    "address": "Chinnappampatty Main Road",
+    "phone": "09600474700",
+    "slug": "sri-vaari-tex"
+  },
+  {
+    "id": "98",
+    "name": "MATHAN TEX",
+    "category": "Saree Shop",
+    "address": "Bhuvanaganapathy Koil Street",
+    "phone": "09514060067",
+    "slug": "mathan-tex"
+  },
+  {
+    "id": "99",
+    "name": "VEERAMATHI TEX",
+    "category": "Saree Shop",
+    "address": "Canara Bank, Balakrishna Chetty St, opp. Sankar",
+    "phone": "09786126630",
+    "slug": "veeramathi-tex"
+  },
+  {
+    "id": "100",
+    "name": "Saree shop",
+    "category": "Saree Shop",
+    "address": "Edapatiyar, pathirakadai back side",
+    "phone": "",
+    "slug": "saree-shop"
+  },
+  {
+    "id": "101",
+    "name": "K.PRANITHA SILKS",
+    "category": "Clothing store",
+    "address": "2/189-9, Alankatanoor Elampillai - Kakapalayam Road near Old Police Station",
+    "phone": "",
+    "slug": "k.pranitha-silks"
+  },
+  {
+    "id": "102",
+    "name": "Muthukumaran Tex",
+    "category": "Saree Shop",
+    "address": "Kaaliyamman koil street Axis Bank back side",
+    "phone": "09994449126",
+    "slug": "muthukumaran-tex"
+  },
+  {
+    "id": "103",
+    "name": "Thirushan Tex",
+    "category": "Men's clothing store",
+    "address": "Kakapalayam Main Road",
+    "phone": "09943299778",
+    "slug": "thirushan-tex"
+  },
+  {
+    "id": "104",
+    "name": "Sri Jayalakshmi Textiles",
+    "category": "Saree Shop",
+    "address": "S.K, D. Ramasamy, Balakrishna Chetty St",
+    "phone": "",
+    "slug": "sri-jayalakshmi-textiles"
+  }
+]

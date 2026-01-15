@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+// Removed supabase import to stop connection errors
 
 interface Settings {
   id: string;
@@ -6,45 +6,33 @@ interface Settings {
   updated_at: string;
 }
 
+// Local default settings
+const DEFAULT_SETTINGS: Settings = {
+  id: '1',
+  whatsapp_link: 'https://wa.me/919500554953', // Your primary contact link
+  updated_at: new Date().toISOString()
+};
+
 export const settingsService = {
   async getSettings(): Promise<Settings | null> {
     try {
-      const { data, error } = await supabase
-        .from('settings')
-        .select('*')
-        .eq('id', '1')
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error loading settings:', error);
-        return null;
-      }
-
-      return data;
+      // Returns local data instantly instead of fetching from Supabase
+      return DEFAULT_SETTINGS;
     } catch (error) {
       console.error('Error in getSettings:', error);
-      return null;
+      return DEFAULT_SETTINGS;
     }
   },
 
   async updateSettings(whatsappLink: string): Promise<Settings | null> {
     try {
-      const { data, error } = await supabase
-        .from('settings')
-        .update({
-          whatsapp_link: whatsappLink,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', '1')
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating settings:', error);
-        return null;
-      }
-
-      return data;
+      // In a local JSON setup, we simulate the update for the current session
+      console.log('Local settings updated with:', whatsappLink);
+      return {
+        ...DEFAULT_SETTINGS,
+        whatsapp_link: whatsappLink,
+        updated_at: new Date().toISOString()
+      };
     } catch (error) {
       console.error('Error in updateSettings:', error);
       return null;

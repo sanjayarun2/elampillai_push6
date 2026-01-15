@@ -1,49 +1,49 @@
 import React from 'react';
-import { Star, MapPin, Phone } from 'lucide-react';
-import type { Shop } from '../types';
+import { Shop } from '../types';
+import { Phone, MapPin, Tag, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-interface ShopCardProps {
-  shop: Shop;
-}
-
-export default function ShopCard({ shop }: ShopCardProps) {
+export default function ShopCard({ shop }: { shop: Shop }) {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition" itemScope itemType="https://schema.org/LocalBusiness">
-      <div className="p-6">
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold text-gray-900" itemProp="name">{shop.name}</h3>
-          <div className="flex items-center">
-            <Star className="h-5 w-5 text-yellow-400 fill-current" />
-            <span className="ml-1 text-gray-600" itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating">
-              <meta itemProp="ratingValue" content={shop.rating.toString()} />
-              <meta itemProp="bestRating" content="5" />
-              {shop.rating}
-            </span>
-          </div>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-fade-in">
+      <h3 className="text-xl font-bold text-gray-900 mb-2">{shop.name}</h3>
+      
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center text-sm text-blue-600 font-semibold">
+          <Tag className="w-4 h-4 mr-2" />
+          {shop.category}
         </div>
         
-        <div className="mt-4 flex items-start space-x-2 text-gray-600">
-          <MapPin className="h-5 w-5 flex-shrink-0 mt-1" />
-          <p itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-            <span itemProp="streetAddress">{shop.address}</span>
-          </p>
+        <div className="flex items-start text-sm text-gray-600">
+          <MapPin className="w-4 h-4 mr-2 mt-1 flex-shrink-0" />
+          <span>{shop.address}</span>
         </div>
-        
+
+        {/* Only show Phone if it exists */}
         {shop.phone && (
-          <div className="mt-2 flex items-center space-x-2 text-gray-600">
-            <Phone className="h-5 w-5" />
-            <p itemProp="telephone">{shop.phone}</p>
+          <div className="flex items-center text-sm text-gray-600">
+            <Phone className="w-4 h-4 mr-2" />
+            <a href={`tel:${shop.phone}`} className="hover:text-blue-600">
+              {shop.phone}
+            </a>
           </div>
         )}
-        
-        <p className="mt-4 text-gray-600" itemProp="description">{shop.description}</p>
-        
-        <div className="mt-4">
-          <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full" itemProp="category">
-            {shop.category}
-          </span>
-        </div>
+
+        {/* FIX: Only show Rating if it exists to prevent .toString() error */}
+        {shop.rating !== undefined && (
+          <div className="flex items-center text-sm text-yellow-500">
+            <Star className="w-4 h-4 mr-2 fill-current" />
+            <span>{shop.rating.toString()}</span>
+          </div>
+        )}
       </div>
+
+      <Link 
+        to={`/shops/${shop.slug}`}
+        className="block text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2 rounded-md transition-colors"
+      >
+        View Details
+      </Link>
     </div>
   );
 }

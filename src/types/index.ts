@@ -2,8 +2,8 @@ export interface Shop {
   id: string;
   name: string;
   address: string;
-  description: string;
-  rating: number;
+  description?: string;
+  rating?: number;
   phone?: string;
   category: string;
 }

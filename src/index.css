@@ -2,29 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@layer utilities {
+  /* Fade In Animation */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-.animate-fade-in {
-  animation: fade-in 0.2s ease-in-out;
-}
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-in-out;
+  }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
+  /* Pulse Animation */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 
-@keyframes scale {
-  from { transform: scale(0.95); }
-  to { transform: scale(1); }
-}
+  /* Scale Animation */
+  @keyframes scale {
+    from { transform: scale(0.95); }
+    to { transform: scale(1); }
+  }
 
-.animate-scale {
-  animation: scale 0.2s ease-out;
+  .animate-scale {
+    animation: scale 0.2s ease-out;
+  }
 }
