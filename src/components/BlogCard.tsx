@@ -1,5 +1,5 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User } from 'lucide-react';
 import type { BlogPost } from '../types';
 
 interface BlogCardProps {
@@ -10,9 +10,10 @@ export default function BlogCard({ post }: BlogCardProps) {
   if (!post) return null;
 
   return (
-    <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-6 flex flex-col md:flex-row">
-      {/* 1. Left Side: Image (Inshorts Style - Large & Square/Rect) */}
-      <div className="md:w-2/5 lg:w-1/3 h-64 md:h-auto overflow-hidden">
+    <article className="bg-white rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.16)] overflow-hidden mb-6 flex flex-col md:flex-row h-auto md:h-[280px]">
+      
+      {/* 1. IMAGE: Fixed width on desktop to match Inshorts aspect ratio */}
+      <div className="md:w-[40%] lg:w-[350px] h-60 md:h-full flex-shrink-0">
         {post.image ? (
           <img 
             src={post.image} 
@@ -21,39 +22,38 @@ export default function BlogCard({ post }: BlogCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
             No Image
           </div>
         )}
       </div>
 
-      {/* 2. Right Side: Content */}
-      <div className="p-6 md:p-8 flex flex-col flex-1">
-        {/* Title: Bold and Professional */}
-        <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2 leading-tight">
-          {post.title}
-        </h2>
+      {/* 2. CONTENT: Large padding and clean typography */}
+      <div className="p-4 md:p-6 flex flex-col justify-between flex-grow">
+        <div>
+          {/* Title: Bold and tight */}
+          <h2 className="text-[18px] md:text-[22px] font-light text-[#44444d] leading-tight mb-2">
+            {post.title}
+          </h2>
 
-        {/* Short Meta Info (Similar to "Short by Author / Date") */}
-        <div className="flex items-center text-[13px] text-gray-500 mb-4">
-          <span className="font-bold text-gray-700 mr-2">short</span>
-          <span className="flex items-center">
-            by {post.author || 'Admin'} / {post.date}
-          </span>
+          {/* Meta: Inshorts signature author/date style */}
+          <div className="text-[12px] text-[#80808b] mb-3">
+            <span className="font-bold text-[#44444d]">short</span> by {post.author || 'Admin'} / {post.date}
+          </div>
+          
+          {/* Excerpt: Max height to keep card size stable */}
+          <p className="text-[#44444d] text-[15px] md:text-[16px] leading-[22px] font-light line-clamp-4 md:line-clamp-5">
+            {post.content}
+          </p>
         </div>
         
-        {/* Main Content Snippet */}
-        <p className="text-gray-600 text-base leading-relaxed mb-6 flex-grow">
-          {post.content}
-        </p>
-        
-        {/* 3. Bottom Link (No Buttons, Just Text) */}
-        <div className="mt-auto">
+        {/* 3. FOOTER: Only the link, no buttons */}
+        <div className="mt-4 md:mt-0">
           <Link 
             to={`/blog/${post.id}`}
-            className="text-sm font-bold text-gray-800 hover:text-blue-600 flex items-center gap-1 transition-colors"
+            className="text-[12px] text-[#44444d] font-bold uppercase tracking-wider hover:text-blue-600 transition-colors"
           >
-            read more at <span className="underline italic">Elampillai News</span>
+            read more at <span className="underline italic ml-1">Elampillai News</span>
           </Link>
         </div>
       </div>
