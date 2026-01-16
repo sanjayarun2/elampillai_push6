@@ -10,7 +10,7 @@ const turso = createClient({
 
 // Setup Keys
 const publicKey = process.env.VITE_VAPID_PUBLIC_KEY;
-const privateKey = process.env.VAPID_PRIVATE_KEY;
+const privateKey = process.env.VITE_VAPID_PRIVATE_KEY;
 
 if (publicKey && privateKey) {
   try {
