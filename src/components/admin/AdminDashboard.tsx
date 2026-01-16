@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-// FIX: Changed path from '../components/ui/Tabs' to '../ui/Tabs'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/Tabs'; 
 import { ShopEditor } from './ShopEditor';
 import { BlogEditor } from './BlogEditor';
 import { MarketplaceEditor } from './MarketplaceEditor';
-import { SettingsEditor } from './SettingsEditor';
+// REMOVED: SettingsEditor import to prevent Supabase errors
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -94,12 +93,13 @@ export default function AdminDashboard() {
           </button>
         </div>
         
-        <Tabs>
+        {/* FIX: Added defaultValue="shops" to satisfy type requirements */}
+        <Tabs defaultValue="shops">
           <TabsList activeTab={activeTab} setActiveTab={setActiveTab}>
             <TabsTrigger value="shops" activeTab={activeTab} setActiveTab={setActiveTab}>Shops</TabsTrigger>
             <TabsTrigger value="blog" activeTab={activeTab} setActiveTab={setActiveTab}>Blog</TabsTrigger>
             <TabsTrigger value="marketplace" activeTab={activeTab} setActiveTab={setActiveTab}>Marketplace</TabsTrigger>
-            <TabsTrigger value="settings" activeTab={activeTab} setActiveTab={setActiveTab}>Settings</TabsTrigger>
+            {/* REMOVED: Settings Tab Trigger */}
           </TabsList>
 
           <TabsContent value="shops" activeTab={activeTab}>
@@ -114,9 +114,7 @@ export default function AdminDashboard() {
             <MarketplaceEditor />
           </TabsContent>
 
-          <TabsContent value="settings" activeTab={activeTab}>
-            <SettingsEditor />
-          </TabsContent>
+          {/* REMOVED: Settings Tab Content */}
         </Tabs>
       </div>
     </div>
