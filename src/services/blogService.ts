@@ -1,20 +1,12 @@
-import { supabase } from '../lib/supabase';
+import { turso } from '../lib/turso';
 import type { BlogPost } from '../types';
 
 export const blogService = {
   async getAll() {
     try {
-      const { data, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching blogs:', error);
-        throw error;
-      }
-
-      return data as BlogPost[];
+      // SQLite query to get all blogs ordered by date
+      const result = await turso.execute("SELECT * FROM blogs ORDER BY date DESC");
+      return result.rows as unknown as BlogPost[];
     } catch (error) {
       console.error('Error in getAll:', error);
       throw error;
@@ -23,22 +15,16 @@ export const blogService = {
 
   async getById(id: string) {
     try {
-      const { data, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const result = await turso.execute({
+        sql: "SELECT * FROM blogs WHERE id = ?",
+        args: [id]
+      });
 
-      if (error) {
-        console.error('Error fetching blog post:', error);
-        throw error;
-      }
-
-      if (!data) {
+      if (result.rows.length === 0) {
         throw new Error('Blog post not found');
       }
 
-      return data as BlogPost;
+      return result.rows[0] as unknown as BlogPost;
     } catch (error) {
       console.error('Error in getById:', error);
       throw error;
@@ -47,18 +33,13 @@ export const blogService = {
 
   async create(post: Omit<BlogPost, 'id'>) {
     try {
-      const { data, error } = await supabase
-        .from('blogs')
-        .insert([post])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating blog post:', error);
-        throw error;
-      }
-
-      return data as BlogPost;
+      const id = crypto.randomUUID();
+      await turso.execute({
+        sql: "INSERT INTO blogs (id, title, content, date, author, image) VALUES (?, ?, ?, ?, ?, ?)",
+        args: [id, post.title, post.content, post.date, post.author, post.image]
+      });
+      
+      return { id, ...post } as BlogPost;
     } catch (error) {
       console.error('Error in create:', error);
       throw error;
@@ -67,19 +48,17 @@ export const blogService = {
 
   async update(id: string, post: Partial<BlogPost>) {
     try {
-      const { data, error } = await supabase
-        .from('blogs')
-        .update(post)
-        .eq('id', id)
-        .select()
-        .single();
+      // Build dynamic SQL for update
+      const keys = Object.keys(post).filter(k => k !== 'id');
+      const setClause = keys.map(k => `${k} = ?`).join(', ');
+      const args = keys.map(k => (post as any)[k]);
 
-      if (error) {
-        console.error('Error updating blog post:', error);
-        throw error;
-      }
+      await turso.execute({
+        sql: `UPDATE blogs SET ${setClause} WHERE id = ?`,
+        args: [...args, id]
+      });
 
-      return data as BlogPost;
+      return { id, ...post } as BlogPost;
     } catch (error) {
       console.error('Error in update:', error);
       throw error;
@@ -88,18 +67,30 @@ export const blogService = {
 
   async delete(id: string) {
     try {
-      const { error } = await supabase
-        .from('blogs')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error deleting blog post:', error);
-        throw error;
-      }
+      await turso.execute({
+        sql: "DELETE FROM blogs WHERE id = ?",
+        args: [id]
+      });
     } catch (error) {
       console.error('Error in delete:', error);
       throw error;
+    }
+  },
+
+  // Added for your Batch Editor logic
+  async syncAllPosts(posts: BlogPost[]): Promise<boolean> {
+    try {
+      const transaction = await turso.batch([
+        "DELETE FROM blogs",
+        ...posts.map(p => ({
+          sql: "INSERT INTO blogs (id, title, content, date, author, image) VALUES (?, ?, ?, ?, ?, ?)",
+          args: [p.id, p.title, p.content, p.date, p.author, p.image]
+        }))
+      ], "write");
+      return true;
+    } catch (e) {
+      console.error("Sync error:", e);
+      return false;
     }
   }
 };
