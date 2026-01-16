@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// FIX 1: Added missing BlogCard import
-import BlogCard from '../components/BlogCard'; 
 import { blogService } from '../services/blogService';
 import type { BlogPost } from '../types';
 import SEOHead from '../components/SEOHead';
