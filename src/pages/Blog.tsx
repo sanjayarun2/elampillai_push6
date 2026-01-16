@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import BlogCard from '../components/BlogCard'; 
 import { blogService } from '../services/blogService';
 import type { BlogPost } from '../types';
@@ -13,7 +14,6 @@ export default function Blog() {
     async function fetchPosts() {
       try {
         setLoading(true);
-        // blogService.getAll() sorts by Date DESC, so Newest is already first [0]
         const data = await blogService.getAll();
         setPosts(data || []);
       } catch (err) {
@@ -35,17 +35,13 @@ export default function Blog() {
   }
 
   return (
-    // Main Container:
-    // Mobile: Full height (minus header) to lock scrolling.
-    // Desktop: Standard padding and auto height.
-    <div className="max-w-[888px] mx-auto px-0 md:px-4 py-4 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-4 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
         url={typeof window !== 'undefined' ? window.location.href : ''} 
       />
       
-      {/* Title Header: Hidden on Mobile (Clean look), Visible on Desktop */}
       <div className="hidden md:block mb-8 border-b border-gray-200 pb-4">
         <h1 className="text-2xl font-bold text-gray-800">News & Updates</h1>
       </div>
@@ -55,18 +51,24 @@ export default function Blog() {
           No news updates available.
         </div>
       ) : (
-        /* LAYOUT LOGIC:
-           - Mobile: flex-row + overflow-x-auto (Horizontal Swipe)
-           - Desktop: md:flex-col (Vertical Stack)
-        */
-        <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar">
-          {posts.map(post => (
-            // Mobile Wrapper: 100% Width, Snap Center.
-            <div key={post.id} className="min-w-full w-full snap-center px-4 md:px-0 md:w-auto h-full md:h-auto flex items-center md:block">
-              <BlogCard post={post} />
+        <>
+          {/* MOBILE: Horizontal Scroll. DESKTOP: Vertical Stack. */}
+          <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar">
+            {posts.map(post => (
+              <div key={post.id} className="min-w-full w-full snap-center px-4 md:px-0 md:w-auto h-full md:h-auto flex items-center md:block">
+                <BlogCard post={post} />
+              </div>
+            ))}
+          </div>
+
+          {/* SWIPE INDICATOR (Mobile Only) */}
+          <div className="md:hidden absolute bottom-6 right-6 z-50 pointer-events-none animate-pulse">
+            <div className="bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+              <span>Swipe</span>
+              <ArrowRight size={14} />
             </div>
-          ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
