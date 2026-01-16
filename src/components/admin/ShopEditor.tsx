@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { shopService, Shop } from '../../services/shopService';
-import { Save, Plus, Trash2, Edit2, Loader2 } from 'lucide-react';
+import { Save, Trash2, Edit2, Loader2, Eye, EyeOff } from 'lucide-react'; // Added Eye icons
 
 export function ShopEditor() {
   const [shops, setShops] = useState<Shop[]>([]);
@@ -8,20 +8,33 @@ export function ShopEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const [currentShop, setCurrentShop] = useState<Partial<Shop>>({});
 
-  // Load shops on mount
   useEffect(() => {
     loadShops();
   }, []);
 
   const loadShops = async () => {
     setLoading(true);
-    const data = await shopService.getAllShops();
+    const data = await shopService.getAdminShops(); // Use Admin version to see hidden
     setShops(data);
     setLoading(false);
   };
 
   const generateSlug = (name: string) => {
     return name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+  };
+
+  // THE FIX: Toggle Visibility Function
+  const toggleHide = async (id: string) => {
+    const updatedShops = shops.map(s => 
+      s.id === id ? { ...s, hidden: !s.hidden } : s
+    );
+    
+    setIsSaving(true);
+    const success = await shopService.updateShops(updatedShops);
+    if (success) {
+      setShops(updatedShops);
+    }
+    setIsSaving(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,17 +44,16 @@ export function ShopEditor() {
     let updatedShops: Shop[];
 
     if (currentShop.id) {
-      // Update existing
       updatedShops = shops.map(s => s.id === currentShop.id ? { ...s, ...currentShop as Shop, slug: generateSlug(currentShop.name!) } : s);
     } else {
-      // Add new
       const newShop: Shop = {
         id: crypto.randomUUID(),
         name: currentShop.name,
         category: currentShop.category || 'General',
         address: currentShop.address || '',
         phone: currentShop.phone || '',
-        slug: generateSlug(currentShop.name)
+        slug: generateSlug(currentShop.name),
+        hidden: false // Default to visible
       };
       updatedShops = [...shops, newShop];
     }
@@ -60,13 +72,10 @@ export function ShopEditor() {
 
   const deleteShop = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this shop?')) return;
-
     const updatedShops = shops.filter(s => s.id !== id);
     setIsSaving(true);
     const success = await shopService.updateShops(updatedShops);
-    if (success) {
-      setShops(updatedShops);
-    }
+    if (success) setShops(updatedShops);
     setIsSaving(false);
   };
 
@@ -74,7 +83,6 @@ export function ShopEditor() {
 
   return (
     <div className="space-y-6">
-      {/* Form Section */}
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           {currentShop.id ? 'Edit Shop' : 'Add New Local Shop'}
@@ -87,7 +95,6 @@ export function ShopEditor() {
               value={currentShop.name || ''}
               onChange={e => setCurrentShop({ ...currentShop, name: e.target.value })}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="e.g. Nithi Tex"
               required
             />
           </div>
@@ -98,7 +105,6 @@ export function ShopEditor() {
               value={currentShop.category || ''}
               onChange={e => setCurrentShop({ ...currentShop, category: e.target.value })}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-              placeholder="e.g. Textiles"
             />
           </div>
           <div>
@@ -129,49 +135,36 @@ export function ShopEditor() {
             {isSaving ? <Loader2 className="animate-spin h-4 w-4" /> : <Save className="h-4 w-4" />}
             {currentShop.id ? 'Update and Push' : 'Add and Push to GitHub'}
           </button>
-          {currentShop.id && (
-            <button
-              type="button"
-              onClick={() => setCurrentShop({})}
-              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          )}
         </div>
       </form>
 
-      {/* List Section */}
       <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-bold text-gray-900">Registered Shops ({shops.length})</h3>
-          <p className="text-xs text-gray-500 italic">Changes here will trigger a Vercel rebuild.</p>
-        </div>
-        
+        <h3 className="text-lg font-bold text-gray-900 mb-6">Registered Shops ({shops.length})</h3>
         <div className="grid gap-4">
           {shops.map(shop => (
-            <div key={shop.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-purple-300 transition">
+            <div key={shop.id} className={`flex items-center justify-between p-4 rounded-lg border transition ${shop.hidden ? 'bg-gray-100 opacity-60' : 'bg-gray-50 border-gray-200'}`}>
               <div>
-                <h4 className="font-bold text-gray-800">{shop.name}</h4>
-                <div className="flex gap-4 mt-1">
-                  <span className="text-xs font-medium bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-                    {shop.category}
-                  </span>
-                  <span className="text-xs text-gray-500">{shop.phone}</span>
-                </div>
+                <h4 className="font-bold text-gray-800">{shop.name} {shop.hidden && '(Hidden)'}</h4>
+                <p className="text-xs text-gray-500">{shop.category}</p>
               </div>
               <div className="flex gap-2">
+                {/* Visibility Toggle Button */}
+                <button
+                  onClick={() => toggleHide(shop.id)}
+                  className={`p-2 rounded-full transition ${shop.hidden ? 'text-gray-400 hover:bg-gray-200' : 'text-green-600 hover:bg-green-50'}`}
+                  title={shop.hidden ? "Unhide" : "Hide"}
+                >
+                  {shop.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
                 <button
                   onClick={() => setCurrentShop(shop)}
                   className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition"
-                  title="Edit"
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => deleteShop(shop.id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-full transition"
-                  title="Delete"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

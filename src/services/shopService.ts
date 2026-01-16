@@ -1,5 +1,5 @@
 import shopsData from '../data/shops.json';
-import { githubService } from './githubService'; // Added this
+import { githubService } from './githubService';
 
 export interface Shop {
   id: string;
@@ -8,25 +8,30 @@ export interface Shop {
   address: string;
   phone: string;
   slug: string;
+  hidden?: boolean; // THE FIX: Added hidden property
 }
 
 export const shopService = {
-  // Get all 100 shops instantly
+  // Public only see visible shops
   getAllShops: async (): Promise<Shop[]> => {
+    const all = shopsData as Shop[];
+    return all.filter(shop => !shop.hidden);
+  },
+
+  // Admin sees everything (including hidden)
+  getAdminShops: async (): Promise<Shop[]> => {
     return shopsData as Shop[];
   },
 
-  // Get a single shop by its slug (for detail pages)
   getShopBySlug: async (slug: string): Promise<Shop | undefined> => {
     return (shopsData as Shop[]).find(shop => shop.slug === slug);
   },
 
-  // Filter shops by category (e.g., "Grocery")
   getShopsByCategory: async (category: string): Promise<Shop[]> => {
-    return (shopsData as Shop[]).filter(shop => shop.category === category);
+    const all = shopsData as Shop[];
+    return all.filter(shop => shop.category === category && !shop.hidden);
   },
 
-  // THE FIX: Add this single function to allow Admin updates
   updateShops: async (updatedShops: Shop[]): Promise<boolean> => {
     return await githubService.updateJsonFile('src/data/shops.json', updatedShops);
   }

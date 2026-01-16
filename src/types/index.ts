@@ -7,6 +7,7 @@ export interface Shop {
   phone?: string;
   category: string;
   slug: string;
+  hidden?: boolean;
 }
 
 export interface BlogPost {
