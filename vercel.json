@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/send-notification.ts": {
+    "api/notify.ts": {
       "maxDuration": 10
     }
   },
