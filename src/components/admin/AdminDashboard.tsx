@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/Tabs';
+// FIX: Changed path from '../components/ui/Tabs' to '../ui/Tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/Tabs'; 
 import { ShopEditor } from './ShopEditor';
 import { BlogEditor } from './BlogEditor';
 import { MarketplaceEditor } from './MarketplaceEditor';
@@ -14,6 +15,10 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Required state for Controlled Tabs
+  const [activeTab, setActiveTab] = useState('shops');
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -89,27 +94,27 @@ export default function AdminDashboard() {
           </button>
         </div>
         
-        <Tabs defaultValue="shops">
-          <TabsList>
-            <TabsTrigger value="shops">Shops</TabsTrigger>
-            <TabsTrigger value="blog">Blog</TabsTrigger>
-            <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+        <Tabs>
+          <TabsList activeTab={activeTab} setActiveTab={setActiveTab}>
+            <TabsTrigger value="shops" activeTab={activeTab} setActiveTab={setActiveTab}>Shops</TabsTrigger>
+            <TabsTrigger value="blog" activeTab={activeTab} setActiveTab={setActiveTab}>Blog</TabsTrigger>
+            <TabsTrigger value="marketplace" activeTab={activeTab} setActiveTab={setActiveTab}>Marketplace</TabsTrigger>
+            <TabsTrigger value="settings" activeTab={activeTab} setActiveTab={setActiveTab}>Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="shops">
+          <TabsContent value="shops" activeTab={activeTab}>
             <ShopEditor />
           </TabsContent>
 
-          <TabsContent value="blog">
+          <TabsContent value="blog" activeTab={activeTab}>
             <BlogEditor />
           </TabsContent>
 
-          <TabsContent value="marketplace">
+          <TabsContent value="marketplace" activeTab={activeTab}>
             <MarketplaceEditor />
           </TabsContent>
 
-          <TabsContent value="settings">
+          <TabsContent value="settings" activeTab={activeTab}>
             <SettingsEditor />
           </TabsContent>
         </Tabs>

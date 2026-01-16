@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import type { BlogPost } from '../types';
-import { blogService } from '../services/blogService';
-import SEOHead from '../components/SEOHead';
+// FIX: Go up 2 levels (../../) to find 'types' in src/
+import type { BlogPost } from '../../types';
+// FIX: Go up 2 levels (../../) to find 'services' in src/
+import { blogService } from '../../services/blogService';
+// FIX: Go up 1 level (../) to find 'SEOHead' in src/components/
+import SEOHead from '../SEOHead';
+// FIX: Go up 1 level (../) to find 'BlogCard' in src/components/
 import BlogCard from '../BlogCard';
 
 export default function Blog() {
