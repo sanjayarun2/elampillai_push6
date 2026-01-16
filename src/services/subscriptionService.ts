@@ -16,7 +16,7 @@ export interface Subscription {
 }
 
 export const subscriptionService = {
-  // ROBUST SAVE: Handles duplicates automatically
+  // Save or Update subscription (Prevents duplicates)
   async save(subscription: PushSubscription) {
     const { endpoint, keys } = subscription.toJSON();
     
@@ -25,7 +25,6 @@ export const subscriptionService = {
     }
 
     try {
-      // ON CONFLICT(endpoint) DO UPDATE ensures we never have duplicates
       await turso.execute({
         sql: `INSERT INTO subscriptions (endpoint, keys) VALUES (?, ?) 
               ON CONFLICT(endpoint) DO UPDATE SET keys = ?, created_at = CURRENT_TIMESTAMP`,
@@ -33,11 +32,12 @@ export const subscriptionService = {
       });
       return { success: true };
     } catch (error) {
-      console.error('Error saving subscription to Turso:', error);
+      console.error('Error saving subscription:', error);
       return { success: false, error };
     }
   },
 
+  // Get all subscriptions
   async getAll(): Promise<Subscription[]> {
     try {
       const result = await turso.execute('SELECT * FROM subscriptions ORDER BY created_at DESC');
@@ -53,17 +53,17 @@ export const subscriptionService = {
     }
   },
 
+  // Get count
   async getCount(): Promise<number> {
     try {
       const result = await turso.execute('SELECT COUNT(*) as count FROM subscriptions');
       return Number(result.rows[0].count);
     } catch (error) {
-      console.error('Error counting subscriptions:', error);
       return 0;
     }
   },
 
-  // Delete by ID or Endpoint (Robustness)
+  // Delete
   async delete(idOrEndpoint: number | string) {
     try {
       if (typeof idOrEndpoint === 'number') {

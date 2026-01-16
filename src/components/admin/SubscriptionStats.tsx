@@ -6,6 +6,7 @@ import SubscriptionList from './SubscriptionList';
 export default function SubscriptionStats() {
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchStats() {
@@ -13,7 +14,7 @@ export default function SubscriptionStats() {
         const total = await subscriptionService.getCount();
         setCount(total);
       } catch (err) {
-        console.error('Stats error', err);
+        setError('Failed to load stats');
       } finally {
         setLoading(false);
       }

@@ -14,8 +14,12 @@ export default function SubscriptionList() {
     setLoading(true);
     try {
       const data = await subscriptionService.getAll();
-      // Client-side deduping just in case legacy bad data exists
-      const uniqueData = Array.from(new Map(data.map(item => [item.endpoint, item])).values());
+      
+      // FIX: Explicitly typed 'item' to fix "implicit any" error
+      const uniqueData = Array.from(
+        new Map(data.map((item: Subscription) => [item.endpoint, item])).values()
+      );
+      
       setSubs(uniqueData);
     } catch (error) {
       console.error('Failed to load subscriptions');
@@ -52,8 +56,8 @@ export default function SubscriptionList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {subs.map((sub, index) => (
-              <tr key={sub.id || index} className="hover:bg-gray-50">
+            {subs.map((sub) => (
+              <tr key={sub.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm text-gray-900">#{sub.id}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}

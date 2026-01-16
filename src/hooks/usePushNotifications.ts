@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { pushNotificationService } from '../services/pushNotificationService';
+import { subscriptionService } from '../services/subscriptionService';
 
-const VAPID_PUBLIC_KEY = 'BLBz5HXVYJGwDh_jRzQqwuOzuMRpO9F9YU_pEYX-FKPpOxLXjBvbXxS-kKXK0LVqLvqzPX4DgTDzBL5H3tQlwXo';
+const PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY; 
 
 export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -9,66 +9,85 @@ export function usePushNotifications() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkPermission = async () => {
-      try {
-        const currentPermission = Notification.permission;
-        setPermission(currentPermission);
-
-        if (currentPermission === 'granted') {
-          const registration = await navigator.serviceWorker.ready;
-          const existingSubscription = await registration.pushManager.getSubscription();
-          setSubscription(existingSubscription);
-
-          // Refresh subscription in Supabase only if new or updated subscription is found
-          if (existingSubscription) {
-            console.log('Refreshing subscription:', existingSubscription);
-            await pushNotificationService.saveSubscription(existingSubscription);
-          }
-        }
-      } catch (err) {
-        console.error('Error checking notification permission:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkPermission();
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      setPermission(Notification.permission);
+      checkSubscription();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  const requestPermission = async () => {
+  async function checkSubscription() {
     try {
-      setLoading(true);
-
-      const permission = await Notification.requestPermission();
-      setPermission(permission);
-
-      // If permission granted, subscribe the user to push notifications
-      if (permission === 'granted') {
-        const registration = await navigator.serviceWorker.ready;
-        const newSubscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: VAPID_PUBLIC_KEY,
-        });
-
-        console.log('New subscription:', newSubscription);
-        await pushNotificationService.saveSubscription(newSubscription);
-        setSubscription(newSubscription);
-
-        new Notification('Notifications Enabled', {
-          body: 'You will now receive updates from the community.',
-          icon: '/icon-192x192.png',
-          tag: 'welcome-notification',
-        });
-      }
-    } catch (err) {
-      console.error('Error requesting notification permission:', err);
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.getSubscription();
+      setSubscription(sub);
+      
+      // Ensure sync on load
+      if (sub) await subscriptionService.save(sub);
+      
+    } catch (error) {
+      console.error('Error checking subscription:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  // Don't show the notification prompt if permission is already granted or denied
-  const shouldShowPrompt = permission === 'default';
+  async function requestPermission() {
+    if (!('Notification' in window)) return;
+    const result = await Notification.requestPermission();
+    setPermission(result);
+    if (result === 'granted') {
+      await subscribeToPush();
+    }
+  }
 
-  return { permission, subscription, loading, requestPermission, shouldShowPrompt };
+  async function subscribeToPush() {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      let sub = await registration.pushManager.getSubscription();
+
+      if (!sub) {
+        sub = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(PUBLIC_KEY)
+        });
+      }
+
+      setSubscription(sub);
+      await subscriptionService.save(sub);
+      
+    } catch (error) {
+      console.error('Failed to subscribe:', error);
+      throw error;
+    }
+  }
+
+  async function unsubscribeFromPush() {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const sub = await registration.pushManager.getSubscription();
+        if (sub) {
+            await sub.unsubscribe();
+            await subscriptionService.delete(sub.endpoint);
+            setSubscription(null);
+        }
+    } catch (error) {
+        console.error('Error unsubscribing:', error);
+    }
+  }
+
+  return { permission, subscription, loading, requestPermission, unsubscribeFromPush };
+}
+
+function urlBase64ToUint8Array(base64String: string) {
+  if (!base64String) return new Uint8Array();
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
