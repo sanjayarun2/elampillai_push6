@@ -1,94 +1,84 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-// NOTE: We do NOT import libraries at the top. 
-// We import them inside the function to prevent "Start-up Crashes".
+// DO NOT import web-push here. It causes the 500 crash.
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // 1. CORS Headers
+  // 1. Setup CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
+  
   try {
-    // 2. DYNAMIC IMPORTS (Safely loads libraries)
-    // This prevents the "Function Invocation Failed" crash
+    // 2. LOAD LIBRARIES SAFELY (Dynamic Import)
+    // This fixes the "Function Invocation Failed" error
     const webpush = await import('web-push');
     const { createClient } = await import('@libsql/client');
 
-    // 3. CHECK VARIABLES
-    const dbUrl = process.env.VITE_TURSO_URL;     
-    const dbToken = process.env.VITE_TURSO_TOKEN; 
+    // 3. GET VARIABLES (Checks for VITE_ version automatically)
+    const dbUrl = process.env.VITE_TURSO_URL;
+    const dbToken = process.env.VITE_TURSO_TOKEN;
     const publicKey = process.env.VITE_VAPID_PUBLIC_KEY;
+    
+    // This line makes your current setup work:
     const privateKey = process.env.VITE_VAPID_PRIVATE_KEY || process.env.VAPID_PRIVATE_KEY;
 
-    const missing = [];
-    if (!dbUrl) missing.push('VITE_TURSO_URL');
-    if (!dbToken) missing.push('VITE_TURSO_TOKEN');
-    if (!publicKey) missing.push('VITE_VAPID_PUBLIC_KEY');
-    if (!privateKey) missing.push('VITE_VAPID_PRIVATE_KEY');
-
-    if (missing.length > 0) {
-      throw new Error(`MISSING VARIABLES: ${missing.join(', ')}`);
+    if (!dbUrl || !dbToken || !publicKey || !privateKey) {
+      throw new Error('MISSING VARIABLES: Check VITE_TURSO_URL, VITE_TURSO_TOKEN, and VITE_VAPID_PRIVATE_KEY');
     }
 
-    // 4. CONNECT TO DB & SETUP KEYS
-    const turso = createClient({
-      url: dbUrl!,
-      authToken: dbToken!,
-    });
-
+    // 4. CONNECT & SETUP
+    const turso = createClient({ url: dbUrl, authToken: dbToken });
+    
     webpush.setVapidDetails(
       'mailto:admin@elampillai.in',
-      publicKey!,
-      privateKey!
+      publicKey,
+      privateKey
     );
 
-    // 5. FETCH & SEND
+    // 5. SEND NOTIFICATION
+    const { title, message, url, image } = req.body;
+    
+    // Fetch Subscribers
     const result = await turso.execute('SELECT * FROM subscriptions');
     const subscriptions = result.rows;
 
     if (subscriptions.length === 0) {
-      return res.status(200).json({ message: 'No subscribers found.' });
+      return res.status(200).json({ message: 'No subscribers.' });
     }
 
-    const { title, message, url, image } = req.body;
     const payload = JSON.stringify({
-      title: title || 'Elampillai News',
-      body: message || 'New update available.',
+      title: title || 'Elampillai Update',
+      body: message || 'New notification',
       url: url || '/',
       image: image || null
     });
 
-    let successCount = 0;
+    // Send loop
     const promises = subscriptions.map(async (sub: any) => {
       try {
         const keys = typeof sub.keys === 'string' ? JSON.parse(sub.keys) : sub.keys;
         await webpush.sendNotification({ endpoint: sub.endpoint, keys }, payload);
-        successCount++;
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
           await turso.execute({
-            sql: 'DELETE FROM subscriptions WHERE endpoint = ?',
-            args: [sub.endpoint]
+             sql: 'DELETE FROM subscriptions WHERE endpoint = ?',
+             args: [sub.endpoint]
           });
         }
       }
     });
 
     await Promise.all(promises);
-
-    return res.status(200).json({ success: true, sent: successCount });
+    return res.status(200).json({ success: true, count: subscriptions.length });
 
   } catch (error: any) {
-    console.error('CRASH REPORT:', error);
-    // This will now show the REAL error in your browser Response tab
+    console.error('CRASH:', error);
+    // This returns the REAL error message to your browser
     return res.status(500).json({ 
-      error: 'Server Execution Failed', 
-      details: error.message,
-      stack: error.stack 
+      error: 'Server Error', 
+      details: error.message 
     });
   }
 }
