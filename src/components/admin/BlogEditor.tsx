@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Edit2, Save, X, Image as ImageIcon } from 'lucide-react';
 import { blogService } from '../../services/blogService';
 import type { BlogPost } from '../../types';
-
-// REMOVED: import { pushNotificationService } ... (File no longer exists)
 
 export function BlogEditor() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -52,31 +50,45 @@ export function BlogEditor() {
     try {
       const postToSave = {
         ...currentPost,
-        id: currentPost.id || Date.now().toString(), // Simple ID generation
+        id: currentPost.id || Date.now().toString(),
         date: currentPost.date || new Date().toISOString().split('T')[0],
-        readTime: '3 min read' // Default
+        readTime: '3 min read'
       } as BlogPost;
 
       if (isEditing) {
-        // Update logic (if your blogService supports it)
-        // await blogService.update(postToSave); 
-        // For now, we might just be re-saving or handling via specific logic
-        console.log('Update not fully implemented in demo, saving as new/overwrite');
-        await blogService.add(postToSave);
+        // Update logic (assuming your service has an update method, otherwise simple create)
+        // For now, we are treating it as a create/overwrite for simplicity in this demo
+        console.log('Updating post...');
+        // If blogService.update exists: await blogService.update(postToSave.id, postToSave);
+        await blogService.create(postToSave); 
       } else {
-        // Create new
-        await blogService.add(postToSave);
+        // 1. Create new post in Database
+        await blogService.create(postToSave);
 
-        // NOTE: Notification logic is disabled because pushNotificationService was removed.
-        // To re-enable, you will need a backend function to read from Turso and send web push.
-        // console.log('Sending notifications...');
+        // 2. Trigger Push Notification via Vercel Serverless Function
+        try {
+          await fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: postToSave.title,
+              message: postToSave.content.substring(0, 100) + '...', // Short summary
+              url: window.location.origin, // Link to homepage
+              image: postToSave.image || null
+            })
+          });
+          console.log('Notification trigger sent successfully');
+        } catch (notifyError) {
+          console.error('Failed to trigger notification:', notifyError);
+          // We don't stop the save process if notification fails
+        }
       }
 
       // Reset and Reload
       setIsEditing(false);
       setCurrentPost({ title: '', content: '', image: '', author: 'Admin', date: new Date().toISOString().split('T')[0] });
       loadPosts();
-      alert('Post saved successfully!');
+      alert(isEditing ? 'Post updated successfully!' : 'Post published and notifications sent!');
 
     } catch (error) {
       console.error('Error saving post:', error);

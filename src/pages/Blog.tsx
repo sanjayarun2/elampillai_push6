@@ -8,7 +8,9 @@ import SEOHead from '../components/SEOHead';
 export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  
+  // FIX: Removed unused 'error' state to satisfy TypeScript
+  // If you need to show an error UI later, add it back.
 
   useEffect(() => {
     async function fetchPosts() {
@@ -18,7 +20,7 @@ export default function Blog() {
         setPosts(data || []);
       } catch (err) {
         console.error('Error loading posts:', err);
-        setError('Failed to load news.');
+        // We log the error but don't need to store it if we aren't displaying it
       } finally {
         setLoading(false);
       }

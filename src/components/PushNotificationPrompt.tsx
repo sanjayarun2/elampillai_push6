@@ -7,7 +7,7 @@ export default function PushNotificationPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
-    // Only show if fully loaded, permission is default (not granted/denied), and not already shown session
+    // Only show if fully loaded, permission is default (not granted/denied), and not already shown this session
     if (!loading && permission === 'default' && !sessionStorage.getItem('hidePushPrompt')) {
       const timer = setTimeout(() => setShowPrompt(true), 3000); // Delay 3s
       return () => clearTimeout(timer);

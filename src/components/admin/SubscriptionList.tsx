@@ -15,7 +15,7 @@ export default function SubscriptionList() {
     try {
       const data = await subscriptionService.getAll();
       
-      // FIX: Explicitly typed 'item' to fix "implicit any" error
+      // FIX: Deduplicate based on endpoint
       const uniqueData = Array.from(
         new Map(data.map((item: Subscription) => [item.endpoint, item])).values()
       );
