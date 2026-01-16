@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, BellOff } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle } from 'lucide-react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export default function PushNotificationButton() {
-  const { permission, subscription, loading, requestPermission, unsubscribeFromPush } = usePushNotifications();
+  const { permission, subscription, loading, requestPermission, unsubscribeFromPush, supported } = usePushNotifications();
   const [error, setError] = useState<string>('');
 
   const handleClick = async () => {
@@ -15,12 +15,13 @@ export default function PushNotificationButton() {
         await requestPermission();
       }
     } catch (err) {
-      setError('Action failed. Please check site permissions.');
+      setError('Action failed.');
       setTimeout(() => setError(''), 3000);
     }
   };
 
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) return null;
+  // If Browser doesn't support it (Like DuckDuckGo), don't show the button
+  if (!supported) return null;
 
   if (loading) {
     return (
@@ -56,8 +57,9 @@ export default function PushNotificationButton() {
       {error && <div className="text-red-600 text-sm animate-fade-in">{error}</div>}
       
       {permission === 'denied' && (
-        <div className="text-amber-600 text-xs mt-2">
-          Notifications are blocked. Reset permissions in browser settings.
+        <div className="text-amber-600 text-xs mt-2 flex items-center gap-1">
+          <AlertTriangle size={12} />
+          <span>Notifications blocked. Reset settings.</span>
         </div>
       )}
     </div>

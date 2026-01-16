@@ -2,15 +2,15 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 import { createClient } from '@libsql/client';
 
-// 1. Setup Turso Client (Replaces Supabase)
+// Setup Turso
 const turso = createClient({
   url: process.env.VITE_TURSO_DB_URL || '',
   authToken: process.env.VITE_TURSO_DB_TOKEN || '',
 });
 
-// 2. Setup VAPID Keys
+// Setup Keys
 const publicKey = process.env.VITE_VAPID_PUBLIC_KEY;
-const privateKey = process.env.VAPID_PRIVATE_KEY; // Ensure this is in Vercel Env Vars
+const privateKey = process.env.VAPID_PRIVATE_KEY;
 
 if (publicKey && privateKey) {
   try {
@@ -25,7 +25,6 @@ if (publicKey && privateKey) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // 3. CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -36,15 +35,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { title, message, url, image } = req.body;
 
-    // 4. FETCH ALL SUBSCRIBERS FROM TURSO
+    // 1. Get Subscribers
     const result = await turso.execute('SELECT * FROM subscriptions');
     const subscriptions = result.rows;
 
     if (subscriptions.length === 0) {
-      return res.status(200).json({ message: 'No subscribers found.' });
+      return res.status(200).json({ message: 'No subscribers.' });
     }
 
-    // 5. PREPARE PAYLOAD
     const payload = JSON.stringify({
       title: title || 'Elampillai News',
       body: message || 'New update available.',
@@ -52,20 +50,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       image: image || null
     });
 
-    // 6. SEND TO EVERYONE (Parallel)
+    // 2. Send to all
     const promises = subscriptions.map(async (sub: any) => {
       try {
-        // Parse keys if stored as string
         const keys = typeof sub.keys === 'string' ? JSON.parse(sub.keys) : sub.keys;
-
-        const pushConfig = {
-          endpoint: sub.endpoint,
-          keys: keys
-        };
-
+        const pushConfig = { endpoint: sub.endpoint, keys: keys };
         await webpush.sendNotification(pushConfig, payload);
       } catch (err: any) {
-        // 7. CLEANUP DEAD SUBSCRIPTIONS
         if (err.statusCode === 410 || err.statusCode === 404) {
           console.log(`Removing dead sub: ${sub.endpoint}`);
           await turso.execute({
@@ -77,11 +68,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     await Promise.all(promises);
-
-    return res.status(200).json({ success: true, sent_count: subscriptions.length });
+    return res.status(200).json({ success: true, count: subscriptions.length });
 
   } catch (error: any) {
-    console.error('Notification Error:', error);
+    console.error('Notify Error:', error);
     return res.status(500).json({ error: error.message });
   }
 }
