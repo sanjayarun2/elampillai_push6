@@ -1,52 +1,82 @@
-import React, { useState, useEffect } from 'react';
-// FIX: Go up 2 levels (../../) to find 'types' in src/
-import type { BlogPost } from '../../types';
-// FIX: Go up 2 levels (../../) to find 'services' in src/
-import { blogService } from '../../services/blogService';
-// FIX: Go up 1 level (../) to find 'SEOHead' in src/components/
-import SEOHead from '../SEOHead';
-// FIX: Go up 1 level (../) to find 'BlogCard' in src/components/
-import BlogCard from '../BlogCard';
+import React, { useEffect, useState } from 'react';
+import { subscriptionService, type Subscription } from '../../services/subscriptionService';
+import { Trash2, RefreshCw } from 'lucide-react';
 
-export default function Blog() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+export default function SubscriptionList() {
+  const [subs, setSubs] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchPosts() {
-      try {
-        setLoading(true);
-        const data = await blogService.getAll();
-        setPosts(data);
-      } catch (err) {
-        console.error('Error loading posts:', err);
-        setError('Failed to load news.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchPosts();
+    loadSubs();
   }, []);
 
-  if (loading) return <div className="p-8 text-center">Loading news...</div>;
+  async function loadSubs() {
+    setLoading(true);
+    try {
+      const data = await subscriptionService.getAll();
+      // Client-side deduping just in case legacy bad data exists
+      const uniqueData = Array.from(new Map(data.map(item => [item.endpoint, item])).values());
+      setSubs(uniqueData);
+    } catch (error) {
+      console.error('Failed to load subscriptions');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDelete(id: number) {
+    if (window.confirm('Delete this subscriber?')) {
+      const success = await subscriptionService.delete(id);
+      if (success) {
+        setSubs(prev => prev.filter(s => s.id !== id));
+      }
+    }
+  }
 
   return (
-    <div className="max-w-[888px] mx-auto px-4 py-8">
-      <SEOHead 
-        title="News & Updates - Elampillai" 
-        description="Stay updated with the latest news from Elampillai."
-        url={typeof window !== 'undefined' ? window.location.href : ''} 
-      />
-      
-      <div className="mb-8 border-b border-gray-200 pb-4">
-        <h1 className="text-2xl font-bold text-gray-800">News & Updates</h1>
+    <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
+        <h3 className="text-sm font-medium text-gray-700">Subscribers List</h3>
+        <button onClick={loadSubs} className="text-gray-500 hover:text-blue-600 transition-colors">
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+        </button>
       </div>
-
-      <div className="flex flex-col gap-6">
-        {posts.map(post => (
-          <BlogCard key={post.id} post={post} />
-        ))}
+      
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {subs.map((sub, index) => (
+              <tr key={sub.id || index} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm text-gray-900">#{sub.id}</td>
+                <td className="px-6 py-4 text-sm text-gray-500">
+                  {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <button 
+                    onClick={() => handleDelete(sub.id)} 
+                    className="text-red-600 hover:text-red-900 p-1"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!loading && subs.length === 0 && (
+              <tr>
+                <td colSpan={3} className="px-6 py-8 text-center text-gray-500 italic">
+                  No subscribers yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

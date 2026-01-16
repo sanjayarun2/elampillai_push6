@@ -1,64 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export default function PushNotificationPrompt() {
   const { permission, loading, requestPermission } = usePushNotifications();
   const [showPrompt, setShowPrompt] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const shouldShowPrompt = !loading && permission === 'default';
-
-    if (shouldShowPrompt) {
-      const timer = setTimeout(() => setShowPrompt(true), 1000);
+    // Only show if fully loaded, permission is default (not granted/denied), and not already shown session
+    if (!loading && permission === 'default' && !sessionStorage.getItem('hidePushPrompt')) {
+      const timer = setTimeout(() => setShowPrompt(true), 3000); // Delay 3s
       return () => clearTimeout(timer);
     }
   }, [loading, permission]);
 
-  const handleEnableNotifications = async () => {
-    try {
-      setError(null);
-      await requestPermission();
-      setShowPrompt(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to enable notifications');
-      setTimeout(() => setError(null), 3000);
-    }
+  const handleEnable = async () => {
+    await requestPermission();
+    setShowPrompt(false);
   };
 
-  if (loading || permission !== 'default' || !showPrompt) {
-    return null;
-  }
+  const handleClose = () => {
+    setShowPrompt(false);
+    sessionStorage.setItem('hidePushPrompt', 'true'); // Don't show again this session
+  };
+
+  if (!showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full transform transition-all duration-300 scale-100">
-        <div className="flex items-center justify-center mb-4">
-          <div className="bg-blue-100 p-3 rounded-full animate-pulse">
-            <Bell className="h-8 w-8 text-blue-600" />
-          </div>
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white rounded-xl shadow-2xl p-5 z-50 border border-gray-100 animate-slide-up">
+      <button onClick={handleClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+        <X size={18} />
+      </button>
+      <div className="flex items-start gap-4">
+        <div className="bg-blue-100 p-3 rounded-full shrink-0">
+          <Bell className="h-6 w-6 text-blue-600" />
         </div>
-        <h3 className="text-xl font-semibold text-center mb-2">Enable Notifications</h3>
-        <p className="text-gray-600 text-center mb-6">
-          Get instant updates from the community. Stay informed about local news, events, and announcements.
-        </p>
-        {error && (
-          <div className="text-red-600 text-sm text-center mb-4 animate-fade-in">{error}</div>
-        )}
-        <div className="flex flex-col space-y-3">
-          <button
-            onClick={handleEnableNotifications}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transform transition-all duration-200 hover:scale-105 active:scale-95 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Enable Notifications
-          </button>
-          <button
-            onClick={() => setShowPrompt(false)}
-            className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors focus:outline-none"
-          >
-            Maybe Later
-          </button>
+        <div>
+          <h3 className="font-bold text-gray-900">Enable Notifications?</h3>
+          <p className="text-sm text-gray-600 mt-1 mb-3">
+            Get instant updates about local news and events.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleEnable}
+              className="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Allow
+            </button>
+            <button
+              onClick={handleClose}
+              className="text-gray-500 text-sm px-3 py-2 hover:bg-gray-50 rounded-lg"
+            >
+              Later
+            </button>
+          </div>
         </div>
       </div>
     </div>

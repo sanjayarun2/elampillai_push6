@@ -1,188 +1,109 @@
-import { supabase } from '../lib/supabase';
+import { useState, useEffect } from 'react';
+import { subscriptionService } from '../services/subscriptionService';
 
-export const pushNotificationService = {
-  async saveSubscription(subscription: PushSubscription) {
-    try {
-      // Safely extract keys
-      const authKey = subscription.getKey('auth');
-      const p256dhKey = subscription.getKey('p256dh');
+const PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY; // Ensure this is in your .env
 
-      if (!authKey || !p256dhKey) {
-        throw new Error('Missing subscription keys (auth or p256dh)');
-      }
+export function usePushNotifications() {
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [subscription, setSubscription] = useState<PushSubscription | null>(null);
+  const [loading, setLoading] = useState(true);
 
-      const auth = btoa(String.fromCharCode(...new Uint8Array(authKey)));
-      const p256dh = btoa(String.fromCharCode(...new Uint8Array(p256dhKey)));
-
-      // Get device info
-      const ua = navigator.userAgent;
-      const deviceType = /mobile|tablet|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
-      const browser = /chrome|firefox|safari|edge|opera/i.exec(ua)?.[0] || 'Unknown';
-      const os = /windows|mac|linux|android|ios/i.exec(ua)?.[0] || 'Unknown';
-
-      const { data, error } = await supabase
-        .from('push_subscriptions')
-        .upsert({
-          endpoint: subscription.endpoint,
-          auth,
-          p256dh,
-          user_agent: ua,
-          device_type: deviceType,
-          browser,
-          os,
-          created_at: new Date().toISOString(),
-          active: true,
-          last_used: new Date().toISOString()
-        }, {
-          onConflict: 'endpoint'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error saving subscription:', error);
-      // Check if error is an instance of Error
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error('Unknown error');
+  useEffect(() => {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      setPermission(Notification.permission);
+      checkSubscription();
+    } else {
+      setLoading(false);
     }
-  },
+  }, []);
 
-  async sendNotification(blogId: string, title: string) {
+  async function checkSubscription() {
     try {
-      const { data: subscriptions, error: subError } = await supabase
-        .from('push_subscriptions')
-        .select('*')
-        .eq('active', true);
-
-      if (subError) throw subError;
-      if (!subscriptions?.length) {
-        console.warn('No active subscriptions found');
-        return { success: false, totalSent: 0, errors: ['No active subscriptions'] };
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.getSubscription();
+      setSubscription(sub);
+      
+      // OPTIONAL: If sub exists locally, ensure it's synced to DB
+      if (sub) {
+        await subscriptionService.save(sub);
       }
-
-      const notificationResults = await Promise.all(
-        subscriptions.map(async (sub) => {
-          try {
-            const payload = {
-              title: 'New Blog Post',
-              body: title,
-              icon: '/icon-192x192.png',
-              tag: `blog-${blogId}`,
-              data: { 
-                url: `/blog/${blogId}`,
-                timestamp: new Date().toISOString()
-              }
-            };
-
-            let response;
-            try {
-              response = await fetch('/api/send-notification', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  subscription: {
-                    endpoint: sub.endpoint,
-                    keys: {
-                      auth: sub.auth,
-                      p256dh: sub.p256dh
-                    }
-                  },
-                  payload
-                })
-              });
-            } catch (fetchError) {
-              console.error('Fetch error:', fetchError);
-              if (fetchError instanceof Error) {
-                throw new Error(fetchError.message);
-              }
-              throw new Error('Network error');
-            }
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error('Notification send failed:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errorText
-              });
-              throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            }
-
-            await supabase.from('notification_logs').insert({
-              subscription_id: sub.id,
-              title: payload.title,
-              body: payload.body,
-              status: 'success',
-              blog_id: blogId
-            });
-
-            await supabase
-              .from('push_subscriptions')
-              .update({ 
-                last_used: new Date().toISOString(),
-                last_successful: new Date().toISOString()
-              })
-              .eq('id', sub.id);
-
-            return { 
-              subscriptionId: sub.id, 
-              status: 'success' 
-            };
-          } catch (error) {
-            console.error('Error processing subscription:', {
-              subscriptionId: sub.id,
-              endpoint: sub.endpoint,
-              error: error instanceof Error ? error.message : 'Unknown error'
-            });
-
-            await supabase.from('notification_logs').insert({
-              subscription_id: sub.id,
-              title: 'New Blog Post',
-              body: title,
-              status: 'failed',
-              error: error instanceof Error ? error.message : 'Unknown error',
-              blog_id: blogId
-            });
-
-            await supabase
-              .from('push_subscriptions')
-              .update({ 
-                active: false, 
-                last_error: new Date().toISOString() 
-              })
-              .eq('id', sub.id);
-
-            return { 
-              subscriptionId: sub.id, 
-              status: 'failed', 
-              error: error instanceof Error ? error.message : 'Unknown error'
-            };
-          }
-        })
-      );
-
-      const successfulNotifications = notificationResults.filter(
-        result => result.status === 'success'
-      );
-
-      return {
-        success: successfulNotifications.length > 0,
-        totalSent: successfulNotifications.length,
-        results: notificationResults
-      };
     } catch (error) {
-      console.error('Critical error in sendNotification:', error);
-      return {
-        success: false,
-        totalSent: 0,
-        errors: [error instanceof Error ? error.message : 'Unknown error']
-      };
+      console.error('Error checking subscription:', error);
+    } finally {
+      setLoading(false);
     }
   }
-};
+
+  async function requestPermission() {
+    if (!('Notification' in window)) {
+      throw new Error('Notifications not supported');
+    }
+
+    const result = await Notification.requestPermission();
+    setPermission(result);
+
+    if (result === 'granted') {
+      await subscribeToPush();
+    }
+  }
+
+  async function subscribeToPush() {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      // 1. Check if already subscribed to avoid duplicates
+      let sub = await registration.pushManager.getSubscription();
+
+      // 2. If not, create new subscription
+      if (!sub) {
+        sub = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(PUBLIC_KEY)
+        });
+      }
+
+      setSubscription(sub);
+      
+      // 3. Save to DB (Service handles deduplication)
+      await subscriptionService.save(sub);
+      
+    } catch (error) {
+      console.error('Failed to subscribe:', error);
+      throw error;
+    }
+  }
+
+  async function unsubscribeFromPush() {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const sub = await registration.pushManager.getSubscription();
+        if (sub) {
+            await sub.unsubscribe();
+            // Remove from DB
+            await subscriptionService.delete(sub.endpoint);
+            setSubscription(null);
+        }
+    } catch (error) {
+        console.error('Error unsubscribing:', error);
+    }
+  }
+
+  return { permission, subscription, loading, requestPermission, unsubscribeFromPush };
+}
+
+// Utility to convert VAPID key
+function urlBase64ToUint8Array(base64String: string) {
+  if (!base64String) return new Uint8Array();
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
