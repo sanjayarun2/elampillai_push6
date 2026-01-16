@@ -24,8 +24,7 @@ export default function Header() {
             <NavLink to="/" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"}>Home</NavLink>
             <NavLink to="/shops" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"}>Shops</NavLink>
             <NavLink to="/blog" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"}>News</NavLink>
-            <NavLink to="/marketplace" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"}>Marketplace</NavLink>
-            <NavLink to="/admin-dashboard" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"}>Admin Dashboard</NavLink>
+            {/* HIDDEN: Admin Dashboard link removed from UI */}
           </nav>
 
           {/* Mobile menu button */}
@@ -44,8 +43,7 @@ export default function Header() {
               <NavLink to="/" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Home</NavLink>
               <NavLink to="/shops" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Shops</NavLink>
               <NavLink to="/blog" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>News</NavLink>
-              <NavLink to="/marketplace" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Marketplace</NavLink>
-              <NavLink to="/admin-dashboard" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Admin Dashboard</NavLink>
+              {/* HIDDEN: Admin Dashboard link removed from UI */}
             </div>
           </div>
         )}
