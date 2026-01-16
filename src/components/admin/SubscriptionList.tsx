@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { BlogPost } from '../types';
-
-// Fix: Use the correct number of dots to reach these folders
-import BlogCard from '../components/BlogCard'; 
 import { blogService } from '../services/blogService';
 import SEOHead from '../components/SEOHead';
+import BlogCard from '../BlogCard';
 
 export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
