@@ -5,7 +5,8 @@
     "category": "Saree Shop",
     "address": "101/213, Kakapalayam Main Road, opposite Iyangar Bakery",
     "phone": "07092957279",
-    "slug": "nithi-tex"
+    "slug": "nithi-tex",
+    "hidden": true
   },
   {
     "id": "2",
