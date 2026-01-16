@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ChevronRight } from 'lucide-react';
+import { Calendar, User } from 'lucide-react';
 import type { BlogPost } from '../types';
 
 interface BlogCardProps {
@@ -11,61 +10,50 @@ export default function BlogCard({ post }: BlogCardProps) {
   if (!post) return null;
 
   return (
-    <article className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col h-full">
-      {/* Image Container - Fixed Height for consistency */}
-      <div className="relative h-52 w-full overflow-hidden">
+    <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-6 flex flex-col md:flex-row">
+      {/* 1. Left Side: Image (Inshorts Style - Large & Square/Rect) */}
+      <div className="md:w-2/5 lg:w-1/3 h-64 md:h-auto overflow-hidden">
         {post.image ? (
           <img 
             src={post.image} 
             alt={post.title}
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-400 text-sm">
-            News Image
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+            No Image
           </div>
         )}
-        <div className="absolute top-3 left-3">
-          <span className="bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
-            Latest
-          </span>
-        </div>
       </div>
 
-      {/* Content Section */}
-      <div className="p-5 flex flex-col flex-grow">
-        {/* Meta Data: Date and Author placed at the top of content */}
-        <div className="flex items-center gap-3 text-gray-500 text-[11px] mb-3">
-          <span className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" />
-            {post.date}
-          </span>
-          <span className="w-1 h-1 bg-gray-300 rounded-full" />
-          <span className="flex items-center gap-1">
-            <User className="h-3.5 w-3.5" />
-            {post.author || 'Admin'}
+      {/* 2. Right Side: Content */}
+      <div className="p-6 md:p-8 flex flex-col flex-1">
+        {/* Title: Bold and Professional */}
+        <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2 leading-tight">
+          {post.title}
+        </h2>
+
+        {/* Short Meta Info (Similar to "Short by Author / Date") */}
+        <div className="flex items-center text-[13px] text-gray-500 mb-4">
+          <span className="font-bold text-gray-700 mr-2">short</span>
+          <span className="flex items-center">
+            by {post.author || 'Admin'} / {post.date}
           </span>
         </div>
-
-        {/* Title - Important placement and size */}
-        <h3 className="text-lg font-bold text-gray-900 mb-3 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
-          {post.title}
-        </h3>
         
-        {/* Excerpt/Content Snippet */}
-        <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed mb-6">
+        {/* Main Content Snippet */}
+        <p className="text-gray-600 text-base leading-relaxed mb-6 flex-grow">
           {post.content}
         </p>
         
-        {/* Footer Link - Placement at the very bottom */}
-        <div className="mt-auto pt-4 border-t border-gray-50">
+        {/* 3. Bottom Link (No Buttons, Just Text) */}
+        <div className="mt-auto">
           <Link 
             to={`/blog/${post.id}`}
-            className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors group/link"
+            className="text-sm font-bold text-gray-800 hover:text-blue-600 flex items-center gap-1 transition-colors"
           >
-            Read Full Story
-            <ChevronRight className="ml-1 h-4 w-4 transform group-hover/link:translate-x-1 transition-transform" />
+            read more at <span className="underline italic">Elampillai News</span>
           </Link>
         </div>
       </div>
