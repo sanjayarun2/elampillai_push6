@@ -6,6 +6,7 @@ export const blogService = {
     try {
       // SQLite query to get all blogs ordered by date
       const result = await turso.execute("SELECT * FROM blogs ORDER BY date DESC");
+      // Map rows to ensure they match our BlogPost interface
       return result.rows as unknown as BlogPost[];
     } catch (error) {
       console.error('Error in getAll:', error);
@@ -36,7 +37,15 @@ export const blogService = {
       const id = crypto.randomUUID();
       await turso.execute({
         sql: "INSERT INTO blogs (id, title, content, date, author, image) VALUES (?, ?, ?, ?, ?, ?)",
-        args: [id, post.title, post.content, post.date, post.author, post.image]
+        // FIX: Ensure no 'undefined' values are passed to Turso
+        args: [
+          id, 
+          post.title ?? "", 
+          post.content ?? "", 
+          post.date ?? new Date().toISOString().split('T')[0], 
+          post.author ?? "Admin", 
+          post.image ?? ""
+        ]
       });
       
       return { id, ...post } as BlogPost;
@@ -48,10 +57,12 @@ export const blogService = {
 
   async update(id: string, post: Partial<BlogPost>) {
     try {
-      // Build dynamic SQL for update
-      const keys = Object.keys(post).filter(k => k !== 'id');
+      const keys = Object.keys(post).filter(k => k !== 'id' && (post as any)[k] !== undefined);
+      if (keys.length === 0) return { id, ...post } as BlogPost;
+
       const setClause = keys.map(k => `${k} = ?`).join(', ');
-      const args = keys.map(k => (post as any)[k]);
+      // FIX: Ensure no 'undefined' values in the mapping
+      const args = keys.map(k => (post as any)[k] ?? null);
 
       await turso.execute({
         sql: `UPDATE blogs SET ${setClause} WHERE id = ?`,
@@ -77,14 +88,22 @@ export const blogService = {
     }
   },
 
-  // Added for your Batch Editor logic
+  // Batch Editor logic
   async syncAllPosts(posts: BlogPost[]): Promise<boolean> {
     try {
-      const transaction = await turso.batch([
+      await turso.batch([
         "DELETE FROM blogs",
         ...posts.map(p => ({
           sql: "INSERT INTO blogs (id, title, content, date, author, image) VALUES (?, ?, ?, ?, ?, ?)",
-          args: [p.id, p.title, p.content, p.date, p.author, p.image]
+          // FIX: Standardize values for batch insertion
+          args: [
+            p.id, 
+            p.title ?? "", 
+            p.content ?? "", 
+            p.date ?? "", 
+            p.author ?? "Admin", 
+            p.image ?? ""
+          ]
         }))
       ], "write");
       return true;

@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import BlogCard from '../components/BlogCard';
-import { useSupabaseQuery } from '../hooks/useSupabaseQuery';
 import { blogService } from '../services/blogService';
 import type { BlogPost } from '../types';
 import SEOHead from '../components/SEOHead';
 
 export default function Blog() {
-  const { data: posts, loading, error } = useSupabaseQuery<BlogPost[]>(
-    () => blogService.getAll()
-  );
+  // Use local state instead of the Supabase-specific hook
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await blogService.getAll();
+        setPosts(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPosts();
+  }, []);
 
   if (loading) {
     return (
@@ -50,7 +65,6 @@ export default function Blog() {
           <p className="text-gray-600">No posts available yet.</p>
         </div>
       ) : (
-        /* Removed the 3-column grid to allow Inshorts horizontal cards to stack properly */
         <div className="flex flex-col gap-6">
           {posts.map(post => (
             <BlogCard key={post.id} post={post} />
