@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSupabaseQuery } from '../../hooks/useSupabaseQuery';
 import { pushNotificationService } from '../../services/pushNotificationService';
 
