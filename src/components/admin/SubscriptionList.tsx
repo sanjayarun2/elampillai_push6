@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { blogService } from '../services/blogService';
+import { blogService } from '../../services/blogService';
 import type { BlogPost } from '../types';
 import SEOHead from '../components/SEOHead';
 
