@@ -35,7 +35,8 @@ export default function Blog() {
   }
 
   return (
-    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-4 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
+    // FIX: Reduced py-4 to py-1 for mobile to start immediately after header
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
@@ -55,11 +56,11 @@ export default function Blog() {
           {/* CONTAINER */}
           <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar">
             {posts.map(post => (
-              <div key={post.id} className="relative min-w-full w-full snap-center px-4 md:px-0 md:w-auto h-full md:h-auto flex items-center md:block">
+              <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-start md:block">
                 <BlogCard post={post} />
                 
-                {/* MOBILE SWIPE ARROW ICON (Overlaid on the image area) */}
-                <div className="md:hidden absolute top-[15%] right-6 z-50 pointer-events-none animate-pulse text-white/80 drop-shadow-md">
+                {/* MOBILE SWIPE ARROW ICON (Overlaid on the image area, Top-Right) */}
+                <div className="md:hidden absolute top-[15%] right-4 z-50 pointer-events-none animate-pulse text-white/90 drop-shadow-md">
                    <ArrowRightCircle size={32} strokeWidth={1.5} fill="rgba(0,0,0,0.3)" />
                 </div>
               </div>
