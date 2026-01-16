@@ -12,11 +12,10 @@ export default function Shops() {
     const loadShops = async () => {
       try {
         const data = await shopService.getAllShops();
-        // Ensure data is an array before setting state
         setShops(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to load shops:", err);
-        setShops([]); // Prevent undefined state
+        setShops([]);
       } finally {
         setLoading(false);
       }
@@ -36,7 +35,6 @@ export default function Shops() {
     );
   }
 
-  // Safety check for keywords
   const shopKeywords = shops.length > 0 
     ? shops.map(shop => `${shop.name}, ${shop.category} in Elampillai`).join(', ')
     : '';
@@ -70,7 +68,7 @@ export default function Shops() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Local Shops</h1>
           <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
@@ -81,7 +79,6 @@ export default function Shops() {
         {shops.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed">
             <p className="text-gray-600 font-medium">No shops available yet.</p>
-            <p className="text-gray-400 text-sm mt-1">Check back soon for updates!</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

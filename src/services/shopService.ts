@@ -1,4 +1,5 @@
-import shopsData from '../data/shops.json';
+\import shopsData from '../data/shops.json';
+import { githubService } from './githubService'; // Added this
 
 export interface Shop {
   id: string;
@@ -23,5 +24,10 @@ export const shopService = {
   // Filter shops by category (e.g., "Grocery")
   getShopsByCategory: async (category: string): Promise<Shop[]> => {
     return (shopsData as Shop[]).filter(shop => shop.category === category);
+  },
+
+  // THE FIX: Add this single function to allow Admin updates
+  updateShops: async (updatedShops: Shop[]): Promise<boolean> => {
+    return await githubService.updateJsonFile('src/data/shops.json', updatedShops);
   }
 };
