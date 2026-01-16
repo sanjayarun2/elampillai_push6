@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import BlogCard from '../components/BlogCard';
+// FIX 1: Ensure this path is correct. If your file is in src/pages, this is correct.
+import BlogCard from '../components/BlogCard'; 
 import { blogService } from '../services/blogService';
 import type { BlogPost } from '../types';
 import SEOHead from '../components/SEOHead';
 
 export default function Blog() {
-  // Use local state instead of the Supabase-specific hook
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
@@ -52,6 +52,8 @@ export default function Blog() {
       <SEOHead 
         title="News & Updates - Elampillai City Portal" 
         description="Stay updated with the latest news, events, and announcements from Elampillai."
+        // FIX 2: Added missing required url prop
+        url={typeof window !== 'undefined' ? window.location.href : ''} 
       />
       
       <div className="mb-8 text-center md:text-left">
