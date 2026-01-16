@@ -13,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.0",
     "@supabase/supabase-js": "^2.39.7",
     "firebase-admin": "^13.0.1",
     "lucide-react": "^0.344.0",
