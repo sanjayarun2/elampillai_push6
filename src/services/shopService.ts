@@ -1,4 +1,4 @@
-\import shopsData from '../data/shops.json';
+import shopsData from '../data/shops.json';
 import { githubService } from './githubService'; // Added this
 
 export interface Shop {
