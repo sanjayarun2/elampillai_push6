@@ -1,5 +1,4 @@
 import React from 'react';
-// REMOVED: import { Link } from 'react-router-dom'; -> No longer needed
 import type { BlogPost } from '../types';
 
 interface BlogCardProps {
@@ -10,10 +9,14 @@ export default function BlogCard({ post }: BlogCardProps) {
   if (!post) return null;
 
   return (
-    <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4 flex flex-col md:flex-row md:h-[280px] md:mb-6 transition-shadow hover:shadow-md">
+    // Card Container: 
+    // Mobile: h-[85vh] to fill screen for swipe. 
+    // Desktop: h-[280px] fixed height row.
+    <article className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[85vh] md:h-[280px] w-full transition-shadow hover:shadow-md">
       
       {/* 1. IMAGE SECTION */}
-      <div className="relative h-[240px] w-full md:w-[350px] md:h-full flex-shrink-0">
+      {/* Mobile: Image takes ~45% height. Desktop: Fixed width 350px on left. */}
+      <div className="relative h-[45%] md:h-full w-full md:w-[350px] flex-shrink-0">
         {post.image ? (
           <img 
             src={post.image} 
@@ -26,47 +29,33 @@ export default function BlogCard({ post }: BlogCardProps) {
             No Image
           </div>
         )}
-
-        {/* BADGE: Visible ONLY on Mobile */}
-        <div className="absolute bottom-3 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm z-10 border border-gray-100 md:hidden">
-          <span className="text-[10px] font-bold text-gray-800 tracking-wide uppercase">
-            inshorts
-          </span>
-        </div>
+        {/* NO BADGE here as requested for mobile clean look */}
       </div>
 
       {/* 2. CONTENT SECTION */}
-      <div className="p-4 pt-5 md:p-6 flex flex-col justify-between flex-grow">
+      {/* Mobile: Scrollable text if too long. Desktop: Fixed layout. */}
+      <div className="p-5 md:p-6 flex flex-col h-[55%] md:h-full justify-start md:justify-between flex-grow overflow-y-auto">
         <div>
-          {/* TITLE */}
-          <h2 className="text-[19px] font-bold text-[#2d2d2d] leading-[1.35] mb-3 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight md:mb-2">
+          {/* TITLE: Bold on mobile, Light/Large on Desktop */}
+          <h2 className="text-[20px] font-bold text-[#2d2d2d] leading-[1.3] mb-3 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
             {post.title}
           </h2>
 
-          {/* META (Desktop Only) */}
+          {/* META: Hidden on Mobile. Visible on Desktop only. */}
           <div className="hidden md:block text-[12px] text-[#80808b] mb-3">
             <span className="font-bold text-[#44444d]">short</span> by {post.author || 'Admin'} / {post.date}
           </div>
 
-          {/* BODY */}
-          <p className="text-[#44444d] text-[15px] leading-[1.6] font-light mb-4 text-justify md:text-[16px] md:leading-[22px] md:text-left md:line-clamp-5">
+          {/* BODY: Justified text on desktop. */}
+          <p className="text-[#44444d] text-[16px] leading-[1.6] font-light md:text-justify md:text-[16px] md:line-clamp-5">
             {post.content}
           </p>
         </div>
 
         {/* 3. FOOTER SECTION */}
-        <div className="mt-2 text-xs text-gray-400 border-t border-gray-50 pt-3 md:border-none md:pt-0 md:mt-0">
-          
-          {/* Mobile Footer */}
-          <div className="flex items-center justify-between w-full md:hidden">
-            <span>
-              read more at <span className="font-bold text-gray-500">The Hawk</span>
-            </span>
-            <span>{post.date}</span>
-          </div>
-
-          {/* Desktop Footer - NOW TEXT ONLY, NO LINK */}
-          <div className="hidden md:block text-[12px] text-[#44444d] font-bold uppercase tracking-wider">
+        {/* COMPLETELY HIDDEN on Mobile (Clean view). Visible on Desktop. */}
+        <div className="hidden md:block mt-2 border-t border-gray-50 pt-3 md:border-none md:pt-0">
+          <div className="text-[12px] text-[#44444d] font-bold uppercase tracking-wider">
             read more at <span className="underline italic ml-1 cursor-default">Elampillai News</span>
           </div>
         </div>
