@@ -9,7 +9,7 @@ export default function ShopCard({ shop }: { shop: Shop }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-fade-in w-full h-72 flex flex-col">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-fade-in w-full h-50 flex flex-col">
       {/* Shop Name */}
       <h3 className="text-xl font-bold text-gray-900 mb-2 truncate">{shop.name}</h3>
       
