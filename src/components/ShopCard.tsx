@@ -1,21 +1,19 @@
 import { Shop } from '../types';
 import { Phone, MapPin, Tag, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export default function ShopCard({ shop }: { shop: Shop }) {
   // 1. DATA GUARD: If shop or slug is missing, return null.
-  // This prevents the "Blank Page" error if your JSON is incomplete.
   if (!shop || !shop.slug) {
     console.error("ShopCard received invalid shop data:", shop);
     return null;
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-fade-in">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 p-6 hover:shadow-lg transition-shadow animate-fade-in w-full h-72 flex flex-col">
       {/* Shop Name */}
-      <h3 className="text-xl font-bold text-gray-900 mb-2">{shop.name}</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-2 truncate">{shop.name}</h3>
       
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-4 flex-grow">
         {/* Category */}
         <div className="flex items-center text-sm text-blue-600 font-semibold">
           <Tag className="w-4 h-4 mr-2" />
@@ -49,14 +47,6 @@ export default function ShopCard({ shop }: { shop: Shop }) {
           </div>
         )}
       </div>
-
-      {/* Action Link: Uses the slug for SEO-friendly routing */}
-      <Link 
-        to={`/shops/${shop.slug}`}
-        className="block text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2 rounded-md transition-colors"
-      >
-        View Details
-      </Link>
     </div>
   );
 }
