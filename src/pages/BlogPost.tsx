@@ -153,6 +153,7 @@ export default function BlogPost() {
               >
                 ← Back to Blog
               </Link>
+              {/* This call is kept but will render in the portal (fixed) */}
               <ShareButton
                 title={post.title}
                 text={`Check out this post: ${post.title}`}
@@ -187,7 +188,6 @@ export default function BlogPost() {
             </div>
 
             <div className="flex justify-between items-center border-t pt-6">
-              {/* Removed the extra ShareButton here as the fixed one is added at the bottom */}
               <WhatsAppButton size="lg" />
             </div>
           </div>
@@ -261,13 +261,6 @@ export default function BlogPost() {
           </div>
         </div>
       </div>
-
-      {/* FIX: ShareButton is now here at the bottom of the fragment to be truly FIXED */}
-      <ShareButton
-        title={post.title}
-        text={`Check out this post: ${post.title}`}
-        url={canonicalUrl}
-      />
     </>
   );
 }
