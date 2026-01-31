@@ -52,7 +52,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           </div>
 
           {/* BODY: Reduced size for mobile readability */}
-          <p className="text-[#44444d] text-[14px] leading-[1.5] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6">
+          <p className="text-[#44444d] text-[14px] leading-[1.5] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6 whitespace-pre-wrap">
             {post.content}
           </p>
         </div>
