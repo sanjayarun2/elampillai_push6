@@ -30,14 +30,13 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
   };
 
   return createPortal(
-    /* Fixed at top-right to be visible from the start on all devices */
+    /* Modern floating share button with glassmorphism and gradient */
     <button
       onClick={handleShare}
-      className="!fixed !top-20 !right-4 sm:!right-6 !z-[9999] inline-flex items-center px-3 py-2 sm:px-4 sm:py-3 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all hover:scale-105 active:scale-95"
+      className="!fixed !bottom-6 !right-4 sm:!right-6 !z-[9999] group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white rounded-full shadow-lg shadow-blue-500/50 hover:shadow-xl hover:shadow-blue-600/60 transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-white/20 backdrop-blur-sm animate-button-pulse"
       aria-label="Share"
     >
-      <Share2 className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
-      <span className="font-semibold hidden sm:inline">Share</span>
+      <Share2 className="h-6 w-6 sm:h-7 sm:w-7 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
     </button>,
     document.body
   );
