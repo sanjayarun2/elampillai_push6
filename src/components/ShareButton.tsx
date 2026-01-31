@@ -17,6 +17,7 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
           url,
         });
       } else {
+        // Fallback to WhatsApp sharing
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${text}\n\n${url}`)}`;
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
       }
@@ -29,11 +30,9 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
   };
 
   return (
-    /* Added a wrapper div with 'sticky' positioning. 
-       'bottom-4' and 'right-4' keep it offset from the edges.
-       'z-50' ensures it stays above other content.
-    */
-    <div className="sticky bottom-4 right-4 flex justify-end z-50">
+    /* Changed 'sticky' to 'fixed' and increased z-index to 9999 
+       This ensures the button floats in the corner of the screen. */
+    <div className="fixed bottom-6 right-6 z-[9999]">
       <button
         onClick={handleShare}
         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors active:bg-blue-800"
