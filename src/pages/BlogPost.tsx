@@ -143,7 +143,7 @@ export default function BlogPost() {
         }}
       />
 
-      {/* FIXED: Calling the button here. Since it is a Portal, it will stick to the screen corner immediately. */}
+      {/* FIXED: The Portal ensures this floats immediately. Using canonicalUrl variable */}
       <ShareButton
         title={post.title}
         text={`Check out this post: ${post.title}`}
