@@ -38,10 +38,10 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* 2. CONTENT SECTION */}
-      <div className="relative p-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
+      <div className="relative pt-3 px-4 pb-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
         <div className="pb-20">
-          {/* TITLE: Matches Inshorts (19px Mobile, Bold) */}
-          <h2 className="text-[19px] leading-[1.35] font-bold text-[#2d2d2d] mb-3 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
+          {/* TITLE: Reduced size for mobile readability */}
+          <h2 className="text-[16px] leading-[1.35] font-bold text-[#2d2d2d] mb-2 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
             {post.title}
           </h2>
 
@@ -51,8 +51,8 @@ export default function BlogCard({ post }: BlogCardProps) {
              {post.date}
           </div>
 
-          {/* BODY: Matches Inshorts (16px, Dark Grey) */}
-          <p className="text-[#44444d] text-[16px] leading-[1.6] font-light md:text-justify md:line-clamp-6">
+          {/* BODY: Reduced size for mobile readability */}
+          <p className="text-[#44444d] text-[14px] leading-[1.5] font-light md:text-[16px] md:text-justify md:line-clamp-6">
             {post.content}
           </p>
         </div>
