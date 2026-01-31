@@ -32,4 +32,44 @@
   .animate-scale {
     animation: scale 0.2s ease-out;
   }
+
+  /* Slide Up Animation - for notifications */
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  /* Hide scrollbar for better cross-browser compatibility */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* Share button fixed positioning - cross-browser compatible */
+  .share-button-fixed {
+    position: fixed;
+    bottom: 24px;
+    right: 16px;
+    z-index: 9999;
+  }
+
+  @media (min-width: 640px) {
+    .share-button-fixed {
+      right: 24px;
+    }
+  }
 }

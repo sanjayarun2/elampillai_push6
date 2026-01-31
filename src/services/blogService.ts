@@ -10,7 +10,8 @@ export const blogService = {
       return result.rows as unknown as BlogPost[];
     } catch (error) {
       console.error('Error in getAll:', error);
-      throw error;
+      // Return empty array instead of throwing to prevent page from breaking
+      return [];
     }
   },
 

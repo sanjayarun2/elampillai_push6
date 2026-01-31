@@ -11,19 +11,20 @@ export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
-  
-  // FIX: Removed unused 'error' state to satisfy TypeScript
-  // If you need to show an error UI later, add it back.
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         setLoading(true);
+        setError(null);
         const data = await blogService.getAll();
-        setPosts(data || []);
+        // Ensure we always have an array
+        setPosts(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Error loading posts:', err);
-        // We log the error but don't need to store it if we aren't displaying it
+        setError('Failed to load posts. Please try again later.');
+        setPosts([]); // Set empty array on error
       } finally {
         setLoading(false);
       }
@@ -56,7 +57,11 @@ export default function Blog() {
         <h1 className="text-2xl font-bold text-gray-800">News & Updates</h1>
       </div>
 
-      {!posts || posts.length === 0 ? (
+      {error ? (
+        <div className="text-center py-12 text-red-500">
+          {error}
+        </div>
+      ) : !posts || posts.length === 0 ? (
         <div className="text-center py-12 text-gray-500 italic">
           No news updates available.
         </div>
