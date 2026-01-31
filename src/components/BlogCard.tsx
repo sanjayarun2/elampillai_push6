@@ -41,7 +41,7 @@ export default function BlogCard({ post }: BlogCardProps) {
       <div className="relative pt-3 px-4 pb-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
         <div className="pb-20">
           {/* TITLE: Reduced size for mobile readability */}
-          <h2 className="text-[16px] leading-[1.35] font-bold text-[#2d2d2d] mb-2 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
+          <h2 className="text-[16px] leading-[1.35] font-bold text-[#2d2d2d] mb-2 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
             {post.title}
           </h2>
 
