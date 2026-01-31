@@ -33,7 +33,7 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
     /* Modern floating share button with glassmorphism and gradient */
     <button
       onClick={handleShare}
-      className="share-button-fixed group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 sm:border-2 sm:border-white/20 backdrop-blur-sm animate-button-pulse"
+      className="share-button-fixed group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white rounded-full shadow-lg shadow-blue-500/50 hover:shadow-xl hover:shadow-blue-600/60 transition-all duration-300 hover:scale-110 active:scale-95 sm:border-2 sm:border-white/20 backdrop-blur-sm animate-button-pulse"
       aria-label="Share"
     >
       <Share2 className="h-6 w-6 sm:h-7 sm:w-7 drop-shadow-lg group-hover:rotate-12 transition-transform duration-300" />
