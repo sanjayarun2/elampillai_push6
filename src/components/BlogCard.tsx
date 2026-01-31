@@ -27,6 +27,8 @@ export default function BlogCard({ post }: BlogCardProps) {
             alt={post.title}
             className="w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
