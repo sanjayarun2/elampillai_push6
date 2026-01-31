@@ -60,7 +60,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         <div className="sticky bottom-0 left-0 right-0 pt-3 pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 active:bg-gray-100 transition-colors shadow-sm"
+              className="flex items-center gap-2 active:opacity-70 transition-opacity"
             >
               <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wide">Share</span>
               {/* WhatsApp Logo SVG */}
