@@ -1,9 +1,4 @@
-import { createClient } from '@libsql/client';
-
-const turso = createClient({
-  url: import.meta.env.VITE_TURSO_URL,
-  authToken: import.meta.env.VITE_TURSO_TOKEN,
-});
+import { turso, isTursoConfigured } from '../lib/turso';
 
 export interface Subscription {
   id: number;
@@ -25,6 +20,11 @@ export const subscriptionService = {
     }
 
     try {
+      if (!isTursoConfigured()) {
+        console.warn('Database not configured');
+        return { success: false, error: 'Database not configured' };
+      }
+      
       await turso.execute({
         sql: `INSERT INTO subscriptions (endpoint, keys) VALUES (?, ?) 
               ON CONFLICT(endpoint) DO UPDATE SET keys = ?, created_at = CURRENT_TIMESTAMP`,
@@ -40,6 +40,10 @@ export const subscriptionService = {
   // Get all subscriptions
   async getAll(): Promise<Subscription[]> {
     try {
+      if (!isTursoConfigured()) {
+        return [];
+      }
+      
       const result = await turso.execute('SELECT * FROM subscriptions ORDER BY created_at DESC');
       return result.rows.map(row => ({
         id: row.id as number,
@@ -56,6 +60,10 @@ export const subscriptionService = {
   // Get count
   async getCount(): Promise<number> {
     try {
+      if (!isTursoConfigured()) {
+        return 0;
+      }
+      
       const result = await turso.execute('SELECT COUNT(*) as count FROM subscriptions');
       return Number(result.rows[0].count);
     } catch (error) {
@@ -66,6 +74,10 @@ export const subscriptionService = {
   // Delete
   async delete(idOrEndpoint: number | string) {
     try {
+      if (!isTursoConfigured()) {
+        return false;
+      }
+      
       if (typeof idOrEndpoint === 'number') {
         await turso.execute({
           sql: 'DELETE FROM subscriptions WHERE id = ?',

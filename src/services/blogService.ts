@@ -1,21 +1,33 @@
-import { turso } from '../lib/turso';
+import { turso, isTursoConfigured } from '../lib/turso';
 import type { BlogPost } from '../types';
 
 export const blogService = {
   async getAll() {
     try {
+      // Return empty array if Turso is not configured
+      if (!isTursoConfigured()) {
+        console.warn('Turso database not configured. Returning empty blog list.');
+        return [];
+      }
+      
       // SQLite query to get all blogs ordered by date
       const result = await turso.execute("SELECT * FROM blogs ORDER BY date DESC");
       // Map rows to ensure they match our BlogPost interface
       return result.rows as unknown as BlogPost[];
     } catch (error) {
       console.error('Error in getAll:', error);
-      throw error;
+      // Return empty array to prevent app crashes, but log the actual error
+      // This allows the app to remain functional even if database queries fail
+      return [];
     }
   },
 
   async getById(id: string) {
     try {
+      if (!isTursoConfigured()) {
+        throw new Error('Database not configured');
+      }
+      
       const result = await turso.execute({
         sql: "SELECT * FROM blogs WHERE id = ?",
         args: [id]
@@ -34,6 +46,10 @@ export const blogService = {
 
   async create(post: Omit<BlogPost, 'id'>) {
     try {
+      if (!isTursoConfigured()) {
+        throw new Error('Database not configured');
+      }
+      
       const id = crypto.randomUUID();
       await turso.execute({
         sql: "INSERT INTO blogs (id, title, content, date, author, image) VALUES (?, ?, ?, ?, ?, ?)",
@@ -57,6 +73,10 @@ export const blogService = {
 
   async update(id: string, post: Partial<BlogPost>) {
     try {
+      if (!isTursoConfigured()) {
+        throw new Error('Database not configured');
+      }
+      
       const keys = Object.keys(post).filter(k => k !== 'id' && (post as any)[k] !== undefined);
       if (keys.length === 0) return { id, ...post } as BlogPost;
 
@@ -78,6 +98,10 @@ export const blogService = {
 
   async delete(id: string) {
     try {
+      if (!isTursoConfigured()) {
+        throw new Error('Database not configured');
+      }
+      
       await turso.execute({
         sql: "DELETE FROM blogs WHERE id = ?",
         args: [id]
@@ -91,6 +115,11 @@ export const blogService = {
   // Batch Editor logic
   async syncAllPosts(posts: BlogPost[]): Promise<boolean> {
     try {
+      if (!isTursoConfigured()) {
+        console.error('Database not configured');
+        return false;
+      }
+      
       await turso.batch([
         "DELETE FROM blogs",
         ...posts.map(p => ({
