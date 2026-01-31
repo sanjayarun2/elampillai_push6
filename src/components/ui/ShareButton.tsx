@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Share2 } from 'lucide-react';
 
 interface ShareButtonProps {
@@ -22,18 +23,24 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
       }
     } catch (error) {
-      console.error('Error sharing:', error);
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Error sharing:', error);
+      }
     }
   };
 
-  return (
-    <button
-      onClick={handleShare}
-      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors active:bg-blue-800"
-      aria-label="Share"
-    >
-      <Share2 className="h-5 w-5 mr-2" />
-      <span>Share</span>
-    </button>
+  return createPortal(
+    /* Fixed at top-right to be visible from the start on all devices */
+    <div className="!fixed !top-20 !right-4 sm:!right-6 !z-[9999] pointer-events-auto">
+      <button
+        onClick={handleShare}
+        className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-3 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all hover:scale-105 active:scale-95"
+        aria-label="Share"
+      >
+        <Share2 className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
+        <span className="font-semibold hidden sm:inline">Share</span>
+      </button>
+    </div>,
+    document.body
   );
 }
