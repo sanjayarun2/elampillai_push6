@@ -38,28 +38,31 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* 2. CONTENT SECTION */}
-      <div className="relative p-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
-        <div className="pb-20">
-          {/* TITLE: Matches Inshorts (19px Mobile, Bold) */}
-          <h2 className="text-[19px] leading-[1.35] font-bold text-[#2d2d2d] mb-3 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
-            {post.title}
-          </h2>
+      <div className="relative flex flex-col h-[65%] md:h-full flex-grow bg-white">
+        {/* Scrollable content area - stops before share button */}
+        <div className="flex-1 overflow-y-auto pt-3 px-4 md:p-6">
+          <div className="pb-2 md:pb-20">
+            {/* TITLE: Further reduced size for mobile readability */}
+            <h2 className="text-[14px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
+              {post.title}
+            </h2>
 
-          {/* META (Desktop Only) */}
-          {/* REMOVED 'short' and 'Admin' text. Shows only Date. */}
-          <div className="hidden md:block text-[12px] text-[#80808b] mb-3">
-             {post.date}
+            {/* META (Desktop Only) */}
+            {/* REMOVED 'short' and 'Admin' text. Shows only Date. */}
+            <div className="hidden md:block text-[12px] text-[#80808b] mb-3">
+               {post.date}
+            </div>
+
+            {/* BODY: Further reduced size for mobile readability */}
+            <p className="text-[#44444d] text-[13px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6 whitespace-pre-wrap">
+              {post.content}
+            </p>
           </div>
-
-          {/* BODY: Matches Inshorts (16px, Dark Grey) */}
-          <p className="text-[#44444d] text-[16px] leading-[1.6] font-light md:text-justify md:line-clamp-6">
-            {post.content}
-          </p>
         </div>
 
         {/* 3. FOOTER / SHARE SECTION */}
-        {/* FIXED: Now sticky at bottom of visible area, always visible */}
-        <div className="sticky bottom-0 left-0 right-0 pt-3 pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        {/* Mobile: Fixed at bottom (flex-none). Desktop: Sticky within content */}
+        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-2 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
