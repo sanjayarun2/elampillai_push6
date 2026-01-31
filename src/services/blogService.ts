@@ -7,10 +7,13 @@ export const blogService = {
       // SQLite query to get all blogs ordered by date
       const result = await turso.execute("SELECT * FROM blogs ORDER BY date DESC");
       // Map rows to ensure they match our BlogPost interface
-      return result.rows as unknown as BlogPost[];
+      const posts = result.rows as unknown as BlogPost[];
+      // Always return an array, even if empty
+      return Array.isArray(posts) ? posts : [];
     } catch (error) {
       console.error('Error in getAll:', error);
-      throw error;
+      // Return empty array instead of throwing to prevent page from breaking
+      return [];
     }
   },
 
