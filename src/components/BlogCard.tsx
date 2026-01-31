@@ -37,7 +37,7 @@ export default function BlogCard({ post }: BlogCardProps) {
 
       {/* 2. CONTENT SECTION */}
       <div className="relative p-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
-        <div>
+        <div className="pb-20">
           {/* TITLE: Matches Inshorts (19px Mobile, Bold) */}
           <h2 className="text-[19px] leading-[1.35] font-bold text-[#2d2d2d] mb-3 font-sans md:text-[22px] md:font-light md:text-[#44444d] md:leading-tight">
             {post.title}
@@ -56,11 +56,11 @@ export default function BlogCard({ post }: BlogCardProps) {
         </div>
 
         {/* 3. FOOTER / SHARE SECTION */}
-        {/* Placed at bottom right for both mobile and desktop */}
-        <div className="mt-auto pt-4 flex justify-end items-end w-full">
+        {/* FIXED: Now sticky at bottom of visible area, always visible */}
+        <div className="sticky bottom-0 left-0 right-0 pt-3 pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 active:bg-gray-100 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 active:bg-gray-100 transition-colors shadow-sm"
             >
               <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wide">Share</span>
               {/* WhatsApp Logo SVG */}
