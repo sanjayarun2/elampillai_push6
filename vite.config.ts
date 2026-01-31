@@ -20,8 +20,18 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom']
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          icons: ['lucide-react'],
         }
+      }
+    },
+    // Performance optimizations
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+        drop_debugger: true,
+        pure_funcs: ['console.debug']
       }
     }
   },

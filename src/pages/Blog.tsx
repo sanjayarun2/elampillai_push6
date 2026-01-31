@@ -5,9 +5,12 @@ import { blogService } from '../services/blogService';
 import type { BlogPost } from '../types';
 import SEOHead from '../components/SEOHead';
 
+const INITIAL_LOAD_COUNT = 10; // Load only 10 posts initially for faster loading
+
 export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
   
   // FIX: Removed unused 'error' state to satisfy TypeScript
   // If you need to show an error UI later, add it back.
@@ -36,6 +39,10 @@ export default function Blog() {
     );
   }
 
+  // Show only a limited number of posts initially
+  const displayedPosts = posts.slice(0, displayCount);
+  const hasMore = posts.length > displayCount;
+
   return (
     // FIX: Reduced py-4 to py-1 for mobile to start immediately after header
     <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
@@ -57,7 +64,7 @@ export default function Blog() {
         <>
           {/* CONTAINER */}
           <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar">
-            {posts.map(post => (
+            {displayedPosts.map(post => (
               <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-start md:block">
                 <BlogCard post={post} />
                 
@@ -68,6 +75,19 @@ export default function Blog() {
               </div>
             ))}
           </div>
+          
+          {/* Load More Button for desktop */}
+          {hasMore && (
+            <div className="hidden md:flex justify-center mt-8">
+              <button
+                onClick={() => setDisplayCount(prev => prev + 10)}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                aria-label={`Load 10 more posts (${posts.length - displayCount} remaining)`}
+              >
+                Load More Posts
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
