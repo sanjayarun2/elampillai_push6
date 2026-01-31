@@ -143,6 +143,13 @@ export default function BlogPost() {
         }}
       />
 
+      {/* FIXED: Calling the button here. Since it is a Portal, it will stick to the screen corner immediately. */}
+      <ShareButton
+        title={post.title}
+        text={`Check out this post: ${post.title}`}
+        url={canonicalUrl}
+      />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <article className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="p-6">
@@ -153,12 +160,6 @@ export default function BlogPost() {
               >
                 ← Back to Blog
               </Link>
-              {/* This call is kept but will render in the portal (fixed) */}
-              <ShareButton
-                title={post.title}
-                text={`Check out this post: ${post.title}`}
-                url={canonicalUrl}
-              />
             </div>
 
             {post.image && (
@@ -197,7 +198,6 @@ export default function BlogPost() {
           <WhatsAppButton size="lg" showText={true} />
         </div>
 
-        {/* Comments Section */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Comments</h2>
           

@@ -1,5 +1,5 @@
 import React from 'react';
-import { createPortal } from 'react-dom'; // Import Portal
+import { createPortal } from 'react-dom';
 import { Share2 } from 'lucide-react';
 
 interface ShareButtonProps {
@@ -28,12 +28,11 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
     }
   };
 
-  // createPortal moves the button to the end of <body> so it's truly fixed
   return createPortal(
     <div className="fixed bottom-6 right-6 z-[9999] pointer-events-auto">
       <button
         onClick={handleShare}
-        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-2xl hover:bg-blue-700 transition-colors active:bg-blue-800"
+        className="inline-flex items-center px-4 py-3 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all hover:scale-105 active:scale-95"
         aria-label="Share"
       >
         <Share2 className="h-5 w-5 mr-2" />
