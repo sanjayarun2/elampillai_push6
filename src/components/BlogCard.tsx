@@ -38,10 +38,10 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* 2. CONTENT SECTION */}
-      <div className="relative pt-3 px-4 pb-5 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
-        <div className="pb-20">
-          {/* TITLE: Reduced size for mobile readability */}
-          <h2 className="text-[16px] leading-[1.35] font-bold text-[#2d2d2d] mb-2 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
+      <div className="relative pt-3 px-4 pb-2 md:p-6 flex flex-col h-[65%] md:h-full flex-grow overflow-y-auto bg-white">
+        <div className="pb-2 md:pb-20">
+          {/* TITLE: Further reduced size for mobile readability */}
+          <h2 className="text-[14px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
             {post.title}
           </h2>
 
@@ -51,15 +51,15 @@ export default function BlogCard({ post }: BlogCardProps) {
              {post.date}
           </div>
 
-          {/* BODY: Reduced size for mobile readability */}
-          <p className="text-[#44444d] text-[14px] leading-[1.5] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6 whitespace-pre-wrap">
+          {/* BODY: Further reduced size for mobile readability */}
+          <p className="text-[#44444d] text-[13px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6 whitespace-pre-wrap">
             {post.content}
           </p>
         </div>
 
         {/* 3. FOOTER / SHARE SECTION */}
-        {/* FIXED: Now sticky at bottom of visible area, always visible */}
-        <div className="sticky bottom-0 left-0 right-0 pt-3 pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        {/* Mobile: Absolute bottom. Desktop: Sticky within content */}
+        <div className="absolute md:sticky bottom-0 left-0 right-0 pt-2.5 pb-2 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
