@@ -16,7 +16,8 @@ export const blogService = {
       return result.rows as unknown as BlogPost[];
     } catch (error) {
       console.error('Error in getAll:', error);
-      // Return empty array instead of throwing to prevent app crashes
+      // Return empty array to prevent app crashes, but log the actual error
+      // This allows the app to remain functional even if database queries fail
       return [];
     }
   },
