@@ -82,6 +82,7 @@ export default function Blog() {
               <button
                 onClick={() => setDisplayCount(prev => prev + 10)}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                aria-label={`Load 10 more posts (${posts.length - displayCount} remaining)`}
               >
                 Load More Posts
               </button>
