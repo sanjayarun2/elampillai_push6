@@ -43,7 +43,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         <div className="flex-1 overflow-y-auto pt-3 px-4 md:p-6">
           <div className="pb-2 md:pb-20">
             {/* TITLE: Increased size for better readability (InShorts style) */}
-            <h2 className="text-[16px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
+            <h2 className="text-[18px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
               {post.title}
             </h2>
 
@@ -62,7 +62,7 @@ export default function BlogCard({ post }: BlogCardProps) {
 
         {/* 3. FOOTER / SHARE SECTION */}
         {/* Mobile: Fixed at bottom (flex-none). Desktop: Sticky within content */}
-        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-2 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-0 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
