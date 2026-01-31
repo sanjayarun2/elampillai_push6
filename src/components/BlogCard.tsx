@@ -62,7 +62,7 @@ export default function BlogCard({ post }: BlogCardProps) {
 
         {/* 3. FOOTER / SHARE SECTION */}
         {/* Mobile: Fixed at bottom (flex-none). Desktop: Sticky within content */}
-        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-0 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-3 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
               className="flex items-center gap-2 active:opacity-70 transition-opacity"
