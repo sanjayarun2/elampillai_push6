@@ -16,7 +16,8 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    <article className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[calc(100vh-128px)] md:h-[280px] w-full transition-shadow hover:shadow-lg">
+    /* FIXED: Mobile height changed to h-[calc(100vh-64px)] to reach the bottom of the phone. Desktop stays md:h-[280px] */
+    <article className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[280px] w-full transition-shadow hover:shadow-lg">
       
       {/* 1. IMAGE SECTION */}
       {/* Mobile: Height 35%. Desktop: Fixed width 350px. */}
@@ -42,7 +43,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         {/* Scrollable content area - stops before share button */}
         <div className="flex-1 overflow-y-auto pt-3 px-4 md:p-6">
           <div className="pb-2 md:pb-20">
-            {/* TITLE: Increased size for better readability (InShorts style) */}
+            {/* TITLE: InShorts style header */}
             <h2 className="text-[18px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
               {post.title}
             </h2>
@@ -52,15 +53,15 @@ export default function BlogCard({ post }: BlogCardProps) {
                {post.date}
             </div>
 
-            {/* BODY: Changed to text-justify for full justification on all screens */}
-            <p className="text-[#44444d] text-[15px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
+            {/* BODY: Fully justified (text-justify) and increased font sizes */}
+            <p className="text-[#44444d] text-[15px] leading-[1.5] font-light md:text-[18px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
         </div>
 
         {/* 3. FOOTER / SHARE SECTION */}
-        {/* Mobile: Fixed at bottom (flex-none). Desktop: Sticky within content */}
+        {/* Mobile: Fixed at bottom. Desktop: Sticky within content */}
         <div className="flex-none md:sticky bottom-0 pt-2.5 pb-3 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
