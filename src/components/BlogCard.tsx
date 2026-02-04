@@ -52,24 +52,24 @@ export default function BlogCard({ post }: BlogCardProps) {
                {post.date}
             </div>
 
-            {/* BODY: Fully Justified Text */}
+            {/* BODY: Fully Justified Text & Size 16px/18px */}
             <p className="text-[#44444d] text-[16px] leading-[1.6] font-light md:text-[18px] md:leading-[1.7] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
 
-          {/* 3. STICKY WHATSAPP BUTTON: Styled as a real floating action button */}
+          {/* 3. STICKY WHATSAPP BUTTON: Original Source Style */}
           <div className="sticky bottom-10 float-right z-30 ml-4 mb-2">
               <button 
                 onClick={handleShare}
-                className="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] rounded-full shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] active:scale-90 transition-all duration-200 border-2 border-white"
+                className="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 active:scale-90 transition-transform"
                 aria-label="Share on WhatsApp"
               >
-                {/* Clean Image Icon for WhatsApp */}
+                {/* Original WhatsApp Branding Icon */}
                 <img 
                   src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
-                  alt="WA" 
-                  className="w-8 h-8 brightness-0 invert" 
+                  alt="WhatsApp" 
+                  className="w-12 h-12 block" 
                 />
               </button>
           </div>
