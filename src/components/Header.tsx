@@ -8,12 +8,14 @@ export default function Header() {
   return (
     <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        {/* Adjusted padding: py-2 on mobile, py-4 on desktop */}
+        <div className="flex justify-between items-center py-2 md:py-4">
           <NavLink to="/" className="flex items-center space-x-2">
-            <MapPin className="h-6 w-6" />
+            <MapPin className="h-5 w-5 md:h-6 md:w-6" />
             <div>
-              <h1 className="text-2xl font-bold">இளம்பிள்ளை</h1>
-              <div className="text-xs">
+              {/* Adjusted text size: text-xl on mobile, md:text-2xl on desktop */}
+              <h1 className="text-xl md:text-2xl font-bold">இளம்பிள்ளை</h1>
+              <div className="text-[10px] md:text-xs">
                 <span>Elampillai, Tamil Nadu 637502</span>
               </div>
             </div>
@@ -30,7 +32,7 @@ export default function Header() {
           {/* Mobile menu button */}
           <button 
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden"
+            className="md:hidden p-1"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -38,7 +40,7 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4">
+          <div className="md:hidden py-4 border-t border-blue-500/30">
             <div className="flex flex-col space-y-4">
               <NavLink to="/" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Home</NavLink>
               <NavLink to="/shops" className={({isActive}) => isActive ? "text-yellow-200" : "hover:text-yellow-200 transition"} onClick={() => setIsOpen(false)}>Shops</NavLink>
