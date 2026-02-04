@@ -16,7 +16,7 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    /* FIXED: Mobile height changed to h-[calc(100vh-64px)] to reach the bottom of the phone. Desktop stays md:h-[280px] */
+    /* MOBILE FIX: height set to h-[calc(100vh-64px)] to reach bottom. DESKTOP remains md:h-[280px] */
     <article className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[280px] w-full transition-shadow hover:shadow-lg">
       
       {/* 1. IMAGE SECTION */}
@@ -40,10 +40,10 @@ export default function BlogCard({ post }: BlogCardProps) {
 
       {/* 2. CONTENT SECTION */}
       <div className="relative flex flex-col h-[65%] md:h-full flex-grow bg-white">
-        {/* Scrollable content area - stops before share button */}
+        {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto pt-3 px-4 md:p-6">
           <div className="pb-2 md:pb-20">
-            {/* TITLE: InShorts style header */}
+            {/* TITLE */}
             <h2 className="text-[18px] leading-[1.3] font-bold text-[#2d2d2d] mb-1.5 font-sans md:text-[22px] md:mb-3 md:font-light md:text-[#44444d] md:leading-tight">
               {post.title}
             </h2>
@@ -53,19 +53,19 @@ export default function BlogCard({ post }: BlogCardProps) {
                {post.date}
             </div>
 
-            {/* BODY: Fully justified (text-justify) and increased font sizes */}
-            <p className="text-[#44444d] text-[15px] leading-[1.5] font-light md:text-[18px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
+            {/* BODY: Fully justified, size increased to 16px (mobile) / 18px (desktop) */}
+            <p className="text-[#44444d] text-[16px] leading-[1.5] font-light md:text-[18px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
         </div>
 
         {/* 3. FOOTER / SHARE SECTION */}
-        {/* Mobile: Fixed at bottom. Desktop: Sticky within content */}
-        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-3 px-4 md:pt-3 md:pb-2 flex justify-end items-end w-full bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        {/* FIX: Removed w-full to prevent button stretching; kept justify-end to align right */}
+        <div className="flex-none md:sticky bottom-0 pt-2.5 pb-3 px-4 md:pt-3 md:pb-2 flex justify-end items-end bg-white/95 backdrop-blur-sm border-t border-gray-100">
             <button 
               onClick={handleShare}
-              className="flex items-center gap-2 active:opacity-70 transition-opacity"
+              className="flex items-center gap-2 active:opacity-70 transition-opacity px-2 py-1"
             >
               <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wide">Share</span>
               {/* WhatsApp Logo SVG */}
