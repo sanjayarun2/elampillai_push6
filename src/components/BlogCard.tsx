@@ -16,8 +16,8 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    /* MOBILE: Full Screen Height. DESKTOP: Fixed Height. */
-    <article className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[280px] w-full transition-shadow hover:shadow-lg">
+    /* MOBILE: Height reduced to -135px to clear both top header and bottom NAV bar. DESKTOP: Fixed h-[280px] */
+    <article className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[calc(100vh-135px)] md:h-[280px] w-full transition-shadow hover:shadow-lg">
       
       {/* 1. IMAGE SECTION */}
       <div className="relative h-[35%] md:h-full w-full md:w-[350px] flex-shrink-0 bg-gray-50">
@@ -52,24 +52,24 @@ export default function BlogCard({ post }: BlogCardProps) {
                {post.date}
             </div>
 
-            {/* BODY: Fully Justified Text & Size 16px/18px */}
+            {/* BODY: Fully Justified Text & Sizes 16px (Mobile) / 18px (Desktop) */}
             <p className="text-[#44444d] text-[16px] leading-[1.6] font-light md:text-[18px] md:leading-[1.7] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
 
-          {/* 3. STICKY WHATSAPP BUTTON: Original Source Style */}
-          <div className="sticky bottom-10 float-right z-30 ml-4 mb-2">
+          {/* 3. STICKY WHATSAPP BUTTON: Latched slightly above the bottom-right */}
+          <div className="sticky bottom-6 float-right z-30 ml-4 mb-2">
               <button 
                 onClick={handleShare}
-                className="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 active:scale-90 transition-transform"
+                className="flex items-center justify-center active:scale-90 transition-transform hover:opacity-90"
                 aria-label="Share on WhatsApp"
               >
-                {/* Original WhatsApp Branding Icon */}
+                {/* Original Official WhatsApp Icon Source */}
                 <img 
                   src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
                   alt="WhatsApp" 
-                  className="w-12 h-12 block" 
+                  className="w-12 h-12 block drop-shadow-md" 
                 />
               </button>
           </div>
