@@ -53,7 +53,7 @@ export default function BlogCard({ post }: BlogCardProps) {
             </div>
 
             {/* BODY: Changed to text-justify for full justification on all screens */}
-            <p className="text-[#44444d] text-[13px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
+            <p className="text-[#44444d] text-[15px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
