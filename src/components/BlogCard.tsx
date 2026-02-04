@@ -48,13 +48,12 @@ export default function BlogCard({ post }: BlogCardProps) {
             </h2>
 
             {/* META (Desktop Only) */}
-            {/* REMOVED 'short' and 'Admin' text. Shows only Date. */}
             <div className="hidden md:block text-[12px] text-[#80808b] mb-3">
                {post.date}
             </div>
 
-            {/* BODY: Text size remains unchanged as requested */}
-            <p className="text-[#44444d] text-[13px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] md:text-justify md:line-clamp-6 whitespace-pre-wrap">
+            {/* BODY: Changed to text-justify for full justification on all screens */}
+            <p className="text-[#44444d] text-[13px] leading-[1.45] font-light md:text-[16px] md:leading-[1.6] text-justify md:line-clamp-6 whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
