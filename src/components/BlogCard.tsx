@@ -35,7 +35,7 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* 2. CONTENT SECTION (50%) */}
-      <div className="h-[50%] w-full flex flex-col p-5 overflow-hidden relative">
+      <div className="h-[60%] w-full flex flex-col p-5 overflow-hidden relative">
         <h2 className="text-[20px] leading-tight font-bold text-[#2d2d2d] mb-3">
           {post.title}
         </h2>
