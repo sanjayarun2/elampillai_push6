@@ -112,8 +112,8 @@ export default function BlogPost() {
       <SEOHead
         title={post.title}
         description={post.content.substring(0, 155)}
-        image={post.image_url} // <--- Make sure this is the news image from Turso
-       url={window.location.href} // <--- This provides the slug
+        image={post.image} // <--- Make sure this is the news image from Turso
+       url={canonicalUrl} // <--- This provides the slug
         type="article"
         keywords={`${post.title}, Elampillai news, community updates, ${post.author}`}
         schema={{
@@ -189,7 +189,10 @@ export default function BlogPost() {
             </div>
 
             <div className="flex justify-between items-center border-t pt-6">
-              <WhatsAppButton size="lg" />
+              <WhatsAppButton 
+  size="lg" 
+  url={canonicalUrl} 
+  title={post.title}>
             </div>
           </div>
         </article>
