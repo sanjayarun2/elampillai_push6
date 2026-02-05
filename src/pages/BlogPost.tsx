@@ -190,9 +190,9 @@ export default function BlogPost() {
 
             <div className="flex justify-between items-center border-t pt-6">
               <WhatsAppButton 
-  size="lg" 
-  url={canonicalUrl} 
-  title={post.title}>
+                size="lg" 
+                url={canonicalUrl} 
+                title={post.title}>
             </div>
           </div>
         </article>
