@@ -192,13 +192,18 @@ export default function BlogPost() {
               <WhatsAppButton 
                 size="lg" 
                 url={canonicalUrl} 
-                title={post.title}>
+                title={post.title}/>
             </div>
           </div>
         </article>
 
         <div className="mt-8 text-center">
-          <WhatsAppButton size="lg" showText={true} />
+          <WhatsAppButton 
+  size="lg" 
+  showText={true} 
+  url={canonicalUrl} 
+  title={post.title} 
+/>
         </div>
 
         <div className="mt-8">
