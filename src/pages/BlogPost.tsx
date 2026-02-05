@@ -105,8 +105,10 @@ export default function BlogPost() {
     );
   }
 
-  const canonicalUrl = `${window.location.origin}/blog/${id}`;
-
+const canonicalUrl = post?.slug 
+  ? `${window.location.origin}/blog/${post.slug}` 
+  : window.location.href;
+  
   return (
     <>
       <SEOHead
