@@ -10,9 +10,14 @@ export default function BlogCard({ post }: BlogCardProps) {
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    const text = `${post.title} - Read more on Elampillai News`;
-    const url = window.location.href;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+    // 1. Generate the correct link to the specific news post
+    const postUrl = `${window.location.origin}/blog/${post.slug}`;
+    
+    // 2. Tamil message for Elampillai News with Bold title
+    const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
+    
+    // 3. Open WhatsApp with the dynamic post URL
+    window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
   };
 
   return (
