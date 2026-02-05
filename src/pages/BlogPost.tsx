@@ -192,7 +192,8 @@ export default function BlogPost() {
               <WhatsAppButton 
                 size="lg" 
                 url={canonicalUrl} 
-                title={post.title}/>
+                title={post.title}
+              />
             </div>
           </div>
         </article>
