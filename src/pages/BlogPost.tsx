@@ -104,11 +104,11 @@ export default function BlogPost() {
       </div>
     );
   }
+// Since your BlogPost interface only has 'id' and not 'slug', we must use 'id'.
+const canonicalUrl = post?.id 
+  ? `${window.location.origin}/blog/${post.id}` 
+  : `${window.location.origin}/blog/${id}`;
 
-const canonicalUrl = post?.slug 
-  ? `${window.location.origin}/blog/${post.slug}` 
-  : window.location.href;
-  
   return (
     <>
       <SEOHead

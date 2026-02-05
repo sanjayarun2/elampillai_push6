@@ -11,7 +11,7 @@ export default function BlogCard({ post }: BlogCardProps) {
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     // 1. Generate the correct link to the specific news post
-    const postUrl = `${window.location.origin}/blog/${post.slug}`;
+    const postUrl = `${window.location.origin}/blog/${post.id}`;
     
     // 2. Tamil message for Elampillai News with Bold title
     const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
