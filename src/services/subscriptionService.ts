@@ -26,8 +26,8 @@ export const subscriptionService = {
 
     try {
       await turso.execute({
-        sql: `INSERT INTO subscriptions (endpoint, keys) VALUES (?, ?) 
-              ON CONFLICT(endpoint) DO UPDATE SET keys = ?, created_at = CURRENT_TIMESTAMP`,
+       sql: `INSERT INTO subscriptions (endpoint, keys, created_at) VALUES (?, ?, datetime('now', '+5 hours', '30 minutes')) 
+      ON CONFLICT(endpoint) DO UPDATE SET keys = ?, created_at = datetime('now', '+5 hours', '30 minutes')`,
         args: [endpoint, JSON.stringify(keys), JSON.stringify(keys)],
       });
       return { success: true };
