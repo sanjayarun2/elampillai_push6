@@ -18,7 +18,7 @@ export default function BlogCard({ post }: BlogCardProps) {
   return (
     <article className="bg-white overflow-hidden flex flex-col h-[calc(100vh-80px)] w-full max-w-2xl mx-auto shadow-lg">
       
-      {/* 1. IMAGE SECTION (30%) */}
+      {/* 1. IMAGE SECTION (Strict 30%) */}
       <div className="h-[30%] w-full flex-shrink-0 bg-gray-100 relative">
         {post.image ? (
           <img 
@@ -34,20 +34,24 @@ export default function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
 
-      {/* 2. CONTENT SECTION (50%) */}
-      <div className="h-[60%] w-full flex flex-col p-5 overflow-hidden relative">
-        <h2 className="text-[20px] leading-tight font-bold text-[#2d2d2d] mb-3">
-          {post.title}
-        </h2>
+      {/* 2. CONTENT SECTION (70%) */}
+      <div className="flex-1 w-full flex flex-col overflow-hidden relative">
         
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
-          <p className="text-[#44444d] text-[16px] leading-[1.6] font-light text-justify whitespace-pre-wrap">
+        {/* px-1 strictly reduces side margins for maximum width */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-1 pt-3">
+          {/* Reduced Title Font to 18px */}
+          <h2 className="text-[18px] leading-tight font-bold text-[#2d2d2d] mb-2 px-1">
+            {post.title}
+          </h2>
+          
+          {/* Reduced Content Font to 15px */}
+          <p className="text-[#44444d] text-[15px] leading-[1.5] font-light text-left whitespace-pre-wrap px-1 pb-16">
             {post.content}
           </p>
         </div>
 
-        {/* Floating WhatsApp Button inside Content Area */}
-        <div className="absolute bottom-4 right-4 z-10">
+        {/* Floating WhatsApp Button */}
+        <div className="absolute bottom-5 right-3 z-10">
           <button 
             onClick={handleShare}
             className="active:scale-90 transition-transform"
@@ -56,18 +60,10 @@ export default function BlogCard({ post }: BlogCardProps) {
             <img 
               src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
               alt="WhatsApp" 
-              className="w-12 h-12 drop-shadow-lg" 
+              className="w-11 h-11 drop-shadow-md" 
             />
           </button>
         </div>
-      </div>
-
-      {/* 3. AD SPACE SECTION (20%) */}
-      <div className="h-[10%] w-full bg-gray-50  flex items-center justify-center">
-        <span className="text-gray-400 text-sm font-medium uppercase tracking-widest">
-          Advertisement Space
-        </span>
-        {/* Place your Ad component or script here */}
       </div>
 
     </article>
