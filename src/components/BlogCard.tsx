@@ -63,7 +63,7 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* 3. AD SPACE SECTION (20%) */}
-      <div className="h-[20%] w-full bg-gray-50 border-t border-gray-100 flex items-center justify-center">
+      <div className="h-[10%] w-full bg-gray-50 border-t border-gray-100 flex items-center justify-center">
         <span className="text-gray-400 text-sm font-medium uppercase tracking-widest">
           Advertisement Space
         </span>
