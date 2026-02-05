@@ -112,8 +112,8 @@ export default function BlogPost() {
       <SEOHead
         title={post.title}
         description={post.content.substring(0, 155)}
-        image={post.image}
-        url={canonicalUrl}
+        image={post.image_url} // <--- Make sure this is the news image from Turso
+       url={window.location.href} // <--- This provides the slug
         type="article"
         keywords={`${post.title}, Elampillai news, community updates, ${post.author}`}
         schema={{

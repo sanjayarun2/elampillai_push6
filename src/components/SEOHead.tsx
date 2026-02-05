@@ -29,6 +29,8 @@ export default function SEOHead({
   const siteName = 'Elampillai Community';
   const fullTitle = `${title} - ${siteName}`;
   const canonicalUrl = new URL(url).origin + new URL(url).pathname;
+// Ensure image has the full domain prefix
+const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;;
 
   return (
     <Helmet>
@@ -43,7 +45,8 @@ export default function SEOHead({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={fullImageurl} />
+      <meta property="og:image:secure_url" content={fullImageurl} />
       <meta property="og:site_name" content={siteName} />
       {author && <meta property="article:author" content={author} />}
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
