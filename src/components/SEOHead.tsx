@@ -30,7 +30,7 @@ export default function SEOHead({
   const fullTitle = `${title} - ${siteName}`;
   const canonicalUrl = new URL(url).origin + new URL(url).pathname;
 // Ensure image has the full domain prefix
-const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;;
+const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;
 
   return (
     <Helmet>
