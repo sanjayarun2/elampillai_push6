@@ -49,10 +49,15 @@ export default function Blog() {
   }, [loading, posts]);
 
   // Shared share logic for the fixed mobile button
-  // FIX: Updated to use a Hash (#) so the link opens the main feed and jumps to the card
+  // FIX: Proper slug generation that preserves Tamil characters for a readable URL
   const handleShare = (post: BlogPost) => {
-    const postUrl = `${window.location.origin}/blog#post-${post.id}`;
-    const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
+    const slug = post.title
+      .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') // Keep Tamil characters and Alphanumeric
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .trim();
+      
+    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(slug)}#post-${post.id}`;
+    const tamilText = `*${post.title}*\n\n`;
     window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
   };
 
