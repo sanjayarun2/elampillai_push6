@@ -1,9 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, MapPin } from 'lucide-react';
 
 export default function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const location = useLocation();
+
+  // Check if current path is the blog/news page
+  const isBlogPage = location.pathname.startsWith('/blog');
 
   return (
     <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
@@ -13,8 +17,10 @@ export default function Header() {
           <NavLink to="/" className="flex items-center space-x-2">
             <MapPin className="h-5 w-5 md:h-6 md:w-6" />
             <div>
-              {/* Adjusted text size: text-xl on mobile, md:text-2xl on desktop */}
-              <h1 className="text-xl md:text-2xl font-bold">இளம்பிள்ளை</h1>
+              {/* Dynamic Title: Changes to 'News' title only on the blog page */}
+              <h1 className="text-xl md:text-2xl font-bold">
+                {isBlogPage ? "இளம்பிள்ளை செய்திகள்" : "இளம்பிள்ளை"}
+              </h1>
               <div className="text-[10px] md:text-xs">
                 <span>Elampillai, Tamil Nadu 637502</span>
               </div>
