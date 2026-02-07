@@ -16,7 +16,8 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    <article className="bg-white overflow-hidden flex flex-col h-[calc(100vh-80px)] w-full max-w-2xl mx-auto shadow-lg">
+    /* Changed height to 85vh to ensure 15% space for footer on all mobile screens */
+    <article className="bg-white overflow-hidden flex flex-col h-[85vh] w-full max-w-2xl mx-auto shadow-lg">
       
       {/* 1. IMAGE SECTION (Strict 30%) */}
       <div className="h-[30%] w-full flex-shrink-0 bg-gray-100 relative">
