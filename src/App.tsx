@@ -30,7 +30,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/shops" element={<Shops />} />
-              {/* FIX: Ensure specific blog ID route is checked before the wildcard blog route */}
+              {/* FIX: Priority routing for blog IDs to ensure social media crawlers fetch correct metadata */}
               <Route path="/blog/:id" element={<BlogPost />} />
               <Route path="/blog/*" element={<Blog />} />
               <Route path="/marketplace" element={<Marketplace />} />

@@ -25,11 +25,16 @@ export default function Blog() {
         const postsData = Array.isArray(data) ? data : [];
         setPosts(postsData);
         
-        // FIX: Prioritize setting active post from URL hash for social media crawlers
+        // FIX: Prioritize setting active post from URL query or hash for social media crawlers
+        const urlParams = new URLSearchParams(window.location.search);
+        const postIdFromQuery = urlParams.get('id');
         const hash = window.location.hash;
-        if (hash && hash.startsWith('#post-')) {
-          const postId = hash.replace('#post-', '');
-          const foundPost = postsData.find(p => p.id === postId);
+        
+        // Bots prefer query params over hashes
+        const targetId = postIdFromQuery || (hash.startsWith('#post-') ? hash.replace('#post-', '') : null);
+        
+        if (targetId) {
+          const foundPost = postsData.find(p => p.id === targetId);
           if (foundPost) {
             setActivePost(foundPost);
           } else if (postsData.length > 0) {
@@ -81,8 +86,9 @@ export default function Blog() {
       .replace(/\s+/g, '-');
       
     // 2. Construct URL - Point directly to the blog page with the hash anchor
-    // FIX: Using /blog/ before the slug to match common routing patterns while keeping the #post-id anchor
-    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}#post-${post.id}`;
+    // FIX: Using query param (?id=) alongside the hash fragment. 
+    // This makes the URL unique for WhatsApp while keeping the scroll functionality for the user.
+    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}?id=${post.id}#post-${post.id}`;
     
     // 3. Construct the message with bold title and the slug text for visual appeal
     const message = `*${post.title}*\n\n${postUrl}`;

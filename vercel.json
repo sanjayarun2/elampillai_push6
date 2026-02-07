@@ -43,7 +43,11 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/blog/:slug",
+      "source": "/blog/:id",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/(.*)",
       "destination": "/index.html"
     },
     {
