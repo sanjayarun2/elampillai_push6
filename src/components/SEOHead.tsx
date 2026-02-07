@@ -40,6 +40,11 @@ export default function SEOHead({
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={canonicalUrl} />
 
+      {/* FIX: Schema.org markup for Google+ / WhatsApp explicitly */}
+      <meta itemprop="name" content={fullTitle} />
+      <meta itemprop="description" content={description} />
+      <meta itemprop="image" content={fullImageurl} />
+
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
