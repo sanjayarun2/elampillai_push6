@@ -1,7 +1,7 @@
 import { createClient } from '@libsql/client/web';
 
 export const config = {
-  // Broadened matcher to ensure the middleware catches relevant traffic
+  // Capture both specific blog paths and the root for bot detection
   matcher: ['/blog/:path*', '/'],
 };
 
@@ -9,15 +9,11 @@ export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
   
-  // 1. Detect social media bots that scrape for preview cards
-  // FIX: Updated regex to include Facebot and Meta-ExternalAgent for better WhatsApp/Facebook detection
+  // Expanded bot detection for modern Meta and WhatsApp crawlers
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
-  // DEBUG LOGGING: View these in Vercel Dashboard > Logs
-  console.log(`[Middleware] Request to: ${url.pathname} | isBot: ${isBot} | postId: ${postId} | UA: ${userAgent}`);
-
-  // 2. If a bot is visiting a blog link with an ID, fetch dynamic data from Turso
+  // Server-side injection for social media bots
   if (isBot && postId) {
     try {
       const db = createClient({
@@ -25,7 +21,6 @@ export default async function middleware(request: Request) {
         authToken: process.env.VITE_TURSO_AUTH_TOKEN || '',
       });
 
-      // Query the specific blog post from your 'blogs' table
       const result = await db.execute({
         sql: "SELECT title, content, image FROM blogs WHERE id = ?",
         args: [postId]
@@ -37,7 +32,6 @@ export default async function middleware(request: Request) {
         const description = String(post.content || "").substring(0, 150).replace(/[#*]/g, '') + "...";
         const image = String(post.image || "https://elampillai.in/og-image.jpg");
 
-        // 3. Return a minimal HTML page with only the SEO tags the bot needs
         return new Response(
           `<!DOCTYPE html>
           <html>
@@ -50,30 +44,16 @@ export default async function middleware(request: Request) {
               <meta property="og:url" content="${url.href}">
               <meta property="og:type" content="article">
               <meta name="twitter:card" content="summary_large_image">
-              <meta name="twitter:title" content="${title}">
-              <meta name="twitter:image" content="${image}">
             </head>
-            <body>Redirecting to Elampillai News...</body>
+            <body>Redirecting...</body>
           </html>`,
-          {
-            headers: { 
-              'content-type': 'text/html; charset=UTF-8',
-              'x-middleware-debug': 'bot-intercepted',
-              'x-post-id': postId 
-            },
-          }
+          { headers: { 'content-type': 'text/html; charset=UTF-8' } }
         );
-      } else {
-        console.warn(`[Middleware] No post found for ID: ${postId}`);
       }
     } catch (e) {
-      console.error("Middleware Turso fetch failed:", e);
+      console.error("Middleware fetch error:", e);
     }
   }
 
-  // 4. For real users (not bots), continue to the React app normally
-  const response = await fetch(request);
-  const newResponse = new Response(response.body, response);
-  newResponse.headers.set('x-middleware-debug', isBot ? 'bot-not-intercepted' : 'human-user');
-  return newResponse;
+  return fetch(request);
 }
