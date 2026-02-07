@@ -8,15 +8,8 @@ interface BlogCardProps {
 export default function BlogCard({ post }: BlogCardProps) {
   if (!post) return null;
 
-  const handleShare = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const postUrl = `${window.location.origin}/blog/${post.id}`;
-    const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
-  };
-
   return (
-    /* Changed height to 88vh to ensure 12% space for footer; relative ensures button pins to card */
+    /* Changed height to 88vh to ensure 12% space for footer */
     <article className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg relative">
       
       {/* 1. IMAGE SECTION (Strict 30%) */}
@@ -49,24 +42,6 @@ export default function BlogCard({ post }: BlogCardProps) {
           <p className="text-[#44444d] text-[15px] leading-[1.5] font-light text-left whitespace-pre-wrap px-1 pb-16">
             {post.content}
           </p>
-        </div>
-      </div>
-
-      {/* STICKY: Floating WhatsApp Button is a direct child of article and outside the scrolling container */}
-      {/* Added inset-0 pointer-events-none container to force layering to the front */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute bottom-6 right-3 z-50 pointer-events-auto">
-          <button 
-            onClick={handleShare}
-            className="active:scale-90 transition-transform"
-            aria-label="Share"
-          >
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
-              alt="WhatsApp" 
-              className="w-11 h-11 drop-shadow-md" 
-            />
-          </button>
         </div>
       </div>
 
