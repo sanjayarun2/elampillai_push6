@@ -29,8 +29,8 @@ export default function SEOHead({
   const siteName = 'Elampillai Community';
   const fullTitle = `${title} - ${siteName}`;
   const canonicalUrl = new URL(url).origin + new URL(url).pathname;
-// Ensure image has the full domain prefix
-const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;
+  // Ensure image has the full domain prefix
+  const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;
 
   return (
     <Helmet>
@@ -57,13 +57,14 @@ const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}$
       <meta name="twitter:url" content={canonicalUrl} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      {/* FIX: Use fullImageurl for Twitter to ensure previews load correctly */}
+      <meta name="twitter:image" content={fullImageurl} />
 
-      {/* WhatsApp */}
+      {/* WhatsApp / Meta App Optimization */}
       <meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:locale" content="en_IN" />
+      <meta property="og:locale" content="ta_IN" />
 
       {/* Additional SEO */}
       <meta name="robots" content="index, follow, max-image-preview:large" />
