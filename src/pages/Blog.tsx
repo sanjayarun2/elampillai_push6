@@ -32,6 +32,13 @@ export default function Blog() {
     fetchPosts();
   }, []);
 
+  // Shared share logic for the fixed mobile button
+  const handleShare = (post: BlogPost) => {
+    const postUrl = `${window.location.origin}/blog/${post.id}`;
+    const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="max-w-[888px] mx-auto px-4 py-8 flex justify-center">
@@ -46,7 +53,7 @@ export default function Blog() {
 
   return (
     // FIX: Added pb-[12vh] to create a consistent 12% gap at the bottom for the footer
-    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white overflow-hidden">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
@@ -73,6 +80,21 @@ export default function Blog() {
               <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-stretch md:block">
                 <BlogCard post={post} />
                 
+                {/* MOBILE FIXED WHATSAPP BUTTON (Pinned to viewport bottom right, clearing footer) */}
+                <div className="md:hidden absolute bottom-6 right-4 z-[60]">
+                  <button 
+                    onClick={() => handleShare(post)}
+                    className="active:scale-90 transition-transform"
+                    aria-label="Share"
+                  >
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+                      alt="WhatsApp" 
+                      className="w-11 h-11 drop-shadow-md" 
+                    />
+                  </button>
+                </div>
+
                 {/* MOBILE SWIPE ARROW ICON (Overlaid on the image area, Top-Right) */}
                 <div className="md:hidden absolute top-[15%] right-4 z-50 pointer-events-none animate-pulse text-white/90 drop-shadow-md">
                     <ArrowRightCircle size={32} strokeWidth={1.5} fill="rgba(0,0,0,0.3)" />
