@@ -52,8 +52,8 @@ export default function Blog() {
   const hasMore = posts.length > displayCount;
 
   return (
-    // FIX: Added overscroll-behavior-none to prevent image sliding behind header on mobile bounce
-    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white overflow-hidden overscroll-none">
+    // FIX: Added touch-none (mobile) and overscroll-none to lock the card position against the header
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white overflow-hidden overscroll-none touch-none md:touch-auto">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
@@ -75,7 +75,7 @@ export default function Blog() {
       ) : (
         <>
           {/* CONTAINER */}
-          <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar overscroll-x-none">
+          <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar overscroll-x-none touch-pan-x">
             {displayedPosts.map(post => (
               <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-stretch md:block">
                 <BlogCard post={post} />

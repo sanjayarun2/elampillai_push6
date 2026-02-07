@@ -32,7 +32,8 @@ export default function BlogCard({ post }: BlogCardProps) {
       <div className="flex-1 w-full flex flex-col overflow-hidden relative z-10 bg-white">
         
         {/* px-1 strictly reduces side margins for maximum width */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide px-1 pt-3">
+        {/* FIX: Added overscroll-contain to isolate scroll momentum and prevent the card from pulling under the header */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-1 pt-3 overscroll-contain">
           {/* Reduced Title Font to 18px */}
           <h2 className="text-[18px] leading-tight font-bold text-[#2d2d2d] mb-2 px-1">
             {post.title}
