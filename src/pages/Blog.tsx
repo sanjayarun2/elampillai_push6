@@ -49,16 +49,22 @@ export default function Blog() {
   }, [loading, posts]);
 
   // Shared share logic for the fixed mobile button
-  // FIX: Proper slug generation that preserves Tamil characters for a readable URL
+  // FIX: Refined slug generation to keep Tamil characters readable in the URL link
   const handleShare = (post: BlogPost) => {
-    const slug = post.title
-      .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') // Keep Tamil characters and Alphanumeric
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .trim();
+    // 1. Create a readable slug by only replacing spaces and removing problematic symbols
+    const readableSlug = post.title
+      .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') 
+      .trim()
+      .replace(/\s+/g, '-');
       
-    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(slug)}#post-${post.id}`;
-    const tamilText = `*${post.title}*\n\n`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
+    // 2. Construct URL - WhatsApp will automatically handle the Tamil characters if the text itself isn't fully URI encoded
+    const postUrl = `${window.location.origin}/blog/${readableSlug}#post-${post.id}`;
+    
+    // 3. Construct the message with bold title
+    const message = `*${post.title}*\n\n${postUrl}`;
+    
+    // 4. Encode the final message for the wa.me link
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   if (loading) {
