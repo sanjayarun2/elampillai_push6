@@ -24,8 +24,20 @@ export default function Blog() {
         // Ensure we always have an array
         const postsData = Array.isArray(data) ? data : [];
         setPosts(postsData);
-        // Set initial active post for SEO
-        if (postsData.length > 0) setActivePost(postsData[0]);
+        
+        // FIX: Prioritize setting active post from URL hash for social media crawlers
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#post-')) {
+          const postId = hash.replace('#post-', '');
+          const foundPost = postsData.find(p => p.id === postId);
+          if (foundPost) {
+            setActivePost(foundPost);
+          } else if (postsData.length > 0) {
+            setActivePost(postsData[0]);
+          }
+        } else if (postsData.length > 0) {
+          setActivePost(postsData[0]);
+        }
       } catch (err) {
         console.error('Error loading posts:', err);
         setError('Failed to load posts. Please try again later.');
@@ -69,8 +81,8 @@ export default function Blog() {
       .replace(/\s+/g, '-');
       
     // 2. Construct URL - Point directly to the blog page with the hash anchor
-    // Removing the extra /blog/ slug segment from the URL path to ensure the router lands on the feed
-    const postUrl = `${window.location.origin}/blog#post-${post.id}`;
+    // FIX: Using /blog/ before the slug to match common routing patterns while keeping the #post-id anchor
+    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}#post-${post.id}`;
     
     // 3. Construct the message with bold title and the slug text for visual appeal
     const message = `*${post.title}*\n\n${postUrl}`;
@@ -119,7 +131,7 @@ export default function Blog() {
           {/* CONTAINER */}
           <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar overscroll-x-none touch-pan-x">
             {displayedPosts.map(post => (
-              <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-stretch md:block">
+              <div key={post.id} id={`post-${post.id}`} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-stretch md:block">
                 <BlogCard post={post} />
                 
                 {/* MOBILE FIXED WHATSAPP BUTTON (Pinned to viewport bottom right, clearing footer) */}
