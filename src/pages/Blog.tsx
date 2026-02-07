@@ -32,9 +32,26 @@ export default function Blog() {
     fetchPosts();
   }, []);
 
+  // FIX: Added Effect to auto-scroll to a specific post if the URL contains a hash (e.g., #post-123)
+  useEffect(() => {
+    if (!loading && posts.length > 0) {
+      const hash = window.location.hash;
+      if (hash) {
+        // Timeout ensures the DOM is fully rendered before jumping
+        setTimeout(() => {
+          const targetElement = document.querySelector(hash);
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 100);
+      }
+    }
+  }, [loading, posts]);
+
   // Shared share logic for the fixed mobile button
+  // FIX: Updated to use a Hash (#) so the link opens the main feed and jumps to the card
   const handleShare = (post: BlogPost) => {
-    const postUrl = `${window.location.origin}/blog/${post.id}`;
+    const postUrl = `${window.location.origin}/blog#post-${post.id}`;
     const tamilText = `*${post.title}*\n\nதினசரி இளம்பிள்ளை செய்திகளை உடனுக்குடன் தெரிந்து கொள்ள கிளிக் செய்யவும்:\n\n`;
     window.open(`https://wa.me/?text=${encodeURIComponent(tamilText + postUrl)}`, '_blank');
   };

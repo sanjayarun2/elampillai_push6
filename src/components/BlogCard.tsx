@@ -10,7 +10,8 @@ export default function BlogCard({ post }: BlogCardProps) {
 
   return (
     /* Changed height to 88vh to ensure 12% space for footer */
-    <article className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg relative">
+    /* FIX: Added id={`post-${post.id}`} so the app can auto-scroll to this specific card when shared */
+    <article id={`post-${post.id}`} className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg relative">
       
       {/* 1. IMAGE SECTION (Strict 30%) - Fixed mobile sliding by using z-20 and flex-shrink-0 */}
       <div className="h-[30%] w-full flex-shrink-0 bg-gray-100 relative z-20 shadow-sm">
@@ -34,13 +35,13 @@ export default function BlogCard({ post }: BlogCardProps) {
         {/* px-1 strictly reduces side margins for maximum width */}
         {/* FIX: Added overscroll-contain to isolate scroll momentum and prevent the card from pulling under the header */}
         <div className="flex-1 overflow-y-auto scrollbar-hide px-1 pt-3 overscroll-contain">
-          {/* Reduced Title Font to 18px */}
-          <h2 className="text-[18px] leading-tight font-bold text-[#2d2d2d] mb-2 px-1">
+          {/* Reduced Title Font to 17px per latest request */}
+          <h2 className="text-[17px] leading-tight font-bold text-[#2d2d2d] mb-2 px-1">
             {post.title}
           </h2>
           
-          {/* Reduced Content Font to 15px */}
-          <p className="text-[#44444d] text-[15px] leading-[1.5] font-light text-left whitespace-pre-wrap px-1 pb-24">
+          {/* Reduced Content Font to 14px per latest request */}
+          <p className="text-[#44444d] text-[14px] leading-[1.6] font-light text-left whitespace-pre-wrap px-1 pb-28">
             {post.content}
           </p>
         </div>
