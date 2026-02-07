@@ -14,6 +14,9 @@ export default async function middleware(request: Request) {
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
+  // DEBUG LOGGING: View these in Vercel Dashboard > Logs
+  console.log(`[Middleware] Request to: ${url.pathname} | isBot: ${isBot} | postId: ${postId} | UA: ${userAgent}`);
+
   // 2. If a bot is visiting a blog link with an ID, fetch dynamic data from Turso
   if (isBot && postId) {
     try {
@@ -53,9 +56,15 @@ export default async function middleware(request: Request) {
             <body>Redirecting to Elampillai News...</body>
           </html>`,
           {
-            headers: { 'content-type': 'text/html; charset=UTF-8' },
+            headers: { 
+              'content-type': 'text/html; charset=UTF-8',
+              'x-middleware-debug': 'bot-intercepted',
+              'x-post-id': postId 
+            },
           }
         );
+      } else {
+        console.warn(`[Middleware] No post found for ID: ${postId}`);
       }
     } catch (e) {
       console.error("Middleware Turso fetch failed:", e);
@@ -63,5 +72,8 @@ export default async function middleware(request: Request) {
   }
 
   // 4. For real users (not bots), continue to the React app normally
-  return fetch(request);
+  const response = await fetch(request);
+  const newResponse = new Response(response.body, response);
+  newResponse.headers.set('x-middleware-debug', isBot ? 'bot-not-intercepted' : 'human-user');
+  return newResponse;
 }
