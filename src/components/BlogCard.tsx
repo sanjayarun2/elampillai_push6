@@ -35,7 +35,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
 
-      {/* 2. CONTENT SECTION (70%) - Removed 'relative' so absolute children pin to the article, not this div */}
+      {/* 2. CONTENT SECTION (70%) */}
       <div className="flex-1 w-full flex flex-col overflow-hidden">
         
         {/* px-1 strictly reduces side margins for maximum width */}
@@ -53,18 +53,21 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
 
       {/* STICKY: Floating WhatsApp Button is a direct child of article and outside the scrolling container */}
-      <div className="absolute bottom-6 right-3 z-50">
-        <button 
-          onClick={handleShare}
-          className="active:scale-90 transition-transform"
-          aria-label="Share"
-        >
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
-            alt="WhatsApp" 
-            className="w-11 h-11 drop-shadow-md" 
-          />
-        </button>
+      {/* Added inset-0 pointer-events-none container to force layering to the front */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-6 right-3 z-50 pointer-events-auto">
+          <button 
+            onClick={handleShare}
+            className="active:scale-90 transition-transform"
+            aria-label="Share"
+          >
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+              alt="WhatsApp" 
+              className="w-11 h-11 drop-shadow-md" 
+            />
+          </button>
+        </div>
       </div>
 
     </article>
