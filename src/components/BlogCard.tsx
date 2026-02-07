@@ -52,7 +52,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         </div>
 
         {/* Floating WhatsApp Button */}
-        <div className="absolute bottom-5 right-3 z-10">
+        <div className="absolute bottom-22 right-3 z-10">
           <button 
             onClick={handleShare}
             className="active:scale-90 transition-transform"
