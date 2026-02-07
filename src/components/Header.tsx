@@ -18,7 +18,7 @@ export default function Header() {
             <MapPin className="h-5 w-5 md:h-6 md:w-6" />
             <div>
               {/* Dynamic Title: Changes to 'News' title only on the blog page */}
-              <h1 className="text-16px md:text-2xl font-bold">
+              <h1 className="text-18px md:text-2xl font-bold">
                 {isBlogPage ? "இளம்பிள்ளை செய்திகள்" : "இளம்பிள்ளை"}
               </h1>
               <div className="text-[10px] md:text-xs">
