@@ -58,21 +58,21 @@ export default function Blog() {
   }, [loading, posts]);
 
   // Shared share logic for the fixed mobile button
-  // FIX: Refined slug generation to keep Tamil characters readable in the URL link
   const handleShare = (post: BlogPost) => {
     // Update SEO head immediately before opening WhatsApp
     setActivePost(post);
 
-    // 1. Create a readable slug by only replacing spaces and removing problematic symbols
+    // 1. Create a readable slug for the URL message
     const readableSlug = post.title
       .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') 
       .trim()
       .replace(/\s+/g, '-');
       
-    // 2. Construct URL - WhatsApp will automatically handle the Tamil characters if the text itself isn't fully URI encoded
-    const postUrl = `${window.location.origin}/blog/${readableSlug}#post-${post.id}`;
+    // 2. Construct URL - Point directly to the blog page with the hash anchor
+    // Removing the extra /blog/ slug segment from the URL path to ensure the router lands on the feed
+    const postUrl = `${window.location.origin}/blog#post-${post.id}`;
     
-    // 3. Construct the message with bold title
+    // 3. Construct the message with bold title and the slug text for visual appeal
     const message = `*${post.title}*\n\n${postUrl}`;
     
     // 4. Encode the final message for the wa.me link
