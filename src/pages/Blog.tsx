@@ -45,8 +45,8 @@ export default function Blog() {
   const hasMore = posts.length > displayCount;
 
   return (
-    // FIX: Reduced py-4 to py-1 for mobile to start immediately after header
-    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
+    // FIX: Added pb-[15vh] to create a consistent 15% gap at the bottom for the footer
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[15vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
@@ -75,7 +75,7 @@ export default function Blog() {
                 
                 {/* MOBILE SWIPE ARROW ICON (Overlaid on the image area, Top-Right) */}
                 <div className="md:hidden absolute top-[15%] right-4 z-50 pointer-events-none animate-pulse text-white/90 drop-shadow-md">
-                   <ArrowRightCircle size={32} strokeWidth={1.5} fill="rgba(0,0,0,0.3)" />
+                    <ArrowRightCircle size={32} strokeWidth={1.5} fill="rgba(0,0,0,0.3)" />
                 </div>
               </div>
             ))}
