@@ -16,7 +16,7 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    /* Added 'relative' to ensure the WhatsApp button stays anchored to the card, not the scrolling content */
+    /* Changed height to 88vh to ensure 12% space for footer; relative ensures button pins to card */
     <article className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg relative">
       
       {/* 1. IMAGE SECTION (Strict 30%) */}
@@ -35,8 +35,8 @@ export default function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
 
-      {/* 2. CONTENT SECTION (70%) */}
-      <div className="flex-1 w-full flex flex-col overflow-hidden relative">
+      {/* 2. CONTENT SECTION (70%) - Removed 'relative' so absolute children pin to the article, not this div */}
+      <div className="flex-1 w-full flex flex-col overflow-hidden">
         
         {/* px-1 strictly reduces side margins for maximum width */}
         <div className="flex-1 overflow-y-auto scrollbar-hide px-1 pt-3">
@@ -52,7 +52,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         </div>
       </div>
 
-      {/* MOVED: Floating WhatsApp Button is now a direct child of article to stay sticky at the front */}
+      {/* STICKY: Floating WhatsApp Button is a direct child of article and outside the scrolling container */}
       <div className="absolute bottom-6 right-3 z-50">
         <button 
           onClick={handleShare}
