@@ -79,19 +79,18 @@ export default function Blog() {
     // Update SEO head immediately before opening WhatsApp
     setActivePost(post);
 
-    // 1. Create a readable slug for the URL message
+    // 1. Create a readable slug for visual appeal in the text
     const readableSlug = post.title
       .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') 
       .trim()
       .replace(/\s+/g, '-');
       
-    // 2. Construct URL - Point directly to the blog page with the hash anchor
-    // FIX: Using query param (?id=) alongside the hash fragment. 
-    // This makes the URL unique for WhatsApp while keeping the scroll functionality for the user.
-    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}?id=${post.id}#post-${post.id}`;
+    // 2. Construct URL
+    // FIX: Pointing to '/blog' path directly to prevent Router 404s while keeping id/hash for data/scrolling.
+    const postUrl = `${window.location.origin}/blog?id=${post.id}#post-${post.id}`;
     
     // 3. Construct the message with bold title and the slug text for visual appeal
-    const message = `*${post.title}*\n\n${postUrl}`;
+    const message = `*${post.title}*\n\nRead more: ${postUrl}`;
     
     // 4. Encode the final message for the wa.me link
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
