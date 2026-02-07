@@ -12,6 +12,8 @@ export default function Blog() {
   const [loading, setLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
   const [error, setError] = useState<string | null>(null);
+  // FIX: Track active post for dynamic SEO metadata
+  const [activePost, setActivePost] = useState<BlogPost | null>(null);
 
   useEffect(() => {
     async function fetchPosts() {
@@ -20,7 +22,10 @@ export default function Blog() {
         setError(null);
         const data = await blogService.getAll();
         // Ensure we always have an array
-        setPosts(Array.isArray(data) ? data : []);
+        const postsData = Array.isArray(data) ? data : [];
+        setPosts(postsData);
+        // Set initial active post for SEO
+        if (postsData.length > 0) setActivePost(postsData[0]);
       } catch (err) {
         console.error('Error loading posts:', err);
         setError('Failed to load posts. Please try again later.');
@@ -42,6 +47,10 @@ export default function Blog() {
           const targetElement = document.querySelector(hash);
           if (targetElement) {
             targetElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            // Set scrolled post as active SEO target
+            const postId = hash.replace('#post-', '');
+            const foundPost = posts.find(p => p.id === postId);
+            if (foundPost) setActivePost(foundPost);
           }
         }, 100);
       }
@@ -51,6 +60,9 @@ export default function Blog() {
   // Shared share logic for the fixed mobile button
   // FIX: Refined slug generation to keep Tamil characters readable in the URL link
   const handleShare = (post: BlogPost) => {
+    // Update SEO head immediately before opening WhatsApp
+    setActivePost(post);
+
     // 1. Create a readable slug by only replacing spaces and removing problematic symbols
     const readableSlug = post.title
       .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') 
@@ -82,9 +94,11 @@ export default function Blog() {
   return (
     // FIX: Added touch-none (mobile) and overscroll-none to lock the card position against the header
     <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white overflow-hidden overscroll-none touch-none md:touch-auto">
+      {/* FIX: Dynamically update SEOHead based on active post */}
       <SEOHead 
-        title="News & Updates - Elampillai" 
-        description="Stay updated with the latest news from Elampillai."
+        title={activePost ? activePost.title : "News & Updates - Elampillai"} 
+        description={activePost ? activePost.content.substring(0, 150) : "Stay updated with the latest news from Elampillai."}
+        image={activePost?.image}
         url={typeof window !== 'undefined' ? window.location.href : ''} 
       />
       
