@@ -16,8 +16,8 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    /* Changed height to 90vh to ensure 10% space for footer on all mobile screens */
-    <article className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg">
+    /* Added 'relative' to ensure the WhatsApp button stays anchored to the card, not the scrolling content */
+    <article className="bg-white overflow-hidden flex flex-col h-[88vh] w-full max-w-2xl mx-auto shadow-lg relative">
       
       {/* 1. IMAGE SECTION (Strict 30%) */}
       <div className="h-[30%] w-full flex-shrink-0 bg-gray-100 relative">
@@ -50,21 +50,21 @@ export default function BlogCard({ post }: BlogCardProps) {
             {post.content}
           </p>
         </div>
+      </div>
 
-        {/* Floating WhatsApp Button - Adjusted to bottom-12 for the new footer height */}
-        <div className="absolute bottom-6 right-3 z-10">
-          <button 
-            onClick={handleShare}
-            className="active:scale-90 transition-transform"
-            aria-label="Share"
-          >
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
-              alt="WhatsApp" 
-              className="w-11 h-11 drop-shadow-md" 
-            />
-          </button>
-        </div>
+      {/* MOVED: Floating WhatsApp Button is now a direct child of article to stay sticky at the front */}
+      <div className="absolute bottom-6 right-3 z-50">
+        <button 
+          onClick={handleShare}
+          className="active:scale-90 transition-transform"
+          aria-label="Share"
+        >
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+            alt="WhatsApp" 
+            className="w-11 h-11 drop-shadow-md" 
+          />
+        </button>
       </div>
 
     </article>
