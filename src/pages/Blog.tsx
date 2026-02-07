@@ -46,7 +46,7 @@ export default function Blog() {
 
   return (
     // FIX: Added pb-[15vh] to create a consistent 15% gap at the bottom for the footer
-    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[10vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
+    <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
       <SEOHead 
         title="News & Updates - Elampillai" 
         description="Stay updated with the latest news from Elampillai."
