@@ -40,7 +40,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           </h2>
           
           {/* Reduced Content Font to 15px */}
-          <p className="text-[#44444d] text-[15px] leading-[1.5] font-light text-left whitespace-pre-wrap px-1 pb-16">
+          <p className="text-[#44444d] text-[15px] leading-[1.5] font-light text-left whitespace-pre-wrap px-1 pb-24">
             {post.content}
           </p>
         </div>
