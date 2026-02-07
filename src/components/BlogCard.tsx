@@ -16,8 +16,8 @@ export default function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    /* Changed height to 85vh to ensure 15% space for footer on all mobile screens */
-    <article className="bg-white overflow-hidden flex flex-col h-[85vh] w-full max-w-2xl mx-auto shadow-lg">
+    /* Changed height to 90vh to ensure 10% space for footer on all mobile screens */
+    <article className="bg-white overflow-hidden flex flex-col h-[90vh] w-full max-w-2xl mx-auto shadow-lg">
       
       {/* 1. IMAGE SECTION (Strict 30%) */}
       <div className="h-[30%] w-full flex-shrink-0 bg-gray-100 relative">
@@ -51,8 +51,8 @@ export default function BlogCard({ post }: BlogCardProps) {
           </p>
         </div>
 
-        {/* Floating WhatsApp Button */}
-        <div className="absolute bottom-22 right-3 z-10">
+        {/* Floating WhatsApp Button - Adjusted to bottom-12 for the new footer height */}
+        <div className="absolute bottom-12 right-3 z-10">
           <button 
             onClick={handleShare}
             className="active:scale-90 transition-transform"
