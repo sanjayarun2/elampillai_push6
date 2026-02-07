@@ -30,9 +30,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/shops" element={<Shops />} />
-              {/* FIX: Use wildcard * so that slugged URLs like /blog/news-title load the Blog component */}
-              <Route path="/blog/*" element={<Blog />} />
+              {/* FIX: Ensure specific blog ID route is checked before the wildcard blog route */}
               <Route path="/blog/:id" element={<BlogPost />} />
+              <Route path="/blog/*" element={<Blog />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
