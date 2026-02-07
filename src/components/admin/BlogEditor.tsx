@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trash2, Edit2, Save, X, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Edit2, Save, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { blogService } from '../../services/blogService';
 import type { BlogPost } from '../../types';
 
@@ -7,6 +7,7 @@ export function BlogEditor() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false); // Added for load state
   
   // Form State
   const [currentPost, setCurrentPost] = useState<Partial<BlogPost>>({
@@ -36,8 +37,22 @@ export function BlogEditor() {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setCurrentPost(prev => ({ ...prev, image: reader.result as string }));
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // Create canvas to convert image to WebP format
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            // Convert to WebP with 0.8 quality
+            const webpDataUrl = canvas.toDataURL('image/webp', 0.8);
+            setCurrentPost(prev => ({ ...prev, image: webpDataUrl }));
+          }
+        };
+        img.src = event.target?.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -45,7 +60,9 @@ export function BlogEditor() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPost.title || !currentPost.content) return;
+    if (!currentPost.title || !currentPost.content || isPublishing) return;
+
+    setIsPublishing(true); // Start load state
 
     try {
       const postToSave = {
@@ -56,43 +73,38 @@ export function BlogEditor() {
       } as BlogPost;
 
       if (isEditing) {
-        // Update logic (assuming your service has an update method, otherwise simple create)
-        // For now, we are treating it as a create/overwrite for simplicity in this demo
         console.log('Updating post...');
-        // If blogService.update exists: await blogService.update(postToSave.id, postToSave);
         await blogService.create(postToSave); 
       } else {
-        // 1. Create new post in Database
         await blogService.create(postToSave);
 
-        // 2. Trigger Push Notification via Vercel Serverless Function
         try {
           await fetch('/api/notify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               title: postToSave.title,
-              message: postToSave.content.substring(0, 100) + '...', // Short summary
-              url: window.location.origin, // Link to homepage
+              message: postToSave.content.substring(0, 100) + '...',
+              url: window.location.origin,
               image: postToSave.image || null
             })
           });
           console.log('Notification trigger sent successfully');
         } catch (notifyError) {
           console.error('Failed to trigger notification:', notifyError);
-          // We don't stop the save process if notification fails
         }
       }
 
-      // Reset and Reload
       setIsEditing(false);
       setCurrentPost({ title: '', content: '', image: '', author: 'Admin', date: new Date().toISOString().split('T')[0] });
-      loadPosts();
+      await loadPosts();
       alert(isEditing ? 'Post updated successfully!' : 'Post published and notifications sent!');
 
     } catch (error) {
       console.error('Error saving post:', error);
       alert('Failed to save post');
+    } finally {
+      setIsPublishing(false); // End load state
     }
   };
 
@@ -204,10 +216,22 @@ export function BlogEditor() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 font-medium"
+          disabled={isPublishing}
+          className={`w-full text-white py-3 rounded-lg transition flex items-center justify-center gap-2 font-medium ${
+            isPublishing ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          }`}
         >
-          <Save size={20} />
-          {isEditing ? 'Update Post' : 'Publish Post'}
+          {isPublishing ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              Publishing...
+            </>
+          ) : (
+            <>
+              <Save size={20} />
+              {isEditing ? 'Update Post' : 'Publish Post'}
+            </>
+          )}
         </button>
       </form>
 
