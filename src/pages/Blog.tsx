@@ -45,7 +45,7 @@ export default function Blog() {
   const hasMore = posts.length > displayCount;
 
   return (
-    // FIX: Added pb-[15vh] to create a consistent 15% gap at the bottom for the footer
+    // FIX: Added pb-[12vh] to create a consistent 12% gap at the bottom for the footer
     <div className="relative max-w-[888px] mx-auto px-0 md:px-4 py-1 pb-[12vh] md:py-8 h-[calc(100vh-64px)] md:h-auto bg-gray-50 md:bg-white">
       <SEOHead 
         title="News & Updates - Elampillai" 
@@ -70,7 +70,7 @@ export default function Blog() {
           {/* CONTAINER */}
           <div className="flex flex-row overflow-x-auto snap-x snap-mandatory gap-0 h-full w-full md:flex-col md:gap-6 md:h-auto md:overflow-visible no-scrollbar">
             {displayedPosts.map(post => (
-              <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-start md:block">
+              <div key={post.id} className="relative min-w-full w-full snap-center px-2 pt-1 md:px-0 md:pt-0 md:w-auto h-full md:h-auto flex items-stretch md:block">
                 <BlogCard post={post} />
                 
                 {/* MOBILE SWIPE ARROW ICON (Overlaid on the image area, Top-Right) */}
