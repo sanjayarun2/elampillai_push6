@@ -1,7 +1,8 @@
 import { createClient } from '@libsql/client/web';
 
 export const config = {
-  matcher: '/blog/:path*',
+  // Broadened matcher to ensure the middleware catches relevant traffic
+  matcher: ['/blog/:path*', '/'],
 };
 
 export default async function middleware(request: Request) {
@@ -9,7 +10,8 @@ export default async function middleware(request: Request) {
   const userAgent = request.headers.get('user-agent') || '';
   
   // 1. Detect social media bots that scrape for preview cards
-  const isBot = /WhatsApp|facebookexternalhit|Twitterbot|LinkedInBot/i.test(userAgent);
+  // FIX: Updated regex to include Facebot and Meta-ExternalAgent for better WhatsApp/Facebook detection
+  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
   // 2. If a bot is visiting a blog link with an ID, fetch dynamic data from Turso
