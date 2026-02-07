@@ -25,12 +25,12 @@ export default function Blog() {
         const postsData = Array.isArray(data) ? data : [];
         setPosts(postsData);
         
-        // FIX: Prioritize setting active post from URL query or hash for social media crawlers
+        // FIX: Prioritize setting active post from URL query (?id=) then fallback to hash for social media crawlers
         const urlParams = new URLSearchParams(window.location.search);
         const postIdFromQuery = urlParams.get('id');
         const hash = window.location.hash;
         
-        // Bots prefer query params over hashes
+        // Source of truth: Query param first, then hash fragment
         const targetId = postIdFromQuery || (hash.startsWith('#post-') ? hash.replace('#post-', '') : null);
         
         if (targetId) {
