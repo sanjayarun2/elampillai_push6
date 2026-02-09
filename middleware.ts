@@ -13,22 +13,24 @@ export async function middleware(request: NextRequest) {
 
   if (isBot && postId) {
     try {
-      // Fetch blog data from your API
       const apiUrl = `${url.origin}/api/blog/${postId}`;
       const response = await fetch(apiUrl);
       const post = await response.json();
 
       if (post && post.title) {
-        const title = post.title;
-        const description = post.content.substring(0, 150).replace(/[#*]/g, '');
-        const image = post.image;
-        const fullImageUrl = image?.startsWith('http') ? image : `${url.origin}${image}`;
+        const title = String(post.title).replace(/"/g, '&quot;');
+        const description = String(post.content).substring(0, 150).replace(/[#*]/g, '').replace(/"/g, '&quot;');
+        const image = String(post.image || '');
+        const fullImageUrl = image.startsWith('http') ? image : `${url.origin}${image}`;
 
         const html = `<!DOCTYPE html>
-<html>
+<html lang="ta">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
+    <meta name="description" content="${description}">
+    
     <meta property="og:title" content="${title}">
     <meta property="og:description" content="${description}">
     <meta property="og:image" content="${fullImageUrl}">
@@ -39,18 +41,24 @@ export async function middleware(request: NextRequest) {
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="Elampillai Community">
     <meta property="og:locale" content="ta_IN">
+    
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="${description}">
     <meta name="twitter:image" content="${fullImageUrl}">
+    
     <meta http-equiv="refresh" content="0;url=${url.href}">
   </head>
-  <body></body>
+  <body>
+    <h1>${title}</h1>
+    <p>${description}</p>
+  </body>
 </html>`;
 
         return new NextResponse(html, {
           headers: {
             'content-type': 'text/html; charset=UTF-8',
+            'cache-control': 'public, max-age=3600',
           },
         });
       }
