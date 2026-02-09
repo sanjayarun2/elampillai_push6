@@ -54,5 +54,9 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "VITE_TURSO_DATABASE_URL": "@turso-database-url",
+    "VITE_TURSO_AUTH_TOKEN": "@turso-auth-token"
+  }
 }
