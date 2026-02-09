@@ -1,19 +1,18 @@
 import { createClient } from '@libsql/client/web';
 
 export const config = {
-  // Capture both specific blog paths and the root for bot detection
-  matcher: ['/blog/:path*', '/'],
+  // Catch both the pretty slug paths and the direct ID query paths
+  matcher: ['/blog/:path*', '/blog'], 
 };
 
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
   
-  // Expanded bot detection for modern Meta and WhatsApp crawlers
+  // Detect bots from WhatsApp, Facebook (Facebot), and Meta
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
-  // Server-side injection for social media bots
   if (isBot && postId) {
     try {
       const db = createClient({
