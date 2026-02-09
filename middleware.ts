@@ -1,14 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 export const config = {
   matcher: '/blog/:path*',
 };
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: Request) {
   const userAgent = request.headers.get('user-agent') || '';
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot|TelegramBot|Discordbot|Slackbot|Instagram|Pinterest|Redditbot|SkypeUriPreview/i.test(userAgent);
   
-  const url = request.nextUrl;
+  const url = new URL(request.url);
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {
@@ -55,7 +53,7 @@ export async function middleware(request: NextRequest) {
   </body>
 </html>`;
 
-        return new NextResponse(html, {
+        return new Response(html, {
           headers: {
             'content-type': 'text/html; charset=UTF-8',
             'cache-control': 'public, max-age=3600',
@@ -67,5 +65,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Equivalent to NextResponse.next() in standard Web API
+  return new Response(null, {
+    headers: {
+      'x-middleware-next': '1',
+    },
+  });
 }
