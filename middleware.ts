@@ -7,7 +7,8 @@ export const config = {
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
-  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent/i.test(userAgent);
+  // Expanded bot detection for modern Meta and WhatsApp crawlers
+  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {

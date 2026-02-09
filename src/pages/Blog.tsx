@@ -85,9 +85,9 @@ export default function Blog() {
       .trim()
       .replace(/\s+/g, '-');
       
-    // 2. Construct URL
-    // FIX: Pointing to '/blog' path directly to prevent Router 404s while keeping id/hash for data/scrolling.
-    const postUrl = `${window.location.origin}/blog?id=${post.id}#post-${post.id}`;
+    // 2. Construct SEO-friendly URL
+    // FIX: Using an SEO-friendly path with the Tamil slug, while keeping the technical ID in query params for stability.
+    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}?id=${post.id}#post-${post.id}`;
     
     // 3. Construct the message with bold title and the slug text for visual appeal
     const message = `*${post.title}*\n\nRead more: ${postUrl}`;
