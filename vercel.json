@@ -7,7 +7,7 @@
     "api/blog/[id].ts": {
       "maxDuration": 10
     },
-    "api/og-meta.ts": {
+    "api/blog/og-meta.ts": {
       "maxDuration": 10
     }
   },
