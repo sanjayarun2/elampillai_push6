@@ -1,16 +1,13 @@
 import { createClient } from '@libsql/client/web';
 
 export const config = {
-  // Catch both the pretty slug paths and the direct ID query paths
-  matcher: ['/blog/:path*', '/blog'], 
+  matcher: ['/blog/:path*', '/'],
 };
 
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
-  
-  // Detect bots from WhatsApp, Facebook (Facebot), and Meta
-  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
+  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {
@@ -44,6 +41,7 @@ export default async function middleware(request: Request) {
               <meta property="og:image:height" content="630">
               <meta property="og:url" content="${url.href}">
               <meta property="og:type" content="article">
+              <link rel="canonical" href="${url.href}">
               <meta name="twitter:card" content="summary_large_image">
             </head>
             <body>Redirecting...</body>
@@ -55,6 +53,5 @@ export default async function middleware(request: Request) {
       console.error("Middleware fetch error:", e);
     }
   }
-
   return fetch(request);
 }
