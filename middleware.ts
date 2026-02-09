@@ -1,5 +1,5 @@
 export const config = {
-  matcher: '/blog/:path*',
+  matcher: ['/blog/:path*', '/api/og-meta'],
 };
 
 export async function middleware(request: Request) {
