@@ -13,7 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.0",
+    "@libsql/client": "^0.4.0",
     "@supabase/supabase-js": "^2.39.7",
     "firebase-admin": "^13.0.1",
     "lucide-react": "^0.344.0",
@@ -30,7 +30,7 @@
     "@types/web-push": "^3.6.3",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
-    "@vercel/node": "^3.2.24",
+    "@vercel/node": "^3.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.18",
     "postcss": "^8.4.35",
