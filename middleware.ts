@@ -8,8 +8,6 @@ export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent/i.test(userAgent);
-  
-  // Always get the ID from the query param, ignoring the encoded slug in the path
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {
