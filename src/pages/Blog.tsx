@@ -79,18 +79,14 @@ export default function Blog() {
     // Update SEO head immediately before opening WhatsApp
     setActivePost(post);
 
-    // 1. Create a readable slug for visual appeal in the text
-    const readableSlug = post.title
-      .replace(/[^\u0B80-\u0BFFa-zA-Z0-9 ]/g, '') 
-      .trim()
-      .replace(/\s+/g, '-');
+    // 1. Generate clean Tamil-to-English transliterated slug
+    const cleanSlug = blogService.generateSlug(post.title);
       
-    // 2. Construct URL
-    // FIX: Using an SEO-friendly path with the Tamil slug, while keeping the technical ID in query params for stability.
-    const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}?id=${post.id}#post-${post.id}`;
+    // 2. Construct URL with clean slug
+    const postUrl = `${window.location.origin}/blog/${cleanSlug}?id=${post.id}`;
     
-    // 3. Construct the message with bold title and the slug text for visual appeal
-    const message = `*${post.title}*\n\nRead more: ${postUrl}`;
+    // 3. Construct the message - WhatsApp will fetch Open Graph data from the URL
+    const message = `${post.title}\n\n${postUrl}`;
     
     // 4. Encode the final message for the wa.me link
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');

@@ -28,9 +28,9 @@ export default function SEOHead({
 }: SEOHeadProps) {
   const siteName = 'Elampillai Community';
   const fullTitle = `${title} - ${siteName}`;
-  const canonicalUrl = new URL(url).origin + new URL(url).pathname;
+  const canonicalUrl = new URL(url).origin + new URL(url).pathname + (new URL(url).search || '');
   // Ensure image has the full domain prefix
-  const fullImageurl = image.startsWith('http') ? image : `${new URL(url).origin}${image}`;
+  const fullImageurl = image?.startsWith('http') ? image : `${new URL(url).origin}${image}`;
 
   return (
     <Helmet>
@@ -41,18 +41,21 @@ export default function SEOHead({
       <link rel="canonical" href={canonicalUrl} />
 
       {/* FIX: Schema.org markup for Google+ / WhatsApp explicitly */}
-      <meta itemprop="name" content={fullTitle} />
-      <meta itemprop="description" content={description} />
-      <meta itemprop="image" content={fullImageurl} />
+      <meta itemProp="name" content={title} />
+      <meta itemProp="description" content={description} />
+      <meta itemProp="image" content={fullImageurl} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:title" content={fullTitle} />
+      <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={fullImageurl} />
       <meta property="og:image:secure_url" content={fullImageurl} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:site_name" content={siteName} />
+      <meta property="og:locale" content="ta_IN" />
       {author && <meta property="article:author" content={author} />}
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
@@ -60,16 +63,9 @@ export default function SEOHead({
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={canonicalUrl} />
-      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      {/* FIX: Use fullImageurl for Twitter to ensure previews load correctly */}
       <meta name="twitter:image" content={fullImageurl} />
-
-      {/* WhatsApp / Meta App Optimization */}
-      <meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:locale" content="ta_IN" />
 
       {/* Additional SEO */}
       <meta name="robots" content="index, follow, max-image-preview:large" />

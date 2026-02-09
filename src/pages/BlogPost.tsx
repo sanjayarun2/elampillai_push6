@@ -40,7 +40,9 @@ export default function BlogPost() {
     );
   }
 
-  const canonicalUrl = `${window.location.origin}/blog/${id}`;
+  // Generate clean Tamil-to-English transliterated slug for the canonical URL
+  const cleanSlug = blogService.generateSlug(post.title);
+  const canonicalUrl = `${window.location.origin}/blog/${cleanSlug}?id=${post.id}`;
 
   return (
     <>
@@ -48,8 +50,10 @@ export default function BlogPost() {
         title={post.title}
         description={post.content.substring(0, 155)}
         image={post.image} 
-        url={canonicalUrl} 
+        url={canonicalUrl}
         type="article"
+        author={post.author}
+        publishedTime={post.date}
       />
 
       <ShareButton title={post.title} url={canonicalUrl} />

@@ -1,6 +1,42 @@
 import { turso } from '../lib/turso';
 import type { BlogPost } from '../types';
 
+// Tamil to English transliteration map for clean URLs
+const tamilToEnglishMap: { [key: string]: string } = {
+  'அ': 'a', 'ஆ': 'aa', 'இ': 'e', 'ஈ': 'ee', 'உ': 'u', 'ஊ': 'oo', 'எ': 'e', 'ஏ': 'ae', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'oa', 'ஔ': 'au',
+  'க': 'ka', 'ங': 'nga', 'ச': 'cha', 'ஞ': 'nja', 'ட': 'ta', 'ண': 'na', 'த': 'tha', 'ந': 'na', 'ப': 'pa', 'ம': 'ma', 'ய': 'ya', 'ர': 'ra', 'ல': 'la', 'வ': 'va', 'ழ': 'zha', 'ள': 'la', 'ற': 'ra', 'ன': 'na',
+  'ஜ': 'ja', 'ஶ': 'sha', 'ஷ': 'sha', 'ஸ': 'sa', 'ஹ': 'ha', 'க்ஷ': 'ksha',
+  'ா': 'aa', 'ி': 'i', 'ீ': 'ee', 'ு': 'u', 'ூ': 'oo', 'ெ': 'e', 'ே': 'ae', 'ை': 'ai', 'ொ': 'o', 'ோ': 'oa', 'ௌ': 'au', '்': ''
+};
+
+// Generate SEO-friendly slug from Tamil/English title
+function generateSlug(title: string): string {
+  let slug = '';
+  
+  // Process each character
+  for (let i = 0; i < title.length; i++) {
+    const char = title[i];
+    
+    // Check for Tamil characters
+    if (tamilToEnglishMap[char]) {
+      slug += tamilToEnglishMap[char];
+    } 
+    // Keep English letters and numbers
+    else if (/[a-zA-Z0-9]/.test(char)) {
+      slug += char.toLowerCase();
+    }
+    // Convert spaces to hyphens
+    else if (char === ' ') {
+      slug += '-';
+    }
+  }
+  
+  // Clean up: remove multiple hyphens, trim hyphens from ends
+  slug = slug.replace(/-+/g, '-').replace(/^-|-$/g, '');
+  
+  return slug || 'blog-post';
+}
+
 export const blogService = {
   async getAll() {
     try {
@@ -112,5 +148,8 @@ export const blogService = {
       console.error("Sync error:", e);
       return false;
     }
-  }
+  },
+
+  // NEW: Generate clean slug for blog posts
+  generateSlug
 };

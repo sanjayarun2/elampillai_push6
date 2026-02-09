@@ -7,7 +7,7 @@ export const config = {
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
-  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent/i.test(userAgent);
+  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot|TelegramBot|Discordbot|Slackbot|Instagram|Pinterest|Redditbot|SkypeUriPreview/i.test(userAgent);
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {
@@ -27,6 +27,7 @@ export default async function middleware(request: Request) {
         const title = String(post.title);
         const description = String(post.content).substring(0, 150).replace(/[#*]/g, '');
         const image = String(post.image);
+        const fullImageUrl = image.startsWith('http') ? image : `${url.origin}${image}`;
 
         return new Response(
           `<!DOCTYPE html>
@@ -36,12 +37,16 @@ export default async function middleware(request: Request) {
               <title>${title}</title>
               <meta property="og:title" content="${title}">
               <meta property="og:description" content="${description}">
-              <meta property="og:image" content="${image}">
+              <meta property="og:image" content="${fullImageUrl}">
+              <meta property="og:image:secure_url" content="${fullImageUrl}">
               <meta property="og:image:width" content="1200">
               <meta property="og:image:height" content="630">
               <meta property="og:url" content="${url.href}">
               <meta property="og:type" content="article">
+              <meta property="og:site_name" content="Elampillai Community">
+              <meta property="og:locale" content="ta_IN">
               <meta name="twitter:card" content="summary_large_image">
+              <meta name="twitter:image" content="${fullImageUrl}">
             </head>
           </html>`,
           { headers: { 'content-type': 'text/html; charset=UTF-8' } }
