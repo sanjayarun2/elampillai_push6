@@ -7,9 +7,10 @@ export async function middleware(request: Request) {
   const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot|TelegramBot|Discordbot|Slackbot|Instagram|Pinterest|Redditbot|SkypeUriPreview/i.test(userAgent);
   
   const url = new URL(request.url);
-  const postId = url.searchParams.get('id');
+  // FIX: Look for ID in query param OR in the URL path (e.g., /blog/123)
+  const postId = url.searchParams.get('id') || url.pathname.split('/').pop();
 
-  if (isBot && postId) {
+  if (isBot && postId && postId !== 'blog') { // Ensure we don't treat '/blog' as an ID
     try {
       const apiUrl = `${url.origin}/api/blog/${postId}`;
       const response = await fetch(apiUrl);
@@ -65,7 +66,6 @@ export async function middleware(request: Request) {
     }
   }
 
-  // Equivalent to NextResponse.next() in standard Web API
   return new Response(null, {
     headers: {
       'x-middleware-next': '1',
