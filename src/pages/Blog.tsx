@@ -78,17 +78,14 @@ export default function Blog() {
   const handleShare = (post: BlogPost) => {
     // Update SEO head immediately before opening WhatsApp
     setActivePost(post);
-
-    // 1. Generate clean Tamil-to-English transliterated slug
-    const cleanSlug = blogService.generateSlug(post.title);
       
-    // 2. Construct URL with clean slug
-    const postUrl = `${window.location.origin}/blog/${cleanSlug}?id=${post.id}`;
+    // Use API endpoint for proper Open Graph meta tags
+    const postUrl = `${window.location.origin}/api/og-meta?id=${post.id}`;
     
-    // 3. Construct the message - WhatsApp will fetch Open Graph data from the URL
+    // Construct the message - WhatsApp will fetch Open Graph data from the URL
     const message = `${post.title}\n\n${postUrl}`;
     
-    // 4. Encode the final message for the wa.me link
+    // Encode the final message for the wa.me link
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
