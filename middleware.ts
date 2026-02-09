@@ -1,14 +1,15 @@
 import { createClient } from '@libsql/client/web';
 
 export const config = {
-  matcher: ['/blog/:path*', '/'],
+  matcher: ['/blog/:path*', '/blog'],
 };
 
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
-  // Expanded bot detection for modern Meta and WhatsApp crawlers
-  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent|Twitterbot|LinkedInBot/i.test(userAgent);
+  const isBot = /WhatsApp|facebookexternalhit|Facebot|Meta-ExternalAgent/i.test(userAgent);
+  
+  // Always get the ID from the query param, ignoring the encoded slug in the path
   const postId = url.searchParams.get('id');
 
   if (isBot && postId) {
@@ -25,9 +26,9 @@ export default async function middleware(request: Request) {
 
       if (result.rows.length > 0) {
         const post = result.rows[0];
-        const title = String(post.title || "Elampillai News");
-        const description = String(post.content || "").substring(0, 150).replace(/[#*]/g, '') + "...";
-        const image = String(post.image || "https://elampillai.in/og-image.jpg");
+        const title = String(post.title);
+        const description = String(post.content).substring(0, 150).replace(/[#*]/g, '');
+        const image = String(post.image);
 
         return new Response(
           `<!DOCTYPE html>
@@ -42,16 +43,14 @@ export default async function middleware(request: Request) {
               <meta property="og:image:height" content="630">
               <meta property="og:url" content="${url.href}">
               <meta property="og:type" content="article">
-              <link rel="canonical" href="${url.href}">
               <meta name="twitter:card" content="summary_large_image">
             </head>
-            <body>Redirecting...</body>
           </html>`,
           { headers: { 'content-type': 'text/html; charset=UTF-8' } }
         );
       }
     } catch (e) {
-      console.error("Middleware fetch error:", e);
+      console.error("Bot metadata error:", e);
     }
   }
   return fetch(request);

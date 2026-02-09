@@ -85,7 +85,7 @@ export default function Blog() {
       .trim()
       .replace(/\s+/g, '-');
       
-    // 2. Construct SEO-friendly URL
+    // 2. Construct URL
     // FIX: Using an SEO-friendly path with the Tamil slug, while keeping the technical ID in query params for stability.
     const postUrl = `${window.location.origin}/blog/${encodeURIComponent(readableSlug)}?id=${post.id}#post-${post.id}`;
     
